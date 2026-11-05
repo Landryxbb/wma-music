@@ -4,6 +4,6 @@
    Ne mettez JAMAIS ici la clé "service_role".
    Laissés vides, l'application démarre en mode démonstration (données dans le navigateur). */
 window.WMA_CONFIG = {
-  supabaseUrl: "https://gicdzgedjnagxjjkijtr.supabase.co
+  supabaseUrl: "https://gicdzgedjnagxjjkijtr.supabase.co",
   supabaseAnonKey: "sb_publishable_SnSlECSZayB940lx6VDR3Q_FSSlUhDJ",
 };
