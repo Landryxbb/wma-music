@@ -178,6 +178,7 @@
 .tmenu .tm-cancel{justify-content:center;margin-top:6px;background:var(--surface2)}
 @media (max-width:860px){.dcard{padding:16px 14px 8px}.dcard-h h2{font-size:17px}.drow{grid-template-columns:64px minmax(0,1fr) 40px;gap:12px}.dr-cov{width:64px;height:64px}}
 
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -205,11 +206,11 @@ body.ob-lock{overflow:hidden}
 #welcome{position:fixed;inset:0;z-index:900;background:#000;color:#fff;display:grid;place-items:center;overflow-y:auto;opacity:0;transition:opacity .35s ease;padding:calc(24px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
 #welcome.in{opacity:1}
 #welcome.out{opacity:0;pointer-events:none}
-.wl-bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(0,1fr);gap:6px;opacity:.5;overflow:hidden}
-.wl-bg span{background:var(--bgimg) center 20%/cover no-repeat,#1C1C1E;filter:grayscale(.35);animation:wlKen 18s ease-in-out infinite alternate;animation-delay:calc(var(--k) * -2s)}
+.wl-bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(0,1fr);gap:4px;opacity:.85;overflow:hidden}
+.wl-bg span{background:var(--bgimg) center 20%/cover no-repeat,#1C1C1E;filter:saturate(1.05);animation:wlKen 18s ease-in-out infinite alternate;animation-delay:calc(var(--k) * -2s)}
 @keyframes wlKen{from{transform:scale(1)}to{transform:scale(1.12)}}
 @media (prefers-reduced-motion:reduce){.wl-bg span,#welcome.in .wl-in>*{animation:none!important}}
-.wl-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,rgba(0,0,0,.35),rgba(0,0,0,.9) 70%),linear-gradient(180deg,rgba(0,0,0,.2),#000 78%)}
+.wl-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,.55) 38%,rgba(0,0,0,.9) 62%,#000 82%)}
 .wl-in{position:relative;width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
 #welcome.in .wl-in>*{animation:inUp .5s cubic-bezier(.2,.7,.2,1) both}
 #welcome.in .wl-in>*:nth-child(2){animation-delay:.05s}
@@ -238,6 +239,13 @@ body.ob-lock{overflow:hidden}
 #welcome .wl-b.pri{background:#FF7A1A;color:#0A0A0A;border:0}
 #welcome .wl-google:hover{background:#EDEDED}
 #welcome:focus{outline:none}
+
+/* Fond photos des pages Sign in / Create your account */
+#authBg{position:fixed;inset:0;z-index:0;pointer-events:none;background:#000}
+body.auth-bg main{position:relative;z-index:1}
+body.auth-bg .auth{background:rgba(18,18,18,.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:28px 24px;margin-top:min(22vh,180px)}
+@media (min-width:861px){#authBg{left:var(--side)}}
+@media (max-width:860px){body.auth-bg .auth{margin-top:min(26vh,200px)}}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -2372,8 +2380,12 @@ const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},ssSe
 const storedSession=()=>{try{return Object.keys(localStorage).some(k=>/^sb-.+-auth-token$/.test(k)&&localStorage.getItem(k))}catch(e){return false}};
 const signedIn=()=>!!api.me()||art();
 
-function welcomeHTML(){const ph=(typeof PHOTO0==='object'&&PHOTO0?Object.values(PHOTO0):[]).filter(Boolean).slice(0,9);
-  return `<div class="wl-bg" aria-hidden="true">${ph.map((p,i)=>`<span style="--bgimg:url('${esc(p)}');--k:${i}"></span>`).join('')}</div><div class="wl-shade" aria-hidden="true"></div>
+/* Photos d'artistes pour les fonds (catalogue en ligne d'abord, photos fournies avec le site ensuite) */
+function bgPhotos(n=9){const seen=new Set(),out=[];const add=u=>{if(u&&!seen.has(u)){seen.add(u);out.push(u)}};
+  DB.artists.forEach(a=>{try{add(artistPhoto(a))}catch(e){}});(typeof PHOTO0==='object'&&PHOTO0?Object.values(PHOTO0):[]).forEach(add);return out.slice(0,n)}
+const bgGrid=ph=>`<div class="wl-bg" aria-hidden="true">${ph.map((p,i)=>`<span style="--bgimg:url('${esc(p)}');--k:${i}"></span>`).join('')}</div><div class="wl-shade" aria-hidden="true"></div>`;
+function welcomeHTML(){const ph=bgPhotos(9);
+  return `${bgGrid(ph)}
   <div class="wl-in">
    <div class="wl-logo" aria-hidden="true">${DI.sun(64)}</div>
    <h1 id="wlTitle">Welcome to WMA MUSIC</h1>
@@ -2408,7 +2420,12 @@ function afterIntro(){
   if(/^#(login|signup|terms|privacy)$/.test(location.hash))return;
   showWelcome()}
 /* Si la session arrive après coup (connexion Google, autre onglet…), l'accueil se ferme tout seul */
-const _chromeOb=chrome;chrome=function(){_chromeOb();if(signedIn()&&$('#welcome'))hideWelcome()};
+const _chromeOb=chrome;chrome=function(){_chromeOb();if(signedIn()&&$('#welcome'))hideWelcome();authBg()};
+/* Même fond de photos derrière les pages Sign in / Create your account */
+function authBg(){const on=/^#(login|signup)$/.test(location.hash)&&!signedIn()&&!art();let el=$('#authBg');document.body.classList.toggle('auth-bg',on);
+  if(!on){if(el)el.remove();return}
+  const ph=bgPhotos(9),key=ph.join('|');if(el&&el.dataset.k===key)return;if(!el){el=document.createElement('div');el.id='authBg';el.setAttribute('aria-hidden','true');document.body.prepend(el)}
+  el.dataset.k=key;el.innerHTML=bgGrid(ph)}
 
 /* ---------- Mot de passe oublié (Supabase existant) ---------- */
 function forgotModal(prefill){openModal(`<h3>Reset your password</h3><p class="muted" style="margin:6px 0 14px">Enter the email of your WMA MUSIC account. We'll send you a link to choose a new password.</p>
