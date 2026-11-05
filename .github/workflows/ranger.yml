@@ -1,0 +1,67 @@
+name: Arranger WMA MUSIC
+
+# Se lance à chaque envoi de fichiers : range automatiquement ce qui a été
+# déposé au mauvais endroit ou renommé par le navigateur (ex. « index (8).html »).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  arranger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ranger les fichiers
+        shell: bash
+        run: |
+          set -e
+          shopt -s nullglob
+          newest() { # garde la copie envoyée le plus récemment
+            best=""; bt=0
+            for f in "$@"; do t=$(git log -1 --format=%ct -- "$f" 2>/dev/null || echo 0); t=${t:-0}
+              if [ "$t" -ge "$bt" ]; then best="$f"; bt=$t; fi; done
+            echo "$best"; }
+          fix() { # fix <nom final> <copies possibles...>
+            target="$1"; shift; copies=()
+            for f in "$@"; do [ "$f" != "$target" ] && [ -f "$f" ] && [[ ! " ${copies[*]} " == *" $f "* ]] && copies+=("$f"); done
+            [ ${#copies[@]} -eq 0 ] && return 0
+            src=$(newest "${copies[@]}"); cp -f "$src" "$target"
+            for f in "${copies[@]}"; do git rm -q -f "$f"; done
+            git add "$target"; echo "OK $target <- $src"; }
+
+          # copies renommées par Windows (« index.html.html ») ou par le navigateur (« index (3).html »)
+          fix index.html index*.html index*.html.html
+          fix sw.js "sw ("*").js" sw.js.js
+          fix icon.svg "icon ("*").svg"
+          fix icon-192.png "icon-192 ("*").png"
+          fix icon-512.png "icon-512 ("*").png"
+          fix config.js "config ("*").js" config.js.js
+          fix manifest.webmanifest "manifest ("*").webmanifest"
+          fix vercel.json "vercel ("*").json" vercel.json.json
+          for f in geo*.js; do mkdir -p api; fix api/geo.js "$f"; done
+
+          for f in *.jpg *.jpeg *.webp; do mkdir -p artists; git mv -f "$f" "artists/$f"; done
+          for f in *.sql; do mkdir -p supabase; git mv -f "$f" "supabase/$f"; done
+          [ -d github ] && git rm -r -q github || true
+
+          git add -A
+          git status --short
+
+      - name: Enregistrer
+        shell: bash
+        run: |
+          if git diff --cached --quiet; then
+            echo "Rien a ranger : tout est deja en place."
+            exit 0
+          fi
+          git config user.name "Landryxbb"
+          git config user.email "landryxbb0@gmail.com"
+          git commit -m "Ranger les fichiers automatiquement"
+          git push
