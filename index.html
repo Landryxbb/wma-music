@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>WMA MUSIC</title>
-<meta name="description" content="WMA MUSIC — streaming gratuit des artistes de WMA UNITED AFRICA. YOUR MUSIC. YOUR AFRICA. YOUR SOUND.">
+<meta name="description" content="WMA MUSIC — free music streaming from African artists. YOUR MUSIC. YOUR AFRICA. YOUR SOUND.">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -319,6 +319,64 @@ td button img{display:block}
   .modal-box.wide{max-width:none;height:100%;max-height:100%;border-radius:0;padding-top:calc(18px + env(safe-area-inset-top,0px))}
   .seg span{font-size:12px;padding:9px 2px}
 }
+
+/* Hero avec photo d'artiste en fond */
+.hero.has-bg{background:linear-gradient(90deg,rgba(0,0,0,.94) 0%,rgba(0,0,0,.78) 38%,rgba(0,0,0,.25) 72%,rgba(0,0,0,.1) 100%),var(--bgimg) 72% 28%/cover no-repeat,#000;min-height:400px}
+.hero.has-bg::after{display:none}
+.hero.has-bg .feat{background:rgba(20,20,20,.62);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.hero.has-bg p{color:rgba(255,255,255,.82)}
+@media (max-width:860px){.hero.has-bg{background:linear-gradient(0deg,rgba(0,0,0,.97) 0%,rgba(0,0,0,.9) 52%,rgba(0,0,0,.35) 68%,rgba(0,0,0,0) 85%),var(--bgimg) center 18%/cover no-repeat,#000;min-height:0;padding-top:250px;align-content:end}}
+
+/* ---------- Diaporama d'accueil ---------- */
+.hero-slider{position:relative;border-radius:16px;overflow:hidden;background:#000;isolation:isolate}
+.hs-track{display:grid}
+.hs-slide{grid-area:1/1;position:relative;min-height:420px;display:flex;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s linear .9s}
+.hs-slide.on{opacity:1;visibility:visible;transition:opacity .9s ease,visibility 0s}
+.hs-bg{position:absolute;inset:-40px;background:var(--bgimg) center 28%/cover no-repeat,#140a03;filter:blur(14px) saturate(1.15);transform:scale(1.05)}
+.hs-bg-plain{background:linear-gradient(135deg,#2A1405,#000)}
+.hs-slide.on .hs-bg{animation:hsZoom 9s ease-out forwards}
+@keyframes hsZoom{from{transform:scale(1.05)}to{transform:scale(1.16)}}
+.hs-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.62) 45%,rgba(0,0,0,.25) 100%)}
+.hs-content{position:relative;z-index:1;flex:1;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:end;padding:36px 36px 52px}
+.hs-text p{max-width:46ch;color:rgba(255,255,255,.84);margin:18px 0 20px}
+.hs-name{font-size:clamp(36px,5.2vw,64px);font-weight:800;letter-spacing:-.035em;line-height:1;margin-top:10px}
+.hs-slide.on .hs-text>*{animation:hsUp .8s cubic-bezier(.2,.7,.2,1) both}
+.hs-slide.on .hs-text>*:nth-child(2){animation-delay:.08s}.hs-slide.on .hs-text>*:nth-child(3){animation-delay:.16s}.hs-slide.on .hs-text>*:nth-child(4){animation-delay:.24s}
+.hs-slide.on .feat,.hs-slide.on .hs-portrait{animation:hsUp .9s .2s cubic-bezier(.2,.7,.2,1) both}
+@keyframes hsUp{from{transform:translateY(18px)}to{transform:none}}
+.hero-slider .feat{background:rgba(20,20,20,.6);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:0;justify-self:end;max-width:380px;width:100%}
+.hs-portrait{justify-self:end;align-self:center;width:min(300px,100%);aspect-ratio:4/5;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+.hs-portrait img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.hs-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;font-size:26px;line-height:1;display:grid;place-items:center;opacity:0;transition:opacity .2s}
+.hero-slider:hover .hs-nav,.hs-nav:focus-visible{opacity:1}.hs-nav:hover{background:rgba(255,255,255,.26)}
+.hs-prev{left:12px}.hs-next{right:12px}
+.hs-dots{position:absolute;left:36px;bottom:20px;z-index:2;display:flex;gap:6px}
+.hs-dots button{width:26px;height:4px;border-radius:2px;background:rgba(255,255,255,.28);overflow:hidden;padding:0}
+.hs-dots button i{display:block;height:100%;width:0;background:#fff}
+.hs-dots button.on i{animation:hsBar var(--dur,7s) linear forwards}
+.hero-slider.paused .hs-dots button.on i{animation-play-state:paused}
+@keyframes hsBar{to{width:100%}}
+/* Entrée des sections + logo animé pendant la lecture */
+.sec.rv{transform:translateY(22px);transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.sec.rv.in{transform:none}
+.card,.acard{transition:transform .25s ease}
+.card:hover,.acard:hover{transform:translateY(-3px)}
+.logo svg rect+g rect{transform-box:fill-box;transform-origin:center}
+body.is-playing .logo svg g rect{animation:eq 1s ease-in-out infinite alternate}
+body.is-playing .logo svg g rect:nth-child(2){animation-delay:-.4s}body.is-playing .logo svg g rect:nth-child(3){animation-delay:-.7s}body.is-playing .logo svg g rect:nth-child(4){animation-delay:-.2s}body.is-playing .logo svg g rect:nth-child(5){animation-delay:-.55s}
+@keyframes eq{from{transform:scaleY(.45)}to{transform:scaleY(1.05)}}
+@media (max-width:860px){
+  .hs-slide{min-height:0}
+  .hs-content{grid-template-columns:1fr;padding:230px 20px 46px;gap:18px;align-content:end}
+  .hs-shade{background:linear-gradient(0deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.82) 50%,rgba(0,0,0,.25) 72%,rgba(0,0,0,0) 90%)}
+  .hs-portrait{position:absolute;top:22px;right:20px;width:120px;aspect-ratio:1;border-radius:50%;border:3px solid rgba(255,255,255,.2)}
+  .hs-slide:not([data-i="0"]) .hs-content{align-content:start;padding-top:170px}
+  .hs-name{font-size:clamp(32px,9vw,44px)}
+  .hero-slider .feat{justify-self:stretch;max-width:none}
+  .hs-dots{left:20px;bottom:18px}
+  .hs-nav{display:none}
+}
+@media (prefers-reduced-motion:reduce){.hs-slide.on .hs-bg,.hs-slide.on .hs-text>*,.hs-slide.on .feat,.hs-slide.on .hs-portrait{animation:none}.sec.rv{transform:none}}
 @media (max-width:1100px){.p-right input{display:none}}
 @media (max-width:860px){
   :root{--player:64px}
@@ -356,43 +414,43 @@ td button img{display:block}
 </head>
 <body>
 <aside class="side">
-  <a class="logo" href="#home" aria-label="WMA MUSIC, accueil">
+  <a class="logo" href="#home" aria-label="WMA MUSIC, home">
     <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect width="38" height="38" rx="9" fill="#FF7A1A"/><g fill="#fff"><rect x="7" y="15" width="3" height="8" rx="1.5"/><rect x="12" y="10" width="3" height="18" rx="1.5"/><rect x="17" y="13" width="3" height="12" rx="1.5"/><rect x="22" y="7" width="3" height="24" rx="1.5"/><rect x="27" y="14" width="3" height="10" rx="1.5"/></g></svg>
     <span><b>WMA MUSIC</b><small>WMA UNITED AFRICA</small></span>
   </a>
   <nav class="nav" id="sideNav"></nav>
-  <div class="side-foot">YOUR MUSIC. YOUR AFRICA. YOUR SOUND.<br>Une plateforme WMA HUB.</div>
+  <div class="side-foot">YOUR MUSIC. YOUR AFRICA. YOUR SOUND.<br>A WMA HUB platform.</div>
 </aside>
 
 <header class="top">
-  <a class="logo" href="#home" aria-label="WMA MUSIC, accueil">
+  <a class="logo" href="#home" aria-label="WMA MUSIC, home">
     <svg width="32" height="32" viewBox="0 0 38 38" aria-hidden="true"><rect width="38" height="38" rx="9" fill="#FF7A1A"/><g fill="#fff"><rect x="7" y="15" width="3" height="8" rx="1.5"/><rect x="12" y="10" width="3" height="18" rx="1.5"/><rect x="17" y="13" width="3" height="12" rx="1.5"/><rect x="22" y="7" width="3" height="24" rx="1.5"/><rect x="27" y="14" width="3" height="10" rx="1.5"/></g></svg>
     <span><b>WMA MUSIC</b><small>WMA UNITED AFRICA</small></span>
   </a>
   <label class="searchbox" for="topSearch">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-    <input id="topSearch" type="search" placeholder="Chansons, artistes, albums, playlists" autocomplete="off">
+    <input id="topSearch" type="search" placeholder="Songs, artists, albums, playlists" autocomplete="off">
   </label>
   <div class="top-actions" id="topActions"></div>
 </header>
 
 <main id="view" tabindex="-1"></main>
 
-<div class="player" id="player" aria-label="Lecteur">
+<div class="player" id="player" aria-label="Player">
   <div class="p-now" id="pNow"></div>
   <div class="p-mid">
     <div class="p-ctl">
-      <button class="ic opt" id="bShuffle" aria-label="Lecture aléatoire" title="Lecture aléatoire"></button>
-      <button class="ic opt" id="bPrev" aria-label="Chanson précédente" title="Précédente"></button>
-      <button class="main" id="bPlay" aria-label="Lecture"></button>
-      <button class="ic" id="bNext" aria-label="Chanson suivante" title="Suivante"></button>
-      <button class="ic opt" id="bRepeat" aria-label="Répétition" title="Répétition"></button>
+      <button class="ic opt" id="bShuffle" aria-label="Shuffle" title="Shuffle"></button>
+      <button class="ic opt" id="bPrev" aria-label="Previous song" title="Previous"></button>
+      <button class="main" id="bPlay" aria-label="Play"></button>
+      <button class="ic" id="bNext" aria-label="Next song" title="Next"></button>
+      <button class="ic opt" id="bRepeat" aria-label="Repeat" title="Repeat"></button>
     </div>
-    <div class="p-prog"><span class="mono" id="tCur">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Progression"><span class="mono" id="tDur">0:00</span></div>
+    <div class="p-prog"><span class="mono" id="tCur">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Progress"><span class="mono" id="tDur">0:00</span></div>
   </div>
   <div class="p-right">
-    <a class="ic" href="#now" aria-label="Page de lecture" title="Page de lecture" id="bNowPage"></a>
-    <button class="ic" id="bMute" aria-label="Couper le son"></button>
+    <a class="ic" href="#now" aria-label="Now playing" title="Now playing" id="bNowPage"></a>
+    <button class="ic" id="bMute" aria-label="Mute"></button>
     <input type="range" id="vol" min="0" max="100" value="80" aria-label="Volume">
   </div>
   <div class="p-mini-prog"><i id="miniProg"></i></div>
@@ -417,8 +475,8 @@ const key=s=>norm(s).replace(/[^a-z0-9]/g,'');
 const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const fmt=s=>{s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const today=()=>new Date().toISOString().slice(0,10);
-const frDate=d=>d?new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):'—';
-const frDT=d=>d?new Date(d).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+const frDate=d=>d?new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—';
+const frDT=d=>d?new Date(d).toLocaleString('en-GB',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
 const store={
   get(k,d){try{const v=localStorage.getItem('wma_'+k);return v?JSON.parse(v):d}catch(e){return d}},
   set(k,v){try{localStorage.setItem('wma_'+k,JSON.stringify(v));return true}catch(e){return false}}
@@ -452,16 +510,16 @@ const I={
 /* ---------- Catalogue de démonstration (mode local uniquement) ---------- */
 const GENRES0=['Rumba','Ndombolo','Afrobeat','Afro-pop','Gospel','Rap','Amapiano'];
 const ARTISTS0=[['innossb',"INNOSS'B",'RDC',''],['lhomanix','Lhomanix','RDC',''],['aspino','Aspino Boy','RDC',''],['jaguaman','Jaguaman','',''],['pascalmk','Pascal Mk','RDC',''],['osee','Osée Elektra','RDC',''],['bargoss','Bargoss','RDC',''],['balca','Balca Ls Sheguey','RDC',''],['mael','Maël Jedis','RDC',''],['belma','BELMA','RDC','https://youtube.com/@belmaofficial'],['tiga','TIGA DISIEL','RDC','']];
-const BIO0={"tiga": "TIGA DISIEL est un artiste de la République démocratique du Congo.", "osee": "Osée Elektra est un artiste de la République démocratique du Congo, originaire de Goma. Sa musique fusionne slam, rap et rythmes traditionnels.", "jaguaman": "Jaguaman est un artiste de la République démocratique du Congo. Ses racines sont la rumba congolaise, le ndombolo et le soukous, qu'il mélange au rap, à la drill, à l'afrobeats, à la pop et à l'amapiano.", "aspino": "Aspino Boy est un artiste de la République démocratique du Congo.", "pascalmk": "Pascal Mk est un artiste de la République démocratique du Congo.", "lhomanix": "Lhomanix est un artiste de la République démocratique du Congo. Son style : afrobeat et musiques africaines.", "belma": "BELMA est un artiste de la République démocratique du Congo.", "balca": "Balca Ls Sheguey est un artiste de la République démocratique du Congo.", "bargoss": "Bargoss est un artiste de la République démocratique du Congo.", "innossb": "INNOSS'B est un artiste de la République démocratique du Congo. Son style mêle afrobeats, hip-hop, ndombolo et rumba congolaise.", "mael": "Maël Jedis est un artiste de la République démocratique du Congo."};
+const BIO0={"innossb": "INNOSS'B is an artist from the Democratic Republic of the Congo. His sound blends afrobeats, hip-hop, ndombolo and Congolese rumba.", "lhomanix": "Lhomanix is an artist from the Democratic Republic of the Congo. Style: afrobeat and African music.", "jaguaman": "Jaguaman is an artist from the Democratic Republic of the Congo. Rooted in Congolese rumba, ndombolo and soukous, blended with rap, drill, afrobeats, pop and amapiano.", "osee": "Osée Elektra is an artist from Goma, in the Democratic Republic of the Congo. The music fuses slam, rap and traditional rhythms.", "aspino": "Aspino Boy is an artist from the Democratic Republic of the Congo.", "pascalmk": "Pascal Mk is an artist from the Democratic Republic of the Congo.", "bargoss": "Bargoss is an artist from the Democratic Republic of the Congo.", "balca": "Balca Ls Sheguey is an artist from the Democratic Republic of the Congo.", "mael": "Maël Jedis is an artist from the Democratic Republic of the Congo.", "belma": "BELMA is an artist from the Democratic Republic of the Congo.", "tiga": "TIGA DISIEL is an artist from the Democratic Republic of the Congo."};
 const PHOTO0={"balca": "/artists/balca.jpg", "aspino": "/artists/aspino.webp", "tiga": "/artists/tiga.jpg", "bargoss": "/artists/bargoss.jpg", "jaguaman": "/artists/jaguaman.jpg", "osee": "/artists/osee.jpg", "lhomanix": "/artists/lhomanix.jpg", "mael": "/artists/mael.jpg", "pascalmk": "/artists/pascalmk.jpg", "innossb": "/artists/innossb.jpg"};
 function seedCatalog(){
-  const now=Date.now(),day=864e5,artists=ARTISTS0.map(([id,name,country,yt],i)=>({id,name,country:country||'RDC',youtube:yt,bio:BIO0[id]||`${name} est un artiste de la République démocratique du Congo.`,...(/claude/.test(location.hostname)?{}:{photoUrl:PHOTO0[id]}),wma:true,home:id!=='mael',hue:(i*47+20)%360,createdAt:now-i*day}));
+  const now=Date.now(),day=864e5,artists=ARTISTS0.map(([id,name,country,yt],i)=>({id,name,country:'DR Congo',youtube:yt,bio:BIO0[id]||`${name} is an artist from the Democratic Republic of the Congo.`,...(/claude/.test(location.hostname)?{}:{photoUrl:PHOTO0[id]}),wma:true,home:id!=='mael',hue:(i*47+20)%360,createdAt:now-i*day}));
   const albums=[],tracks=[];let n=0;
   artists.forEach((a,i)=>{const g1=GENRES0[i%7],g2=GENRES0[(i+3)%7];let al=null;
-    if(i%3===0){const ts=now-(20+i*9)*day;al={id:'al'+a.id,title:'EP démo',artistId:a.id,date:new Date(ts).toISOString().slice(0,10),type:'EP',createdAt:ts};albums.push(al)}
-    for(let k=0;k<(al?3:2);k++){n++;const ts=now-(i*3+k)*day;tracks.push({id:'t'+n,title:`Piste démo ${k+1} · ${k%2?g2:g1}`,artistId:a.id,featIds:[],albumId:al?al.id:null,genre:k%2?g2:g1,duration:40,status:'published',publishedAt:ts,releaseDate:new Date(ts).toISOString().slice(0,10),demo:true,rights:'demo',createdAt:ts})}});
+    if(i%3===0){const ts=now-(20+i*9)*day;al={id:'al'+a.id,title:'Demo EP',artistId:a.id,date:new Date(ts).toISOString().slice(0,10),type:'EP',createdAt:ts};albums.push(al)}
+    for(let k=0;k<(al?3:2);k++){n++;const ts=now-(i*3+k)*day;tracks.push({id:'t'+n,title:`Demo track ${k+1} · ${k%2?g2:g1}`,artistId:a.id,featIds:[],albumId:al?al.id:null,genre:k%2?g2:g1,duration:40,status:'published',publishedAt:ts,releaseDate:new Date(ts).toISOString().slice(0,10),demo:true,rights:'demo',createdAt:ts})}});
   const by=g=>tracks.filter(t=>g.includes(t.genre)).map(t=>t.id);
-  const playlists=[{id:'plrumba',name:'Rumba & Ndombolo',desc:'Sélection officielle WMA.',trackIds:by(['Rumba','Ndombolo'])},{id:'plafro',name:'Afro Vibes',desc:'Afrobeat, afro-pop et amapiano.',trackIds:by(['Afrobeat','Afro-pop','Amapiano'])},{id:'plnew',name:'Nouveautés WMA',desc:'Les dernières sorties du label.',trackIds:tracks.slice(0,8).map(t=>t.id)},{id:'plspirit',name:'Gospel & Rap',desc:'Deux énergies, une même scène.',trackIds:by(['Gospel','Rap'])}].map(p=>({...p,official:true,createdAt:now}));
+  const playlists=[{id:'plrumba',name:'Rumba & Ndombolo',desc:'The official WMA selection.',trackIds:by(['Rumba','Ndombolo'])},{id:'plafro',name:'Afro Vibes',desc:'Afrobeat, afro-pop and amapiano.',trackIds:by(['Afrobeat','Afro-pop','Amapiano'])},{id:'plnew',name:'WMA New Releases',desc:'The label\'s latest releases.',trackIds:tracks.slice(0,8).map(t=>t.id)},{id:'plspirit',name:'Gospel & Rap',desc:'Two energies, one stage.',trackIds:by(['Gospel','Rap'])}].map(p=>({...p,official:true,createdAt:now}));
   return {v:3,artists,albums,tracks,playlists,genres:GENRES0.slice()};
 }
 
@@ -497,7 +555,7 @@ function bootLocal(){
   LUSERS=store.get('users2',[]);LSESSION=store.get('session2',null);ANON=store.get('anon2',null)||{id:'anon',...emptyMe()};
   const u=LUSERS.find(x=>x.id===LSESSION);ME=u||null;PEOPLE=[...LUSERS,ANON];
 }
-function saveLocalCatalog(){LOCAL.tracks=DB.tracks;LOCAL.artists=DB.artists;LOCAL.albums=DB.albums;LOCAL.playlists=DB.playlists;LOCAL.genres=DB.genres;if(!store.set('catalog2',LOCAL))toast("Stockage du navigateur plein : changement non conservé.")}
+function saveLocalCatalog(){LOCAL.tracks=DB.tracks;LOCAL.artists=DB.artists;LOCAL.albums=DB.albums;LOCAL.playlists=DB.playlists;LOCAL.genres=DB.genres;if(!store.set('catalog2',LOCAL))toast("Browser storage is full: this change was not saved.")}
 const clean=o=>JSON.parse(JSON.stringify(o,(k,v)=>k==='audioUrl'||k==='_local'?undefined:v));
 
 /* Écritures catalogue (admin) */
@@ -533,7 +591,7 @@ function saveMe(){
 async function flushMe(){
   if(meWriting||!meDirty||!UID)return;meWriting=true;meDirty=false;
   const body=clean({favs:ME.favs,follows:ME.follows,albums:ME.albums,history:ME.history.slice(0,100),playlists:ME.playlists,listens:ME.listens,log:ME.log.slice(-400),updatedAt:Date.now()});
-  try{if(supa())await sbx(SB.from('music_people').upsert({user_id:UID,data:body,updated_at:new Date().toISOString()}));else await DBX.doc('people/'+UID).set(body)}catch(e){if(!flushMe.warned){flushMe.warned=1;toast(e&&e.code==='quota_exceeded'?'Espace de stockage plein.':"Vos favoris et écoutes ne peuvent pas être enregistrés avec votre niveau d'accès.")}}
+  try{if(supa())await sbx(SB.from('music_people').upsert({user_id:UID,data:body,updated_at:new Date().toISOString()}));else await DBX.doc('people/'+UID).set(body)}catch(e){if(!flushMe.warned){flushMe.warned=1;toast(e&&e.code==='quota_exceeded'?'Storage is full.':"Your favourites and plays can't be saved with your access level.")}}
   meWriting=false;if(meDirty)flushMe();
 }
 
@@ -542,10 +600,10 @@ async function uploadFile(b,type){
   if(supa()){const img=/^image\//.test(type),ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','video/mp4':'m4a','video/webm':'webm','audio/mpeg':'mp3','audio/mp4':'m4a','audio/x-m4a':'m4a','audio/aac':'aac','audio/ogg':'ogg','audio/webm':'webm','audio/flac':'flac','audio/wav':'wav'}[type]||'bin';
     const path=(img?'img/':'audio/')+(crypto.randomUUID?crypto.randomUUID():uid('f'))+'.'+ext;
     const r=await SB.storage.from(img?SUPA_IMG:SUPA_AUDIO).upload(path,b,{contentType:type,cacheControl:'31536000',upsert:false});
-    if(r.error)throw new Error(/size|large/i.test(r.error.message)?'Fichier trop lourd pour le stockage Supabase.':/row-level|policy|permission|Unauthorized/i.test(r.error.message)?"Envoi refusé : votre compte n'est pas administrateur.":"L'envoi du fichier a échoué : "+r.error.message);
+    if(r.error)throw new Error(/size|large/i.test(r.error.message)?'This file is too large for storage.':/row-level|policy|permission|Unauthorized/i.test(r.error.message)?"Upload refused: your account is not an administrator.":"The upload failed: "+r.error.message);
     return {id:path}}
-  if(cloud()){if(!ASSETS)throw new Error("Le stockage de fichiers n'est pas disponible pour votre niveau d'accès (Éditeur requis).");
-    try{const r=await ASSETS.upload(b,{type});return {id:r.id}}catch(e){throw new Error({too_large:'Fichier trop lourd (20 Mo maximum).',quota_or_state:'Espace de stockage plein : supprimez des fichiers inutilisés.',unsupported_type:'Format de fichier refusé par le stockage.'}[e&&e.code]||"L'envoi du fichier a échoué. Réessayez.")}}
+  if(cloud()){if(!ASSETS)throw new Error("File storage isn't available with your access level (Editor required).");
+    try{const r=await ASSETS.upload(b,{type});return {id:r.id}}catch(e){throw new Error({too_large:'File too large (20 MB maximum).',quota_or_state:'Storage is full: delete unused files.',unsupported_type:'This file format was refused by the storage.'}[e&&e.code]||"The upload failed. Please try again.")}}
   return {local:URL.createObjectURL(b)};
 }
 async function dropFile(id){if(!id)return;if(supa()){try{await SB.storage.from(/^img\//.test(id)?SUPA_IMG:SUPA_AUDIO).remove([id])}catch(e){}return}if(cloud()&&ASSETS){try{await ASSETS.delete(id)}catch(e){}}}
@@ -588,7 +646,7 @@ async function bootCloud(){
   const id=await user.id();if(!id)return;
   DBX=db;USERX=user;UID=id;MODE='cloud';
   CAN_EDIT=await user.canEdit().catch(()=>false);
-  const meInfo=await user.me().catch(()=>null);MYNAME=(meInfo&&meInfo.name)||'Vous';
+  const meInfo=await user.me().catch(()=>null);MYNAME=(meInfo&&meInfo.name)||'You';
   if(CAN_EDIT){ASSETS=await claude.use('assets').catch(()=>null)}
   Object.assign(DB,{artists:[],albums:[],tracks:[],playlists:[]});
   ME={id:UID,...emptyMe()};PEOPLE=[ME];
@@ -610,8 +668,8 @@ async function bootCloud(){
 let PROFILES={};
 async function bootSupa(){
   const C=window.WMA_CONFIG||{};if(!C.supabaseUrl||!C.supabaseAnonKey)return false;
-  if(!window.supabase){toast('Connexion au service WMA MUSIC impossible pour le moment. Réessayez plus tard.');return false}
-  SB=window.supabase.createClient(C.supabaseUrl,C.supabaseAnonKey);MODE='supa';
+  if(!window.supabase){toast('WMA MUSIC can\'t connect to its service right now. Please try again later.');return false}
+  SB=window.supabase.createClient(String(C.supabaseUrl).trim().replace(/\/rest\/v1\/?$/,'').replace(/\/+$/,''),String(C.supabaseAnonKey).trim());MODE='supa';
   Object.assign(DB,{artists:[],albums:[],tracks:[],playlists:[]});ME=null;PEOPLE=[];
   const {data:{session}}=await SB.auth.getSession();await supaSession(session);
   SB.auth.onAuthStateChange((ev,s)=>{if(ev==='SIGNED_IN'||ev==='SIGNED_OUT'||ev==='USER_UPDATED'){if((s?.user?.id||null)!==UID||ev!=='SIGNED_IN')supaSession(s).then(()=>{chrome();rerender()})}});
@@ -657,7 +715,7 @@ function avatar(a,size){
   return `<div class="av" style="--h:${a.hue??24}${size?';font-size:'+size+'px':''}">${src?`<img src="${esc(src)}" alt="Photo de ${esc(a.name)}" data-ini="${esc(ini)}" onerror="this.parentNode.textContent=this.dataset.ini">`:esc(ini)}</div>`;
 }
 function artistLinks(t){const a=api.artist(t.artistId),f=t.featIds.map(api.artist).filter(Boolean);
-  return `<a href="#artist-${a?.id}">${esc(a?.name||'Artiste inconnu')}</a>${f.length?' feat. '+f.map(x=>`<a href="#artist-${x.id}">${esc(x.name)}</a>`).join(', '):''}`}
+  return `<a href="#artist-${a?.id}">${esc(a?.name||'Unknown artist')}</a>${f.length?' feat. '+f.map(x=>`<a href="#artist-${x.id}">${esc(x.name)}</a>`).join(', '):''}`}
 const artistText=t=>{const a=api.artist(t.artistId),f=t.featIds.map(api.artist).filter(Boolean);return (a?.name||'')+(f.length?' feat. '+f.map(x=>x.name).join(', '):'')};
 
 /* ---------- Audio de démonstration, synthétisé dans le navigateur ---------- */
@@ -758,21 +816,21 @@ const MAXB=20*1024*1024;
 function probeDuration(b){return new Promise(res=>{const a=new Audio(),u=URL.createObjectURL(b);a.preload='metadata';a.onloadedmetadata=()=>{const d=a.duration;URL.revokeObjectURL(u);res(isFinite(d)?d:0)};a.onerror=()=>{URL.revokeObjectURL(u);res(0)};a.src=u})}
 async function prepareAudio(file,onp){
   const ext=(file.name.split('.').pop()||'').toLowerCase();
-  if(!/^audio\/|^video\/(mp4|webm)/.test(file.type)&&!/^(mp3|m4a|mp4|aac|wav|flac|ogg|oga|opus|webm|aif|aiff)$/.test(ext))throw new Error("Ce fichier n'est pas un format audio reconnu.");
+  if(!/^audio\/|^video\/(mp4|webm)/.test(file.type)&&!/^(mp3|m4a|mp4|aac|wav|flac|ogg|oga|opus|webm|aif|aiff)$/.test(ext))throw new Error("This file is not a recognised audio format.");
   const isMp4=/^(m4a|mp4)$/.test(ext)||/audio\/(mp4|x-m4a|m4a)|video\/mp4/.test(file.type), isWebm=ext==='webm'||/webm/.test(file.type);
-  if(supa()&&!/^(wav|flac|aif|aiff)$/.test(ext)&&!/wav|flac|aiff/.test(file.type)&&file.size<=50*1024*1024){onp('Lecture du fichier…',.5);const d=await probeDuration(file);
+  if(supa()&&!/^(wav|flac|aif|aiff)$/.test(ext)&&!/wav|flac|aiff/.test(file.type)&&file.size<=50*1024*1024){onp('Reading the file…',.5);const d=await probeDuration(file);
     if(d>0){const type=file.type&&/^audio\/|^video\//.test(file.type)?file.type:({mp3:'audio/mpeg',m4a:'audio/mp4',mp4:'audio/mp4',aac:'audio/aac',ogg:'audio/ogg',oga:'audio/ogg',opus:'audio/ogg',webm:'audio/webm'}[ext]||'audio/mpeg');return {blob:file,type,duration:Math.round(d),converted:false}}}
-  if((isMp4||isWebm)&&file.size<=MAXB){onp('Lecture du fichier…',.5);const d=await probeDuration(file);if(d>0)return {blob:file,type:isMp4?'video/mp4':'video/webm',duration:Math.round(d),converted:false}}
-  if(!('AudioEncoder' in window)||!('AudioData' in window))throw new Error("Ce navigateur ne peut pas convertir ce format. Importez un fichier M4A (export iPhone, iTunes), ou utilisez Chrome ou Edge pour convertir un MP3/WAV.");
-  onp('Décodage de l\'audio…',.02);
+  if((isMp4||isWebm)&&file.size<=MAXB){onp('Reading the file…',.5);const d=await probeDuration(file);if(d>0)return {blob:file,type:isMp4?'video/mp4':'video/webm',duration:Math.round(d),converted:false}}
+  if(!('AudioEncoder' in window)||!('AudioData' in window))throw new Error("This browser can't convert this format. Upload an M4A file (iPhone or iTunes export), or use Chrome or Edge to convert an MP3/WAV.");
+  onp('Decoding the audio…',.02);
   const ac=new (window.AudioContext||window.webkitAudioContext)();let dec;
-  try{dec=await ac.decodeAudioData(await file.arrayBuffer())}catch(e){throw new Error('Impossible de lire ce fichier audio : il est peut-être endommagé.')}finally{ac.close&&ac.close()}
-  if(dec.duration>30*60)throw new Error('Durée maximale : 30 minutes.');
+  try{dec=await ac.decodeAudioData(await file.arrayBuffer())}catch(e){throw new Error('This audio file can\'t be read: it may be damaged.')}finally{ac.close&&ac.close()}
+  if(dec.duration>30*60)throw new Error('Maximum length: 30 minutes.');
   const aacBr=dec.duration>900?96000:dec.duration>720?128000:160000,aac={codec:'mp4a.40.2',sampleRate:44100,numberOfChannels:2,bitrate:aacBr};
   const opBr=dec.duration>1200?96000:128000,opus={codec:'opus',sampleRate:48000,numberOfChannels:2,bitrate:opBr};
   const ok=async c=>(await AudioEncoder.isConfigSupported(c).catch(()=>({supported:false}))).supported;
   const useAac=await ok(aac),cfg=useAac?aac:opus,SR=cfg.sampleRate,bitrate=cfg.bitrate;
-  if(!useAac&&!await ok(opus))throw new Error("Ce navigateur ne sait pas convertir l'audio. Importez un fichier M4A, ou utilisez Chrome ou Edge.");
+  if(!useAac&&!await ok(opus))throw new Error("This browser can't convert audio. Upload an M4A file, or use Chrome or Edge.");
   const oc=new OfflineAudioContext(2,Math.ceil(dec.duration*SR),SR),src=oc.createBufferSource();src.buffer=dec;src.connect(oc.destination);src.start();
   const buf=await oc.startRendering(),L=buf.getChannelData(0),R=buf.getChannelData(1),len=buf.length;
   const frames=[];let asc=null,err=null;
@@ -780,17 +838,17 @@ async function prepareAudio(file,onp){
   enc.configure(cfg);
   for(let off=0;off<len;off+=SR){const n=Math.min(SR,len-off),data=new Float32Array(n*2);data.set(L.subarray(off,off+n),0);data.set(R.subarray(off,off+n),n);
     enc.encode(new AudioData({format:'f32-planar',sampleRate:SR,numberOfFrames:n,numberOfChannels:2,timestamp:Math.round(off/SR*1e6),data}));
-    if(err)throw err;if(enc.encodeQueueSize>6)await new Promise(r=>setTimeout(r,0));onp('Conversion pour le streaming…',off/len)}
-  await enc.flush();enc.close();if(err)throw new Error("La conversion a échoué. Essayez un fichier M4A.");
+    if(err)throw err;if(enc.encodeQueueSize>6)await new Promise(r=>setTimeout(r,0));onp('Converting for streaming…',off/len)}
+  await enc.flush();enc.close();if(err)throw new Error("The conversion failed. Try an M4A file.");
   let out,type;
   if(useAac){const fr=frames[0]&&frames[0][0]===0xFF&&(frames[0][1]&0xF0)===0xF0?frames.map(f=>f.subarray(f[1]&1?7:9)):frames;out=muxM4A(fr,asc||[0x12,0x10],SR,2);type='video/mp4'}
   else{const head=asc&&asc.length>=19&&asc[0]===0x4F?Array.from(asc):opusHead(2);out=muxWebM(frames,head,dec.duration*1000);type='video/webm'}
-  if(out.length>MAXB)throw new Error('Fichier converti trop lourd (20 Mo maximum).');
-  onp('Prêt',1);
+  if(out.length>MAXB)throw new Error('The converted file is too large (20 MB maximum).');
+  onp('Ready',1);
   return {blob:new Blob([out],{type}),type,duration:Math.round(dec.duration),converted:true,kbps:bitrate/1000,codec:useAac?'AAC (M4A)':'Opus (WebM)'};
 }
-const readImg=(file,max)=>new Promise((res,rej)=>{if(!file)return res(null);if(!/^image\//.test(file.type))return rej(new Error('La pochette doit être une image (JPG, PNG, WebP).'));
-  const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(im.src);c.toBlob(b=>b?res({blob:b,w:im.width,h:im.height,url:URL.createObjectURL(b)}):rej(new Error('Image illisible.')),'image/jpeg',.9)};im.onerror=()=>rej(new Error('Image illisible.'));im.src=URL.createObjectURL(file)});
+const readImg=(file,max)=>new Promise((res,rej)=>{if(!file)return res(null);if(!/^image\//.test(file.type))return rej(new Error('The cover must be an image (JPG, PNG, WebP).'));
+  const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(im.src);c.toBlob(b=>b?res({blob:b,w:im.width,h:im.height,url:URL.createObjectURL(b)}):rej(new Error('This image can\'t be read.')),'image/jpeg',.9)};im.onerror=()=>rej(new Error('This image can\'t be read.'));im.src=URL.createObjectURL(file)});
 async function storeImage(img){if(!img)return null;if(cloud()){const r=await uploadFile(img.blob,'image/jpeg');return {coverId:r.id}}return {cover:await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(img.blob)})}}
 
 /* =========================================================
@@ -802,21 +860,22 @@ audio.volume=store.get('vol',80)/100;$('#vol').value=audio.volume*100;
 const curTrack=()=>P.idx>=0?api.track(P.order[P.idx]):null;
 function buildOrder(startId){P.order=P.queue.slice();if(P.shuffle){const rest=P.order.filter(id=>id!==startId);for(let i=rest.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[rest[i],rest[j]]=[rest[j],rest[i]]}P.order=startId?[startId,...rest]:rest}P.idx=Math.max(0,P.order.indexOf(startId))}
 async function playTrack(id,queue){
-  const t=api.track(id);if(!t||(!isLive(t)&&!api.isAdmin())){toast("Ce titre n'est pas disponible.");return}
+  if(!api.me()&&!art()){PENDING={id,queue};toast('Create a free account to start listening.');location.hash='#signup';return}
+  const t=api.track(id);if(!t||(!isLive(t)&&!api.isAdmin())){toast("This song is not available.");return}
   if(queue){P.queue=queue.filter(x=>{const y=api.track(x);return y&&(isLive(y)||x===id)});if(!P.queue.includes(id))P.queue.unshift(id);buildOrder(id)}
   else if(!P.order.includes(id)){P.queue=[id];buildOrder(id)}else P.idx=P.order.indexOf(id);
   await loadCurrent(true);
 }
-let loadToken=0;
+let loadToken=0,PENDING=null;
 async function loadCurrent(autoplay){
   const t=curTrack();if(!t)return;const my=++loadToken;P.loading=true;P.counted=false;P.listened=0;P.lastT=0;renderPlayer();refreshPlaying();
   try{const src=t.audioId?await audioSrc(t.audioId):t.audioUrl?t.audioUrl:t.demo?await demoUrl(t):null;if(my!==loadToken)return;
     if(!src)throw new Error('nofile');audio.src=src;if(autoplay)await audio.play();
   }catch(e){if(my!==loadToken)return;P.loading=false;if(e&&e.name==='NotAllowedError'){renderPlayer();return}
-    toast(e&&e.message==='nofile'?"Le fichier audio de ce titre n'est plus disponible.":"Lecture impossible pour ce titre. Passage au suivant.");renderPlayer();if(P.order.length>1)return next(true);return}
+    toast(e&&e.message==='nofile'?"The audio file for this song is no longer available.":"This song can't be played. Skipping to the next one.");renderPlayer();if(P.order.length>1)return next(true);return}
   P.loading=false;renderPlayer();setMedia(t);
 }
-function toggle(){const t=curTrack();if(!t){const f=api.pub()[0];if(f)playTrack(f.id,api.pub().map(x=>x.id));return}if(audio.paused)audio.play().catch(()=>toast('Touchez Lecture pour démarrer le son.'));else audio.pause()}
+function toggle(){if(!api.me()&&!art()){toast('Create a free account to start listening.');location.hash='#signup';return}const t=curTrack();if(!t){const f=api.pub()[0];if(f)playTrack(f.id,api.pub().map(x=>x.id));return}if(audio.paused)audio.play().catch(()=>toast('Tap Play to start the sound.'));else audio.pause()}
 function next(auto){if(!P.order.length)return;if(auto&&P.repeat==='one'){audio.currentTime=0;audio.play();return}
   if(P.idx<P.order.length-1)P.idx++;else if(P.repeat==='all'||!auto)P.idx=0;else{audio.pause();renderPlayer();return}loadCurrent(true)}
 function prev(){if(audio.currentTime>3){audio.currentTime=0;return}P.idx=P.idx>0?P.idx-1:P.order.length-1;loadCurrent(true)}
@@ -827,13 +886,13 @@ audio.addEventListener('timeupdate',()=>{
   $('#seek').value=d?c/d*1000:0;$('#seek').style.setProperty('--p',p+'%');$('#miniProg').style.width=p+'%';$('#tCur').textContent=fmt(c);$('#tDur').textContent=fmt(d);
   const big=$('#npSeek');if(big){big.value=d?c/d*1000:0;big.style.setProperty('--p',p+'%');$('#npCur').textContent=fmt(c);$('#npDur').textContent=fmt(d)}
 });
-audio.addEventListener('play',()=>{renderPlayer();refreshPlaying()});audio.addEventListener('pause',()=>{renderPlayer();refreshPlaying()});audio.addEventListener('ended',()=>next(true));
+audio.addEventListener('play',()=>{document.body.classList.add('is-playing');renderPlayer();refreshPlaying()});audio.addEventListener('pause',()=>{document.body.classList.remove('is-playing');renderPlayer();refreshPlaying()});audio.addEventListener('ended',()=>next(true));
 $('#seek').addEventListener('input',e=>{if(audio.duration)audio.currentTime=e.target.value/1000*audio.duration});
 $('#vol').addEventListener('input',e=>{audio.volume=e.target.value/100;audio.muted=false;store.set('vol',+e.target.value);$('#vol').style.setProperty('--p',e.target.value+'%');renderPlayer()});
 $('#vol').style.setProperty('--p',$('#vol').value+'%');
 $('#bPlay').onclick=toggle;$('#bNext').onclick=()=>next(false);$('#bPrev').onclick=prev;
-$('#bShuffle').onclick=()=>{P.shuffle=!P.shuffle;store.set('shuffle',P.shuffle);const c=curTrack();if(c)buildOrder(c.id);renderPlayer();toast(P.shuffle?'Lecture aléatoire activée':'Lecture aléatoire désactivée')};
-$('#bRepeat').onclick=()=>{P.repeat={off:'all',all:'one',one:'off'}[P.repeat];store.set('repeat',P.repeat);renderPlayer();toast({off:'Répétition désactivée',all:'Répéter la file',one:'Répéter le titre'}[P.repeat])};
+$('#bShuffle').onclick=()=>{P.shuffle=!P.shuffle;store.set('shuffle',P.shuffle);const c=curTrack();if(c)buildOrder(c.id);renderPlayer();toast(P.shuffle?'Shuffle on':'Shuffle off')};
+$('#bRepeat').onclick=()=>{P.repeat={off:'all',all:'one',one:'off'}[P.repeat];store.set('repeat',P.repeat);renderPlayer();toast({off:'Repeat off',all:'Repeat queue',one:'Repeat song'}[P.repeat])};
 $('#bMute').onclick=()=>{audio.muted=!audio.muted;renderPlayer()};
 function setMedia(t){if(!('mediaSession' in navigator)||!t)return;try{const cov=trackCover(t);navigator.mediaSession.metadata=new MediaMetadata({title:t.title,artist:artistText(t),album:t.albumId?api.album(t.albumId)?.title:'Single',artwork:[{src:new URL(cov,location.href).href,sizes:'512x512',type:'image/jpeg'}]});
   navigator.mediaSession.setActionHandler('play',()=>audio.play());navigator.mediaSession.setActionHandler('pause',()=>audio.pause());navigator.mediaSession.setActionHandler('nexttrack',()=>next(false));navigator.mediaSession.setActionHandler('previoustrack',prev)}catch(e){}}
@@ -850,9 +909,9 @@ function recordPlay(t){
 }
 function renderPlayer(){
   const t=curTrack();
-  $('#pNow').innerHTML=t?`<a href="#now"><img src="${trackCover(t)}" alt=""></a><div><div class="t1"><a href="#now">${esc(t.title)}</a></div><div class="t2">${artistLinks(t)}</div></div><button class="ic ${isFav(t.id)?'on':''}" data-act="fav" data-id="${t.id}" aria-label="Favori">${isFav(t.id)?I.heartF:I.heart}</button>`
-    :`<div><div class="t1">Aucun titre en cours</div><div class="t2">Choisissez une chanson pour commencer</div></div>`;
-  $('#bPlay').innerHTML=P.loading?'<span class="spin"></span>':(audio.paused?I.play:I.pause);$('#bPlay').setAttribute('aria-label',audio.paused?'Lecture':'Pause');
+  $('#pNow').innerHTML=t?`<a href="#now"><img src="${trackCover(t)}" alt=""></a><div><div class="t1"><a href="#now">${esc(t.title)}</a></div><div class="t2">${artistLinks(t)}</div></div><button class="ic ${isFav(t.id)?'on':''}" data-act="fav" data-id="${t.id}" aria-label="Favourite">${isFav(t.id)?I.heartF:I.heart}</button>`
+    :`<div><div class="t1">Nothing playing</div><div class="t2">Pick a song to start listening</div></div>`;
+  $('#bPlay').innerHTML=P.loading?'<span class="spin"></span>':(audio.paused?I.play:I.pause);$('#bPlay').setAttribute('aria-label',audio.paused?'Play':'Pause');
   $('#bPrev').innerHTML=I.prev;$('#bNext').innerHTML=I.next;$('#bShuffle').innerHTML=I.shuffle;$('#bShuffle').classList.toggle('on',P.shuffle);
   $('#bRepeat').innerHTML=P.repeat==='one'?I.repeat1:I.repeat;$('#bRepeat').classList.toggle('on',P.repeat!=='off');
   $('#bMute').innerHTML=audio.muted||audio.volume===0?I.mute:I.vol;$('#bNowPage').innerHTML=I.expand;
@@ -865,43 +924,60 @@ function refreshPlaying(){const t=curTrack();document.querySelectorAll('.trow[da
    BIBLIOTHÈQUE AUDITEUR
    ========================================================= */
 const isFav=id=>(api.me()?.favs||[]).includes(id);
-function needLogin(msg){toast(msg||'Connectez-vous pour utiliser cette fonction.');if(!art())location.hash='#login';return false}
-function toggleFav(id){const m=api.me();if(!m)return needLogin('Connectez-vous pour ajouter des favoris.');m.favs=m.favs||[];const i=m.favs.indexOf(id);if(i>=0){m.favs.splice(i,1);toast('Retiré des favoris')}else{m.favs.unshift(id);toast('Ajouté aux favoris')}saveMe();renderPlayer();rerender()}
-function toggleFollow(aid){const m=api.me();if(!m)return needLogin('Connectez-vous pour suivre un artiste.');m.follows=m.follows||[];const i=m.follows.indexOf(aid);if(i>=0)m.follows.splice(i,1);else m.follows.push(aid);saveMe();toast(i>=0?'Vous ne suivez plus cet artiste':'Artiste suivi');rerender()}
-function toggleLibAlbum(alid){const m=api.me();if(!m)return needLogin();m.albums=m.albums||[];const i=m.albums.indexOf(alid);if(i>=0)m.albums.splice(i,1);else m.albums.unshift(alid);saveMe();toast(i>=0?'Retiré de la bibliothèque':'Ajouté à la bibliothèque');rerender()}
+function needLogin(msg){toast(msg||'Sign in to use this feature.');if(!art())location.hash='#login';return false}
+function toggleFav(id){const m=api.me();if(!m)return needLogin('Sign in to save favourites.');m.favs=m.favs||[];const i=m.favs.indexOf(id);if(i>=0){m.favs.splice(i,1);toast('Removed from favourites')}else{m.favs.unshift(id);toast('Added to favourites')}saveMe();renderPlayer();rerender()}
+function toggleFollow(aid){const m=api.me();if(!m)return needLogin('Sign in to follow an artist.');m.follows=m.follows||[];const i=m.follows.indexOf(aid);if(i>=0)m.follows.splice(i,1);else m.follows.push(aid);saveMe();toast(i>=0?'You unfollowed this artist':'Artist followed');rerender()}
+function toggleLibAlbum(alid){const m=api.me();if(!m)return needLogin();m.albums=m.albums||[];const i=m.albums.indexOf(alid);if(i>=0)m.albums.splice(i,1);else m.albums.unshift(alid);saveMe();toast(i>=0?'Removed from your library':'Added to your library');rerender()}
 const myPl=id=>(ME?.playlists||[]).find(p=>p.id===id);
 function addToPlaylistModal(tid){
-  const m=api.me();if(!m)return needLogin('Connectez-vous pour créer des playlists.');
-  openModal(`<h3>Ajouter à une playlist</h3><div class="tlist">${(m.playlists||[]).map(p=>`<button class="trow" style="grid-template-columns:44px 1fr auto;text-align:left" data-act="pladd" data-pl="${p.id}" data-id="${tid}"><img src="${plCover(p)}" alt=""><div><div class="t1">${esc(p.name)}</div><div class="t2">${p.trackIds.length} titre(s)</div></div><span class="ic">${I.plus}</span></button>`).join('')||'<p class="muted">Vous n\'avez pas encore de playlist.</p>'}</div>
-   <form class="form" id="newPlForm" style="margin-top:16px"><div class="fld"><label for="newPlName">Nouvelle playlist</label><input id="newPlName" maxlength="60" placeholder="Nom de la playlist" required></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">Créer et ajouter</button><button class="btn" type="button" data-act="close">Annuler</button></div></form>`);
-  $('#newPlForm').onsubmit=e=>{e.preventDefault();const name=$('#newPlName').value.trim();if(!name)return;m.playlists=m.playlists||[];m.playlists.push({id:uid('p'),name,desc:'',trackIds:[tid],createdAt:Date.now()});saveMe();closeModal();toast(`Ajouté à « ${name} »`);chrome()};
+  const m=api.me();if(!m)return needLogin('Sign in to create playlists.');
+  openModal(`<h3>Add to a playlist</h3><div class="tlist">${(m.playlists||[]).map(p=>`<button class="trow" style="grid-template-columns:44px 1fr auto;text-align:left" data-act="pladd" data-pl="${p.id}" data-id="${tid}"><img src="${plCover(p)}" alt=""><div><div class="t1">${esc(p.name)}</div><div class="t2">${p.trackIds.length} song(s)</div></div><span class="ic">${I.plus}</span></button>`).join('')||'<p class="muted">You don\'t have any playlists yet.</p>'}</div>
+   <form class="form" id="newPlForm" style="margin-top:16px"><div class="fld"><label for="newPlName">New playlist</label><input id="newPlName" maxlength="60" placeholder="Playlist name" required></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">Create and add</button><button class="btn" type="button" data-act="close">Annuler</button></div></form>`);
+  $('#newPlForm').onsubmit=e=>{e.preventDefault();const name=$('#newPlName').value.trim();if(!name)return;m.playlists=m.playlists||[];m.playlists.push({id:uid('p'),name,desc:'',trackIds:[tid],createdAt:Date.now()});saveMe();closeModal();toast(`Added to “${name}”`);chrome()};
 }
 
 /* =========================================================
    COMPOSANTS
    ========================================================= */
 const showCounts=()=>api.isAdmin();
-function trackCard(t,q){return `<div class="card"><div class="cov"><img src="${trackCover(t)}" alt="" loading="lazy"><button class="pbtn play" data-act="play" data-id="${t.id}" data-q="${q||t.id}" aria-label="Écouter ${esc(t.title)}">${I.play}</button></div>
-  <div class="card-t"><div><div class="t1">${esc(t.title)}</div><div class="t2">${artistLinks(t)}${t.demo?' <span class="badge">DÉMO</span>':''}</div></div><button class="ic ${isFav(t.id)?'on':''}" data-act="fav" data-id="${t.id}" aria-label="${isFav(t.id)?'Retirer des favoris':'Ajouter aux favoris'}">${isFav(t.id)?I.heartF:I.heart}</button></div></div>`}
-function albumCard(al){const a=api.artist(al.artistId),tr=api.albumTracks(al.id),q=tr.map(t=>t.id).join(',');return `<div class="card"><a class="cov" href="#album-${al.id}"><img src="${albumCover(al)}" alt="" loading="lazy">${q?`<button class="pbtn play" data-act="play" data-id="${tr[0].id}" data-q="${q}" aria-label="Écouter ${esc(al.title)}">${I.play}</button>`:''}</a>
+function trackCard(t,q){return `<div class="card"><div class="cov"><img src="${trackCover(t)}" alt="" loading="lazy"><button class="pbtn play" data-act="play" data-id="${t.id}" data-q="${q||t.id}" aria-label="Play ${esc(t.title)}">${I.play}</button></div>
+  <div class="card-t"><div><div class="t1">${esc(t.title)}</div><div class="t2">${artistLinks(t)}${t.demo?' <span class="badge">DEMO</span>':''}</div></div><button class="ic ${isFav(t.id)?'on':''}" data-act="fav" data-id="${t.id}" aria-label="${isFav(t.id)?'Remove from favourites':'Add to favourites'}">${isFav(t.id)?I.heartF:I.heart}</button></div></div>`}
+function albumCard(al){const a=api.artist(al.artistId),tr=api.albumTracks(al.id),q=tr.map(t=>t.id).join(',');return `<div class="card"><a class="cov" href="#album-${al.id}"><img src="${albumCover(al)}" alt="" loading="lazy">${q?`<button class="pbtn play" data-act="play" data-id="${tr[0].id}" data-q="${q}" aria-label="Play ${esc(al.title)}">${I.play}</button>`:''}</a>
   <div><div class="t1"><a href="#album-${al.id}">${esc(al.title)}</a></div><div class="t2">${esc(al.type||'Album')} · <a href="#artist-${a?.id}">${esc(a?.name||'')}</a></div></div></div>`}
-function plCard(p){const ids=p.trackIds.filter(id=>{const t=api.track(id);return t&&isLive(t)}),q=ids.join(',');return `<div class="card"><a class="cov" href="#playlist-${p.id}"><img src="${plCover(p)}" alt="" loading="lazy">${q?`<button class="pbtn play" data-act="play" data-id="${ids[0]}" data-q="${q}" aria-label="Écouter ${esc(p.name)}">${I.play}</button>`:''}</a>
-  <div><div class="t1"><a href="#playlist-${p.id}">${esc(p.name)}</a></div><div class="t2">${p.official?'WMA MUSIC':'Votre playlist'} · ${ids.length} titres</div></div></div>`}
-function artistCard(a){return `<a class="acard" href="#artist-${a.id}">${avatar(a)}<div><div class="t1">${esc(a.name)}</div><div class="t2">${a.country?esc(a.country)+' · ':''}Artiste${a.wma?' WMA':''}</div></div></a>`}
+function plCard(p){const ids=p.trackIds.filter(id=>{const t=api.track(id);return t&&isLive(t)}),q=ids.join(',');return `<div class="card"><a class="cov" href="#playlist-${p.id}"><img src="${plCover(p)}" alt="" loading="lazy">${q?`<button class="pbtn play" data-act="play" data-id="${ids[0]}" data-q="${q}" aria-label="Play ${esc(p.name)}">${I.play}</button>`:''}</a>
+  <div><div class="t1"><a href="#playlist-${p.id}">${esc(p.name)}</a></div><div class="t2">${p.official?'WMA MUSIC':'Your playlist'} · ${ids.length} songs</div></div></div>`}
+function artistCard(a){return `<a class="acard" href="#artist-${a.id}">${avatar(a)}<div><div class="t1">${esc(a.name)}</div><div class="t2">${a.country?esc(a.country)+' · ':''}Artist</div></div></a>`}
 function trackRows(list,opts={}){
-  if(!list.length)return `<div class="empty">${opts.empty||'Aucun titre pour le moment.'}</div>`;
+  if(!list.length)return `<div class="empty">${opts.empty||'No songs yet.'}</div>`;
   const q=list.map(t=>t.id).join(','),cur=curTrack();
   return `<div class="tlist">${list.map((t,i)=>`<div class="trow ${cur&&cur.id===t.id?'cur':''}" data-id="${t.id}"><span class="n mono">${i+1}</span>
-   <button data-act="play" data-id="${t.id}" data-q="${q}" aria-label="Écouter ${esc(t.title)}"><img src="${trackCover(t)}" alt=""></button>
-   <div style="min-width:0"><div class="t1">${esc(t.title)}</div><div class="t2">${artistLinks(t)}${t.albumId&&!opts.noAlbum&&api.album(t.albumId)?' · <a href="#album-'+t.albumId+'">'+esc(api.album(t.albumId).title)+'</a>':''}${t.demo?' <span class="badge">DÉMO</span>':''}</div></div>
-   <button class="ic ${isFav(t.id)?'on':''}" data-act="fav" data-id="${t.id}" aria-label="Favori">${isFav(t.id)?I.heartF:I.heart}</button>
-   ${opts.removeFrom?`<button class="ic" data-act="plrm" data-pl="${opts.removeFrom}" data-id="${t.id}" aria-label="Retirer de la playlist" title="Retirer">✕</button>`:`<button class="ic" data-act="addpl" data-id="${t.id}" aria-label="Ajouter à une playlist" title="Ajouter à une playlist">${I.plus}</button>`}
+   <button data-act="play" data-id="${t.id}" data-q="${q}" aria-label="Play ${esc(t.title)}"><img src="${trackCover(t)}" alt=""></button>
+   <div style="min-width:0"><div class="t1">${esc(t.title)}</div><div class="t2">${artistLinks(t)}${t.albumId&&!opts.noAlbum&&api.album(t.albumId)?' · <a href="#album-'+t.albumId+'">'+esc(api.album(t.albumId).title)+'</a>':''}${t.demo?' <span class="badge">DEMO</span>':''}</div></div>
+   <button class="ic ${isFav(t.id)?'on':''}" data-act="fav" data-id="${t.id}" aria-label="Favourite">${isFav(t.id)?I.heartF:I.heart}</button>
+   ${opts.removeFrom?`<button class="ic" data-act="plrm" data-pl="${opts.removeFrom}" data-id="${t.id}" aria-label="Remove from playlist" title="Remove">✕</button>`:`<button class="ic" data-act="addpl" data-id="${t.id}" aria-label="Add to a playlist" title="Add to a playlist">${I.plus}</button>`}
    <span class="d mono">${fmt(t.duration)}</span></div>`).join('')}</div>`;
 }
 const sec=(title,body,link)=>`<section class="sec"><div class="sec-h"><h2>${title}</h2>${link?`<a href="${link[0]}">${link[1]}</a>`:''}</div>${body}</section>`;
 const rail=items=>`<div class="rail">${items.join('')}</div>`;
 const sortNew=l=>l.slice().sort((a,b)=>(pubDate(b)||b.createdAt)-(pubDate(a)||a.createdAt));
 const NEW_DAYS=90;
+let HERO_I=0,HERO_N=1,heroTimer=null,heroPaused=false;
+const RM=matchMedia('(prefers-reduced-motion: reduce)');
+function heroShow(n){const el=$('.hero-slider');if(!el||!HERO_N)return;HERO_I=(n+HERO_N)%HERO_N;el.style.setProperty('--i',HERO_I);
+  el.querySelectorAll('.hs-slide').forEach((s,k)=>{s.classList.toggle('on',k===HERO_I);s.setAttribute('aria-hidden',k===HERO_I?'false':'true');s.querySelectorAll('a,button').forEach(b=>b.tabIndex=k===HERO_I?0:-1)});
+  el.querySelectorAll('.hs-dots button').forEach((d,k)=>{d.classList.toggle('on',k===HERO_I);d.style.setProperty('--dur',RM.matches?'0s':'7s')});heroArm()}
+function heroArm(){clearTimeout(heroTimer);if(HERO_N<2||heroPaused||document.hidden||RM.matches||!$('.hero-slider'))return;heroTimer=setTimeout(()=>heroShow(HERO_I+1),7000)}
+function bindHero(){const el=$('.hero-slider');if(!el||el.dataset.b)return;el.dataset.b=1;
+  el.addEventListener('mouseenter',()=>{heroPaused=true;el.classList.add('paused');clearTimeout(heroTimer)});el.addEventListener('mouseleave',()=>{heroPaused=false;el.classList.remove('paused');heroArm()});
+  el.addEventListener('focusin',()=>{heroPaused=true;clearTimeout(heroTimer)});el.addEventListener('focusout',()=>{heroPaused=false;heroArm()});
+  let x0=null,y0=0;el.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+  el.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy))heroShow(HERO_I+(dx<0?1:-1));x0=null},{passive:true});
+  el.addEventListener('keydown',e=>{if(e.key==='ArrowRight')heroShow(HERO_I+1);if(e.key==='ArrowLeft')heroShow(HERO_I-1)});
+  heroShow(HERO_I)}
+document.addEventListener('visibilitychange',heroArm);
+/* Entrée douce des sections au défilement (contenu visible au repos) */
+const revealIO='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');revealIO.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'}):null;
+function bindReveal(){if(!revealIO||RM.matches)return;document.querySelectorAll('#view .sec:not(.rv)').forEach(s=>{const r=s.getBoundingClientRect();if(r.top>innerHeight){s.classList.add('rv');revealIO.observe(s)}})}
 
 /* =========================================================
    PAGES
@@ -910,108 +986,120 @@ const pages={};
 pages.home=()=>{
   const pub=api.pub(),q=s=>s.map(t=>t.id).join(','),newest=sortNew(pub),recent=newest.filter(t=>Date.now()-(pubDate(t)||t.createdAt)<NEW_DAYS*864e5);
   const feat=newest[0];
-  if(!pub.length&&!DB.artists.length)return `<h1 class="ltitle">Accueil</h1><div class="empty" style="margin-top:20px">${cloud()?'Le catalogue se charge…':'Le catalogue est vide.'}${api.isAdmin()?` <a href="#admin-songs" style="color:var(--accent);font-weight:700">Ajouter une chanson</a>`:''}</div>`;
+  if(!pub.length&&!DB.artists.length)return `<h1 class="ltitle">Home</h1><div class="empty" style="margin-top:20px">${cloud()?'Loading the catalogue…':'The catalogue is empty.'}${api.isAdmin()?` <a href="#admin-songs" style="color:var(--accent);font-weight:700">Add a song</a>`:''}</div>`;
   const albums=DB.albums.filter(al=>api.albumTracks(al.id).length).sort((a,b)=>api.albumTracks(b.id).reduce((s,t)=>s+stat.plays(t.id),0)-api.albumTracks(a.id).reduce((s,t)=>s+stat.plays(t.id),0)||new Date(b.date)-new Date(a.date));
   const singles=newest.filter(t=>!t.albumId),pop=DB.artists.filter(a=>api.tracksOf(a.id).length).sort((a,b)=>stat.artistPlays(b.id)-stat.artistPlays(a.id)||stat.followers(b.id)-stat.followers(a.id)),clips=DB.artists.filter(a=>a.youtube);
-  return `<h1 class="ltitle">Accueil</h1><section class="hero"><div style="position:relative;z-index:1"><div class="eyebrow">Streaming gratuit · Artistes africains</div>
+  const heroA=api.artist('aspino')||DB.artists.find(a=>key(a.name)==='aspinoboy'),heroImg=heroA&&artistPhoto(heroA);
+  const spot=DB.artists.filter(a=>a.home!==false&&artistPhoto(a)&&a!==heroA&&api.tracksOf(a.id).length).sort((a,b)=>(b.id==='innossb')-(a.id==='innossb')||stat.artistPlays(b.id)-stat.artistPlays(a.id)||a.name.localeCompare(b.name)).slice(0,6);
+  const bg=src=>src?`<div class="hs-bg" style="--bgimg:url('${esc(src)}')"></div>`:'<div class="hs-bg hs-bg-plain"></div>';
+  const slides=[`<div class="hs-slide" data-i="0">${bg(heroImg)}<div class="hs-shade"></div>
+     <div class="hs-content"><div class="hs-text"><div class="eyebrow">Free streaming · African artists</div>
       <h1 class="slogan" style="margin-top:12px"><span>Your music.</span><span><em>Your Africa.</em></span><span>Your sound.</span></h1>
-      <p>Écoutez gratuitement les artistes accompagnés par WMA UNITED AFRICA, créez vos playlists et suivez vos artistes préférés.</p>
-      <div class="actions" style="margin-top:0">${feat?`<button class="btn pri" data-act="play" data-id="${feat.id}" data-q="${q(newest)}">${I.play} Écouter les nouveautés</button>`:''}${api.me()||art()?'':'<a class="btn" href="#signup">Créer un compte gratuit</a>'}</div></div>
-    ${feat?`<div class="feat"><img src="${trackCover(feat)}" alt=""><div style="min-width:0"><div class="eyebrow">Dernière sortie</div><div class="t1" style="font-size:16px;margin-top:4px">${esc(feat.title)}</div><div class="t2">${artistLinks(feat)}</div><button class="btn sm pri" style="margin-top:10px" data-act="play" data-id="${feat.id}" data-q="${q(newest)}">${I.play} Écouter</button></div></div>`:''}</section>
-  ${sec('Nouveautés',recent.length?rail(recent.slice(0,12).map(t=>trackCard(t,q(recent)))):`<div class="empty">Aucune sortie ces ${NEW_DAYS} derniers jours.</div>`,['#search','Tout voir'])}
-  ${albums.length?sec('Albums populaires',rail(albums.slice(0,10).map(albumCard))):''}
-  ${singles.length?sec('Singles récents',rail(singles.slice(0,10).map(t=>trackCard(t,q(singles))))):''}
-  ${pop.length?sec('Artistes populaires',rail(pop.slice(0,10).map(artistCard))):''}
-  ${DB.playlists.length?sec('Playlists recommandées',rail(api.playlists().filter(p=>p.official).map(plCard))):''}
-  ${clips.length?sec('Clips musicaux',rail(clips.map(a=>`<a class="card" href="${esc(a.youtube)}" target="_blank" rel="noopener"><div class="cov" style="aspect-ratio:16/9;display:grid;place-items:center;background:hsl(${a.hue??24} 40% 14%)"><span class="pbtn" style="width:54px;height:54px">${I.yt}</span></div><div><div class="t1">${esc(a.name)}</div><div class="t2">Clips officiels sur YouTube ↗</div></div></a>`))):''}
-  ${sec('Artistes WMA UNITED AFRICA',`<div class="grid">${DB.artists.filter(a=>a.wma&&a.home!==false).map(artistCard).join('')}</div>`,['#artists','Tous les artistes'])}`;
+      <p>Stream the sound of Africa for free. Discover rising voices, build your own playlists and follow the artists you love.</p>
+      <div class="actions" style="margin-top:0">${feat?`<button class="btn pri" data-act="play" data-id="${feat.id}" data-q="${q(newest)}">${I.play} Play new releases</button>`:''}${api.me()||art()?'':'<a class="btn" href="#signup">Create a free account</a>'}</div></div>
+     ${feat?`<div class="feat"><img src="${trackCover(feat)}" alt=""><div style="min-width:0"><div class="eyebrow">Latest release</div><div class="t1" style="font-size:16px;margin-top:4px">${esc(feat.title)}</div><div class="t2">${artistLinks(feat)}</div><button class="btn sm pri" style="margin-top:10px" data-act="play" data-id="${feat.id}" data-q="${q(newest)}">${I.play} Play</button></div></div>`:''}</div></div>`,
+   ...spot.map((a,n)=>{const tr=sortNew(api.tracksOf(a.id)),qq=tr.map(t=>t.id).join(',');return `<div class="hs-slide" data-i="${n+1}">${bg(artistPhoto(a))}<div class="hs-shade"></div>
+     <div class="hs-content"><div class="hs-text"><div class="eyebrow">Featured artist</div><h2 class="hs-name">${esc(a.name)}</h2>
+      <p>${esc(a.bio||'')}</p><div class="actions" style="margin-top:0">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${qq}">${I.play} Play ${esc(a.name)}</button>`:''}<a class="btn" href="#artist-${a.id}">View artist</a></div></div>
+     <a class="hs-portrait" href="#artist-${a.id}" aria-label="${esc(a.name)}"><img src="${esc(artistPhoto(a))}" alt="${esc(a.name)}" loading="lazy"></a></div></div>`})];
+  HERO_N=slides.length;if(HERO_I>=HERO_N)HERO_I=0;
+  return `<h1 class="ltitle">Home</h1><section class="hero-slider" aria-roledescription="carousel" aria-label="Highlights" style="--i:${HERO_I}"><div class="hs-track">${slides.join('')}</div>
+   ${HERO_N>1?`<button class="hs-nav hs-prev" data-act="heroGo" data-d="-1" aria-label="Previous slide">‹</button><button class="hs-nav hs-next" data-act="heroGo" data-d="1" aria-label="Next slide">›</button>
+   <div class="hs-dots">${slides.map((_,n)=>`<button data-act="heroTo" data-n="${n}" aria-label="Slide ${n+1}" class="${n===HERO_I?'on':''}"><i></i></button>`).join('')}</div>`:''}</section>
+  ${sec('New releases',recent.length?rail(recent.slice(0,12).map(t=>trackCard(t,q(recent)))):`<div class="empty">No releases in the last ${NEW_DAYS} days.</div>`,['#search','See all'])}
+  ${albums.length?sec('Popular albums',rail(albums.slice(0,10).map(albumCard))):''}
+  ${singles.length?sec('Latest singles',rail(singles.slice(0,10).map(t=>trackCard(t,q(singles))))):''}
+  ${pop.length?sec('Popular artists',rail(pop.slice(0,10).map(artistCard))):''}
+  ${DB.playlists.length?sec('Recommended playlists',rail(api.playlists().filter(p=>p.official).map(plCard))):''}
+  ${clips.length?sec('Music videos',rail(clips.map(a=>`<a class="card" href="${esc(a.youtube)}" target="_blank" rel="noopener"><div class="cov" style="aspect-ratio:16/9;display:grid;place-items:center;background:hsl(${a.hue??24} 40% 14%)"><span class="pbtn" style="width:54px;height:54px">${I.yt}</span></div><div><div class="t1">${esc(a.name)}</div><div class="t2">Official videos on YouTube ↗</div></div></a>`))):''}
+  ${sec('Featured artists',`<div class="grid">${DB.artists.filter(a=>a.wma&&a.home!==false).map(artistCard).join('')}</div>`,['#artists','All artists'])}`;
 };
-pages.artists=()=>`<h1 class="ltitle">Artistes</h1><p class="muted">Les artistes accompagnés par WMA UNITED AFRICA.</p><div class="grid" style="margin-top:24px">${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(artistCard).join('')||'<div class="empty">Aucun artiste.</div>'}</div>`;
+pages.artists=()=>`<h1 class="ltitle">Artists</h1><p class="muted">Discover the artists on WMA MUSIC.</p><div class="grid" style="margin-top:24px">${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(artistCard).join('')||'<div class="empty">No artists yet.</div>'}</div>`;
 let searchState={q:'',f:'all'};
-pages.search=()=>`<h1 class="ltitle">Recherche</h1><label class="searchbox" for="pageSearch" style="max-width:640px;height:44px">${I.search}<input id="pageSearch" type="search" placeholder="Artistes, chansons, albums, playlists" value="${esc(searchState.q)}" autocomplete="off"></label>
-   <div class="chips" style="margin-top:14px">${[['all','Tout'],['tracks','Chansons'],['artists','Artistes'],['albums','Albums'],['playlists','Playlists']].map(([k,l])=>`<button class="chip ${searchState.f===k?'on':''}" data-act="sfilter" data-f="${k}">${l}</button>`).join('')}</div><div id="sResults">${searchResults()}</div>`;
+pages.search=()=>`<h1 class="ltitle">Search</h1><label class="searchbox" for="pageSearch" style="max-width:640px;height:44px">${I.search}<input id="pageSearch" type="search" placeholder="Artists, songs, albums, playlists" value="${esc(searchState.q)}" autocomplete="off"></label>
+   <div class="chips" style="margin-top:14px">${[['all','All'],['tracks','Songs'],['artists','Artists'],['albums','Albums'],['playlists','Playlists']].map(([k,l])=>`<button class="chip ${searchState.f===k?'on':''}" data-act="sfilter" data-f="${k}">${l}</button>`).join('')}</div><div id="sResults">${searchResults()}</div>`;
 function searchResults(){
   const q=norm(searchState.q).trim(),f=searchState.f;
-  if(!q)return sec('Parcourir par genre',`<div class="genres">${DB.genres.map((g,i)=>`<button class="genre" style="--h:${[18,8,30,350,40,200,26][i%7]}" data-act="sgenre" data-g="${esc(g)}">${esc(g)}</button>`).join('')}</div>`);
+  if(!q)return sec('Browse by genre',`<div class="genres">${DB.genres.map((g,i)=>`<button class="genre" style="--h:${[18,8,30,350,40,200,26][i%7]}" data-act="sgenre" data-g="${esc(g)}">${esc(g)}</button>`).join('')}</div>`);
   const w=q.split(/\s+/),hit=s=>w.every(x=>norm(s).includes(x));
   const tr=api.pub().filter(t=>hit([t.title,artistText(t),t.genre,t.albumId?api.album(t.albumId)?.title:'',t.producer,t.writers].join(' '))),ar=DB.artists.filter(a=>hit(a.name+' '+(a.country||''))),
     al=DB.albums.filter(x=>hit(x.title+' '+(api.artist(x.artistId)?.name||''))&&api.albumTracks(x.id).length),pl=api.playlists().filter(p=>hit(p.name+' '+(p.desc||'')));
-  if(!tr.length&&!ar.length&&!al.length&&!pl.length)return `<div class="empty" style="margin-top:28px">Aucun résultat pour « ${esc(searchState.q)} ». Vérifiez l'orthographe ou essayez un nom d'artiste.</div>`;
+  if(!tr.length&&!ar.length&&!al.length&&!pl.length)return `<div class="empty" style="margin-top:28px">No results for “${esc(searchState.q)}”. Check the spelling or try an artist name.</div>`;
   let h='';
-  if((f==='all'||f==='tracks')&&tr.length)h+=sec(`Chansons <span class="muted mono" style="font-size:14px">${tr.length}</span>`,trackRows(f==='all'?tr.slice(0,6):tr));
-  if((f==='all'||f==='artists')&&ar.length)h+=sec('Artistes',`<div class="grid">${ar.map(artistCard).join('')}</div>`);
+  if((f==='all'||f==='tracks')&&tr.length)h+=sec(`Songs <span class="muted mono" style="font-size:14px">${tr.length}</span>`,trackRows(f==='all'?tr.slice(0,6):tr));
+  if((f==='all'||f==='artists')&&ar.length)h+=sec('Artists',`<div class="grid">${ar.map(artistCard).join('')}</div>`);
   if((f==='all'||f==='albums')&&al.length)h+=sec('Albums',`<div class="grid">${al.map(albumCard).join('')}</div>`);
   if((f==='all'||f==='playlists')&&pl.length)h+=sec('Playlists',`<div class="grid">${pl.map(plCard).join('')}</div>`);
-  return h||`<div class="empty" style="margin-top:28px">Aucun résultat dans cette catégorie.</div>`;
+  return h||`<div class="empty" style="margin-top:28px">No results in this category.</div>`;
 }
 pages.artist=id=>{
   const a=api.artist(id);if(!a)return notFound();
   const tr=sortNew(api.tracksOf(a.id)),als=DB.albums.filter(x=>x.artistId===a.id&&api.albumTracks(x.id).length),sg=tr.filter(t=>!t.albumId),pls=api.playlists().filter(p=>p.trackIds.some(tid=>{const t=api.track(tid);return t&&isLive(t)&&(t.artistId===a.id||t.featIds.includes(a.id))}));
   const fol=(api.me()?.follows||[]).includes(a.id),q=tr.map(t=>t.id).join(',');
-  return `<div class="phead"><div class="art">${avatar(a,64)}</div><div class="info">${a.wma?'<div class="eyebrow">Artiste WMA UNITED AFRICA</div>':''}<h1 style="margin-top:8px">${esc(a.name)}</h1>
-     <div class="meta">${a.country?esc(a.country):''}${showCounts()?`${a.country?' · ':''}<span class="mono">${stat.followers(a.id)}</span> abonné(s) · <span class="mono">${stat.artistPlays(a.id)}</span> écoute(s)`:''}</div>
-     <div class="actions">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${q}">${I.play} Écouter</button>`:''}<button class="btn" data-act="follow" data-id="${a.id}">${fol?'Abonné ✓':'Suivre'}</button>${a.youtube?`<a class="btn ghost" href="${esc(a.youtube)}" target="_blank" rel="noopener">${I.yt} YouTube</a>`:''}</div></div></div>
+  return `<div class="phead"><div class="art">${avatar(a,64)}</div><div class="info"><div class="eyebrow">Artist</div><h1 style="margin-top:8px">${esc(a.name)}</h1>
+     <div class="meta">${a.country?esc(a.country):''}${showCounts()?`${a.country?' · ':''}<span class="mono">${stat.followers(a.id)}</span> follower(s) · <span class="mono">${stat.artistPlays(a.id)}</span> play(s)`:''}</div>
+     <div class="actions">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${q}">${I.play} Play</button>`:''}<button class="btn" data-act="follow" data-id="${a.id}">${fol?'Following ✓':'Follow'}</button>${a.youtube?`<a class="btn ghost" href="${esc(a.youtube)}" target="_blank" rel="noopener">${I.yt} YouTube</a>`:''}</div></div></div>
    <p class="bio">${esc(a.bio||'')}</p>
-   ${sec('Chansons',trackRows(tr,{empty:'Aucune chanson publiée pour cet artiste.'}))}
+   ${sec('Songs',trackRows(tr,{empty:'No songs released by this artist yet.'}))}
    ${als.length?sec('Albums',`<div class="grid">${als.map(albumCard).join('')}</div>`):''}
    ${sg.length?sec('Singles',rail(sg.map(t=>trackCard(t,sg.map(x=>x.id).join(','))))):''}
    ${pls.length?sec('Playlists',rail(pls.map(plCard))):''}
-   ${sec('Clips',a.youtube?`<a class="card" style="max-width:320px" href="${esc(a.youtube)}" target="_blank" rel="noopener"><div class="cov" style="aspect-ratio:16/9;display:grid;place-items:center;background:hsl(${a.hue??24} 40% 14%)"><span class="pbtn" style="width:54px;height:54px">${I.yt}</span></div><div class="t1">Voir les clips sur YouTube ↗</div></a>`:'<div class="empty">Aucun clip ajouté pour le moment.</div>')}`;
+   ${sec('Videos',a.youtube?`<a class="card" style="max-width:320px" href="${esc(a.youtube)}" target="_blank" rel="noopener"><div class="cov" style="aspect-ratio:16/9;display:grid;place-items:center;background:hsl(${a.hue??24} 40% 14%)"><span class="pbtn" style="width:54px;height:54px">${I.yt}</span></div><div class="t1">Watch videos on YouTube ↗</div></a>`:'<div class="empty">No videos added yet.</div>')}`;
 };
 pages.album=id=>{
   const al=api.album(id);if(!al)return notFound();const a=api.artist(al.artistId),tr=api.albumTracks(al.id),tot=tr.reduce((s,t)=>s+(t.duration||0),0),inLib=(api.me()?.albums||[]).includes(al.id);
   return `<div class="phead"><div class="art"><img src="${albumCover(al)}" alt=""></div><div class="info"><div class="eyebrow">${esc(al.type||'Album')}</div><h1 style="margin-top:8px">${esc(al.title)}</h1>
-    <div class="meta"><a href="#artist-${a?.id}">${esc(a?.name||'')}</a> · Sortie le ${frDate(al.date)} · ${tr.length} titres · <span class="mono">${fmt(tot)}</span></div>
-    <div class="actions">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${tr.map(t=>t.id).join(',')}">${I.play} Écouter</button>`:''}<button class="btn" data-act="libalbum" data-id="${al.id}">${inLib?'Dans la bibliothèque ✓':'Ajouter à la bibliothèque'}</button></div></div></div>
-   ${sec('Titres',trackRows(tr,{noAlbum:true,empty:'Aucun titre publié dans cet album.'}))}`;
+    <div class="meta"><a href="#artist-${a?.id}">${esc(a?.name||'')}</a> · Released ${frDate(al.date)} · ${tr.length} songs · <span class="mono">${fmt(tot)}</span></div>
+    <div class="actions">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${tr.map(t=>t.id).join(',')}">${I.play} Play</button>`:''}<button class="btn" data-act="libalbum" data-id="${al.id}">${inLib?'In your library ✓':'Add to library'}</button></div></div></div>
+   ${sec('Songs',trackRows(tr,{noAlbum:true,empty:'No released songs in this album.'}))}`;
 };
 pages.playlist=id=>{
   const p=api.playlist(id);if(!p)return notFound();const tr=p.trackIds.map(api.track).filter(t=>t&&isLive(t)),own=!!p.mine;
-  return `<div class="phead"><div class="art"><img src="${plCover(p)}" alt=""></div><div class="info"><div class="eyebrow">${p.official?'Playlist officielle WMA':'Votre playlist'}</div><h1 style="margin-top:8px">${esc(p.name)}</h1>
-    <div class="meta">${esc(p.desc||'')} ${tr.length} titres · <span class="mono">${fmt(tr.reduce((s,t)=>s+(t.duration||0),0))}</span></div>
-    <div class="actions">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${tr.map(t=>t.id).join(',')}">${I.play} Écouter</button>`:''}${own?`<button class="btn" data-act="plrename" data-pl="${p.id}">Renommer</button><button class="btn danger" data-act="pldel" data-pl="${p.id}">Supprimer</button>`:''}</div></div></div>
-   ${sec('Titres',trackRows(tr,{removeFrom:own?p.id:null,empty:'Cette playlist est vide. Ajoutez des titres avec le bouton + sur une chanson.'}))}`;
+  return `<div class="phead"><div class="art"><img src="${plCover(p)}" alt=""></div><div class="info"><div class="eyebrow">${p.official?'Official playlist':'Your playlist'}</div><h1 style="margin-top:8px">${esc(p.name)}</h1>
+    <div class="meta">${esc(p.desc||'')} ${tr.length} songs · <span class="mono">${fmt(tr.reduce((s,t)=>s+(t.duration||0),0))}</span></div>
+    <div class="actions">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${tr.map(t=>t.id).join(',')}">${I.play} Play</button>`:''}${own?`<button class="btn" data-act="plrename" data-pl="${p.id}">Rename</button><button class="btn danger" data-act="pldel" data-pl="${p.id}">Delete</button>`:''}</div></div></div>
+   ${sec('Songs',trackRows(tr,{removeFrom:own?p.id:null,empty:'This playlist is empty. Add songs with the + button on any song.'}))}`;
 };
 let libTab='favs';
 pages.library=tab=>{
   if(tab)libTab=tab;const m=api.me();
-  if(!m)return art()?`<div class="empty">Votre bibliothèque n'est pas disponible avec ce niveau d'accès.</div>`:`<div class="auth"><h1>Votre bibliothèque</h1><p class="muted">Connectez-vous pour retrouver vos favoris, vos playlists, vos albums et vos artistes suivis.</p><div class="actions"><a class="btn pri" href="#login">Se connecter</a><a class="btn" href="#signup">S'inscrire</a></div></div>`;
+  if(!m)return art()?`<div class="empty">Your library isn't available with this access level.</div>`:`<div class="auth"><h1>Your library</h1><p class="muted">Sign in to find your favourites, playlists, albums and the artists you follow.</p><div class="actions"><a class="btn pri" href="#login">Sign in</a><a class="btn" href="#signup">Sign up</a></div></div>`;
   const live=id=>{const t=api.track(id);return t&&isLive(t)?t:null};let body='';
-  if(libTab==='favs')body=trackRows((m.favs||[]).map(live).filter(Boolean),{empty:'Aucun favori. Touchez le cœur sur une chanson pour l\'ajouter ici.'});
-  if(libTab==='playlists'){const mine=api.myPlaylists();body=`<div class="actions" style="margin:0 0 18px"><button class="btn pri" data-act="plnew">${I.plus} Nouvelle playlist</button></div>`+(mine.length?`<div class="grid">${mine.map(plCard).join('')}</div>`:'<div class="empty">Aucune playlist créée.</div>')}
-  if(libTab==='albums'){const als=(m.albums||[]).map(api.album).filter(Boolean);body=als.length?`<div class="grid">${als.map(albumCard).join('')}</div>`:'<div class="empty">Aucun album dans votre bibliothèque.</div>'}
-  if(libTab==='artists'){const ar=(m.follows||[]).map(api.artist).filter(Boolean);body=ar.length?`<div class="grid">${ar.map(artistCard).join('')}</div>`:'<div class="empty">Vous ne suivez aucun artiste.</div>'}
-  if(libTab==='history')body=trackRows((m.history||[]).map(h=>live(h.t)).filter(Boolean),{empty:'Votre historique apparaîtra ici après 30 secondes d\'écoute d\'un titre.'});
-  return `<h1 class="ltitle">Bibliothèque</h1><div class="chips" style="margin:0 0 22px">${[['favs','Favoris'],['playlists','Playlists'],['albums','Albums'],['artists','Artistes suivis'],['history','Historique']].map(([k,l])=>`<a class="chip ${libTab===k?'on':''}" style="display:inline-flex;align-items:center" href="#library-${k}">${l}</a>`).join('')}</div>${body}`;
+  if(libTab==='favs')body=trackRows((m.favs||[]).map(live).filter(Boolean),{empty:'No favourites yet. Tap the heart on a song to add it here.'});
+  if(libTab==='playlists'){const mine=api.myPlaylists();body=`<div class="actions" style="margin:0 0 18px"><button class="btn pri" data-act="plnew">${I.plus} New playlist</button></div>`+(mine.length?`<div class="grid">${mine.map(plCard).join('')}</div>`:'<div class="empty">No playlists yet.</div>')}
+  if(libTab==='albums'){const als=(m.albums||[]).map(api.album).filter(Boolean);body=als.length?`<div class="grid">${als.map(albumCard).join('')}</div>`:'<div class="empty">No albums in your library.</div>'}
+  if(libTab==='artists'){const ar=(m.follows||[]).map(api.artist).filter(Boolean);body=ar.length?`<div class="grid">${ar.map(artistCard).join('')}</div>`:'<div class="empty">You don\'t follow any artists yet.</div>'}
+  if(libTab==='history')body=trackRows((m.history||[]).map(h=>live(h.t)).filter(Boolean),{empty:'Your history will appear here after you listen to a song for 30 seconds.'});
+  return `<h1 class="ltitle">Library</h1><div class="chips" style="margin:0 0 22px">${[['favs','Favourites'],['playlists','Playlists'],['albums','Albums'],['artists','Following'],['history','History']].map(([k,l])=>`<a class="chip ${libTab===k?'on':''}" style="display:inline-flex;align-items:center" href="#library-${k}">${l}</a>`).join('')}</div>${body}`;
 };
 pages.favorites=()=>pages.library('favs');
 pages.profile=()=>{
   const m=api.me();if(!m)return pages.library();
   const name=art()?MYNAME:m.name,adm=api.isAdmin();
-  return `<div class="phead"><div class="art" style="width:140px"><div class="av" style="--h:${m.hue??24}">${esc((name||'?').slice(0,1).toUpperCase())}</div></div><div class="info"><div class="eyebrow">${adm?'Administrateur WMA':'Profil'}</div><h1 style="margin-top:8px">${esc(name)}</h1>
-   <div class="meta">${art()?'Connecté avec votre compte Claude':esc(m.email||'')}</div>
-   <div class="actions">${adm?`<a class="btn pri" href="#admin">${I.admin} WMA ADMIN</a>`:''}${art()?'':'<button class="btn" data-act="logout">Se déconnecter</button>'}</div></div></div>
-   <div class="two" style="margin-top:28px">${art()?'':`<div class="panel"><h3 style="font-size:18px;margin-bottom:14px">Modifier le profil</h3><form class="form" id="profForm"><div class="fld"><label for="pfName">Nom affiché</label><input id="pfName" value="${esc(m.name)}" maxlength="40" required></div><div class="fld"><label for="pfBio">À propos</label><textarea id="pfBio" maxlength="280">${esc(m.bio||'')}</textarea></div><div class="err" id="pfErr"></div><div><button class="btn pri" type="submit">Enregistrer</button></div></form></div>`}
-   <div class="panel"><h3 style="font-size:18px;margin-bottom:14px">Votre activité</h3><div class="kpis"><div class="kpi"><b>${(m.favs||[]).length}</b><span>Favoris</span></div><div class="kpi"><b>${(m.playlists||[]).length}</b><span>Playlists</span></div><div class="kpi"><b>${(m.follows||[]).length}</b><span>Artistes suivis</span></div><div class="kpi"><b>${Object.values(m.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</b><span>Écoutes</span></div></div></div></div>
-   ${sec('Écouté récemment',trackRows((m.history||[]).slice(0,10).map(h=>api.track(h.t)).filter(t=>t&&isLive(t)),{empty:'Rien pour le moment.'}),['#library-history','Historique complet'])}`;
+  return `<div class="phead"><div class="art" style="width:140px"><div class="av" style="--h:${m.hue??24}">${esc((name||'?').slice(0,1).toUpperCase())}</div></div><div class="info"><div class="eyebrow">${adm?'WMA administrator':'Profile'}</div><h1 style="margin-top:8px">${esc(name)}</h1>
+   <div class="meta">${art()?'Signed in with your Claude account':esc(m.email||'')}</div>
+   <div class="actions">${adm?`<a class="btn pri" href="#admin">${I.admin} WMA ADMIN</a>`:''}${art()?'':'<button class="btn" data-act="logout">Sign out</button>'}</div></div></div>
+   <div class="two" style="margin-top:28px">${art()?'':`<div class="panel"><h3 style="font-size:18px;margin-bottom:14px">Edit profile</h3><form class="form" id="profForm"><div class="fld"><label for="pfName">Display name</label><input id="pfName" value="${esc(m.name)}" maxlength="40" required></div><div class="fld"><label for="pfBio">About</label><textarea id="pfBio" maxlength="280">${esc(m.bio||'')}</textarea></div><div class="err" id="pfErr"></div><div><button class="btn pri" type="submit">Save</button></div></form></div>`}
+   <div class="panel"><h3 style="font-size:18px;margin-bottom:14px">Your activity</h3><div class="kpis"><div class="kpi"><b>${(m.favs||[]).length}</b><span>Favourites</span></div><div class="kpi"><b>${(m.playlists||[]).length}</b><span>Playlists</span></div><div class="kpi"><b>${(m.follows||[]).length}</b><span>Following</span></div><div class="kpi"><b>${Object.values(m.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</b><span>Plays</span></div></div></div></div>
+   ${sec('Recently played',trackRows((m.history||[]).slice(0,10).map(h=>api.track(h.t)).filter(t=>t&&isLive(t)),{empty:'Nothing yet.'}),['#library-history','Full history'])}`;
 };
-const cloudAuth=()=>`<div class="auth"><h1>Vous êtes connecté</h1><p class="muted">Sur cette version, WMA MUSIC utilise votre compte Claude : pas de mot de passe à créer. Vos favoris, playlists et écoutes sont enregistrés automatiquement.</p><div class="actions"><a class="btn pri" href="#home">Écouter</a></div></div>`;
-pages.login=()=>art()?cloudAuth():`<div class="auth"><h1>Connexion</h1><p class="muted">Bon retour sur WMA MUSIC.</p><form class="form" id="loginForm" style="margin-top:20px" novalidate><div class="fld"><label for="lgEmail">E-mail</label><input id="lgEmail" type="email" autocomplete="email" required></div><div class="fld"><label for="lgPass">Mot de passe</label><input id="lgPass" type="password" autocomplete="current-password" required></div><div class="err" id="lgErr"></div><button class="btn pri" type="submit" style="height:44px">Se connecter</button>${supa()?'<button class="btn" type="button" data-act="google" style="height:44px">Continuer avec Google</button><button class="btn ghost sm" type="button" data-act="forgot">Mot de passe oublié ?</button>':''}<p class="muted" style="font-size:13.5px">Pas encore de compte ? <a href="#signup" style="color:var(--accent);font-weight:700">Inscrivez-vous gratuitement</a></p></form></div>`;
-pages.signup=()=>art()?cloudAuth():`<div class="auth"><h1>Créer un compte</h1><p class="muted">Gratuit. Favoris, playlists et artistes suivis sur WMA MUSIC.</p><form class="form" id="signupForm" style="margin-top:20px" novalidate><div class="fld"><label for="suName">Nom</label><input id="suName" autocomplete="name" maxlength="40" required></div><div class="fld"><label for="suEmail">E-mail</label><input id="suEmail" type="email" autocomplete="email" required></div><div class="fld"><label for="suPass">Mot de passe (8 caractères minimum)</label><input id="suPass" type="password" autocomplete="new-password" minlength="8" required></div><div class="err" id="suErr"></div><button class="btn pri" type="submit" style="height:44px">Créer mon compte</button>${supa()?'<button class="btn" type="button" data-act="google" style="height:44px">S\'inscrire avec Google</button>':''}<p class="muted" style="font-size:13.5px">Déjà inscrit ? <a href="#login" style="color:var(--accent);font-weight:700">Connectez-vous</a></p></form></div>`;
+const cloudAuth=()=>`<div class="auth"><h1>You're signed in</h1><p class="muted">This version of WMA MUSIC uses your Claude account, so there's no password to create. Your favourites, playlists and plays are saved automatically.</p><div class="actions"><a class="btn pri" href="#home">Start listening</a></div></div>`;
+pages.login=()=>art()?cloudAuth():`<div class="auth"><h1>Sign in</h1><p class="muted">Welcome back to WMA MUSIC.</p><form class="form" id="loginForm" style="margin-top:20px" novalidate><div class="fld"><label for="lgEmail">Email</label><input id="lgEmail" type="email" autocomplete="email" required></div><div class="fld"><label for="lgPass">Password</label><input id="lgPass" type="password" autocomplete="current-password" required></div><div class="err" id="lgErr"></div><button class="btn pri" type="submit" style="height:44px">Sign in</button>${supa()?'<button class="btn" type="button" data-act="google" style="height:44px">Continue with Google</button><button class="btn ghost sm" type="button" data-act="forgot">Forgot password?</button>':''}<p class="muted" style="font-size:13.5px">No account yet? <a href="#signup" style="color:var(--accent);font-weight:700">Sign up for free</a></p></form></div>`;
+pages.signup=()=>art()?cloudAuth():`<div class="auth"><h1>Create your account</h1><p class="muted">It's free. Create an account to start listening, save favourites, build playlists and follow artists.</p><form class="form" id="signupForm" style="margin-top:20px" novalidate><div class="fld"><label for="suName">Name</label><input id="suName" autocomplete="name" maxlength="40" required></div><div class="fld"><label for="suEmail">Email</label><input id="suEmail" type="email" autocomplete="email" required></div><div class="fld"><label for="suPass">Password (at least 8 characters)</label><input id="suPass" type="password" autocomplete="new-password" minlength="8" required></div><div class="err" id="suErr"></div><button class="btn pri" type="submit" style="height:44px">Create my account</button>${supa()?'<button class="btn" type="button" data-act="google" style="height:44px">Sign up with Google</button>':''}<p class="muted" style="font-size:13.5px">Already have an account? <a href="#login" style="color:var(--accent);font-weight:700">Sign in</a></p></form></div>`;
 pages.now=()=>{
-  const t=curTrack();if(!t)return `<div class="empty" style="margin-top:40px">Aucun titre en cours. <a href="#home" style="color:var(--accent);font-weight:700">Choisissez une chanson</a>.</div>`;
-  const up=P.order.slice(P.idx+1).map(api.track).filter(Boolean),credits=[t.producer&&'Production : '+t.producer,t.writers&&'Auteurs et compositeurs : '+t.writers].filter(Boolean);
+  const t=curTrack();if(!t)return `<div class="empty" style="margin-top:40px">Nothing is playing. <a href="#home" style="color:var(--accent);font-weight:700">Pick a song</a>.</div>`;
+  const up=P.order.slice(P.idx+1).map(api.track).filter(Boolean),credits=[t.producer&&'Produced by '+t.producer,t.writers&&'Written by '+t.writers].filter(Boolean);
   return `<div class="np"><div><img class="bigcov" src="${trackCover(t)}" alt=""><h1>${esc(t.title)}</h1><div class="meta" style="margin-top:6px;font-weight:600">${artistLinks(t)}${t.albumId&&api.album(t.albumId)?' · <a href="#album-'+t.albumId+'" class="muted">'+esc(api.album(t.albumId).title)+'</a>':''}</div>
-     <div class="p-prog" style="margin-top:18px;max-width:none"><span class="mono" id="npCur">0:00</span><input type="range" id="npSeek" min="0" max="1000" value="0" aria-label="Progression"><span class="mono" id="npDur">0:00</span></div>
+     <div class="p-prog" style="margin-top:18px;max-width:none"><span class="mono" id="npCur">0:00</span><input type="range" id="npSeek" min="0" max="1000" value="0" aria-label="Progress"><span class="mono" id="npDur">0:00</span></div>
      <div class="p-ctl" id="npCtl" style="justify-content:center;margin-top:10px;gap:18px"></div>
      ${t.description||credits.length?`<div class="panel" style="margin-top:20px">${t.description?`<p style="margin:0 0 8px">${esc(t.description)}</p>`:''}${credits.map(c=>`<div class="t2" style="white-space:normal">${esc(c)}</div>`).join('')}</div>`:''}
-     <p class="muted" style="font-size:12px;text-align:center;margin-top:14px">Qualité : ${quality()==='eco'?'économie (connexion lente détectée)':'standard'}${t.demo?' · piste de démonstration générée localement':''}</p></div>
-   <div>${sec('À suivre',trackRows(up,{empty:P.repeat==='all'?'La file recommence au début.':'Fin de la file.'}))}</div></div>`;
+     <p class="muted" style="font-size:12px;text-align:center;margin-top:14px">Quality: ${quality()==='eco'?'data saver (slow connection detected)':'standard'}${t.demo?' · demo track generated on your device':''}</p></div>
+   <div>${sec('Up next',trackRows(up,{empty:P.repeat==='all'?'The queue starts over.':'End of the queue.'}))}</div></div>`;
 };
 function renderNowControls(){const c=$('#npCtl');if(!c)return;
-  c.innerHTML=`<button class="ic ${P.shuffle?'on':''}" data-act="ctl" data-c="shuffle" aria-label="Aléatoire">${I.shuffle}</button><button class="ic" data-act="ctl" data-c="prev" aria-label="Précédente">${I.prev}</button><button class="main" style="width:60px;height:60px" data-act="ctl" data-c="play" aria-label="Lecture ou pause">${P.loading?'<span class="spin"></span>':audio.paused?I.play:I.pause}</button><button class="ic" data-act="ctl" data-c="next" aria-label="Suivante">${I.next}</button><button class="ic ${P.repeat!=='off'?'on':''}" data-act="ctl" data-c="repeat" aria-label="Répétition">${P.repeat==='one'?I.repeat1:I.repeat}</button>`;
+  c.innerHTML=`<button class="ic ${P.shuffle?'on':''}" data-act="ctl" data-c="shuffle" aria-label="Shuffle">${I.shuffle}</button><button class="ic" data-act="ctl" data-c="prev" aria-label="Previous">${I.prev}</button><button class="main" style="width:60px;height:60px" data-act="ctl" data-c="play" aria-label="Play or pause">${P.loading?'<span class="spin"></span>':audio.paused?I.play:I.pause}</button><button class="ic" data-act="ctl" data-c="next" aria-label="Next">${I.next}</button><button class="ic ${P.repeat!=='off'?'on':''}" data-act="ctl" data-c="repeat" aria-label="Repeat">${P.repeat==='one'?I.repeat1:I.repeat}</button>`;
   const s=$('#npSeek');if(s&&!s.dataset.b){s.dataset.b=1;s.addEventListener('input',e=>{if(audio.duration)audio.currentTime=e.target.value/1000*audio.duration})}}
-const notFound=()=>`<div class="empty" style="margin-top:40px">Cette page n'existe pas ou n'est plus disponible. <a href="#home" style="color:var(--accent);font-weight:700">Retour à l'accueil</a></div>`;
+const notFound=()=>`<div class="empty" style="margin-top:40px">This page doesn't exist or is no longer available. <a href="#home" style="color:var(--accent);font-weight:700">Back to home</a></div>`;
 
 /* =========================================================
    WMA ADMIN
@@ -1019,40 +1107,40 @@ const notFound=()=>`<div class="empty" style="margin-top:40px">Cette page n'exis
    ne sont modifiables qu'au niveau "admin" (Éditeur / propriétaire) et le stockage
    de fichiers n'est accordé qu'aux Éditeurs.
    ========================================================= */
-const STATUS={draft:['BROUILLON',''],scheduled:['PROGRAMMÉ','warn'],published:['PUBLIÉ','ok'],unpublished:['DÉPUBLIÉ','off']};
-const statusBadge=t=>{const live=isLive(t),s=t.status==='scheduled'&&live?['PUBLIÉ','ok']:STATUS[t.status]||STATUS.draft;return `<span class="badge ${s[1]}">${s[0]}</span>`};
+const STATUS={draft:['DRAFT',''],scheduled:['SCHEDULED','warn'],published:['PUBLISHED','ok'],unpublished:['UNPUBLISHED','off']};
+const statusBadge=t=>{const live=isLive(t),s=t.status==='scheduled'&&live?['PUBLISHED','ok']:STATUS[t.status]||STATUS.draft;return `<span class="badge ${s[1]}">${s[0]}</span>`};
 pages.admin=sub=>{
-  if(!api.isAdmin())return art()?`<div class="auth"><h1>Accès refusé</h1><p class="muted">WMA ADMIN est réservé aux administrateurs de WMA UNITED AFRICA (accès Éditeur ou propriétaire).</p><div class="actions"><a class="btn" href="#home">Retour à l'accueil</a></div></div>`
-    :api.me()?`<div class="auth"><h1>Accès refusé</h1><p class="muted">WMA ADMIN est réservé à l'équipe WMA UNITED AFRICA.</p><div class="actions"><a class="btn" href="#home">Retour à l'accueil</a></div></div>`
-    :`<div class="auth"><h1>WMA ADMIN</h1><p class="muted">Connectez-vous avec un compte administrateur WMA.</p><div class="actions"><a class="btn pri" href="#login">Se connecter</a></div></div>`;
+  if(!api.isAdmin())return art()?`<div class="auth"><h1>Access denied</h1><p class="muted">WMA ADMIN is reserved for WMA administrators (Editor or owner access).</p><div class="actions"><a class="btn" href="#home">Back to home</a></div></div>`
+    :api.me()?`<div class="auth"><h1>Access denied</h1><p class="muted">WMA ADMIN is reserved for the WMA team.</p><div class="actions"><a class="btn" href="#home">Back to home</a></div></div>`
+    :`<div class="auth"><h1>WMA ADMIN</h1><p class="muted">Sign in with a WMA administrator account.</p><div class="actions"><a class="btn pri" href="#login">Sign in</a></div></div>`;
   sub=sub||'overview';
-  const nav=[['overview','Vue d\'ensemble'],['songs','Gestion des musiques'],['artists','Artistes'],['albums','Albums'],['playlists','Playlists officielles'],['genres','Catégories'],['users','Auditeurs'],['stats','Statistiques']];
+  const nav=[['overview','Overview'],['songs','Music manager'],['artists','Artists'],['albums','Albums'],['playlists','Official playlists'],['genres','Genres'],['users','Listeners'],['stats','Statistics']];
   return `<div class="eyebrow">WMA UNITED AFRICA</div><h1 class="ltitle" style="margin-top:4px">WMA ADMIN</h1>
-   ${cloud()?'':'<div class="note" style="margin-bottom:12px;border-color:var(--warn)">Mode démonstration hors ligne : les fichiers importés restent dans ce navigateur pendant la session. Ouvrez l\'application depuis votre compte Claude pour utiliser la base partagée et le stockage audio.</div>'}
+   ${cloud()?'':`<div class="note" style="margin-bottom:12px;border-color:var(--warn)"><b style="color:var(--fg)">Demo mode: nothing is published for other listeners.</b> Songs added here stay in this browser.<br>${/claude/.test(location.hostname)?'Open the app from your Claude account to use the shared database.':!window.WMA_CONFIG?'The config.js file is missing or has a typo (a missing quote or comma). Fix it, then redeploy the site on Vercel.':!window.WMA_CONFIG.supabaseUrl||!window.WMA_CONFIG.supabaseAnonKey?'config.js is empty: paste the Supabase URL and the public key, then redeploy.':!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(window.WMA_CONFIG.supabaseUrl)?'The Supabase URL in config.js is wrong: it must look exactly like https://xxxx.supabase.co (no /rest/v1/ and no trailing slash).':'The Supabase library could not load: check your internet connection and reload the page.'}</div>`}
    <nav class="adm-nav">${nav.map(([k,l])=>`<a href="#admin${k==='overview'?'':'-'+k}" class="${sub===k?'on':''}">${l}</a>`).join('')}</nav>${(admin[sub]||admin.overview)()}`;
 };
 pages.stats=()=>pages.admin('stats');
 const admin={};
-function kpiBlock(){const pub=DB.tracks.filter(isLive).length;return `<div class="kpis"><div class="kpi"><b>${PEOPLE.filter(p=>p.id!=='anon').length}</b><span>Auditeurs enregistrés</span></div><div class="kpi"><b>${DB.artists.length}</b><span>Artistes</span></div>
-  <div class="kpi"><b>${DB.tracks.length}</b><span>Chansons (${pub} en ligne)</span></div><div class="kpi"><b>${DB.albums.length}</b><span>Albums</span></div><div class="kpi"><b>${stat.total()}</b><span>Écoutes comptées</span></div><div class="kpi"><b>${stat.listenersAll()}</b><span>Auditeurs uniques</span></div></div>`}
+function kpiBlock(){const pub=DB.tracks.filter(isLive).length;return `<div class="kpis"><div class="kpi"><b>${PEOPLE.filter(p=>p.id!=='anon').length}</b><span>Registered listeners</span></div><div class="kpi"><b>${DB.artists.length}</b><span>Artists</span></div>
+  <div class="kpi"><b>${DB.tracks.length}</b><span>Songs (${pub} live)</span></div><div class="kpi"><b>${DB.albums.length}</b><span>Albums</span></div><div class="kpi"><b>${stat.total()}</b><span>Counted plays</span></div><div class="kpi"><b>${stat.listenersAll()}</b><span>Unique listeners</span></div></div>`}
 admin.overview=()=>{const drafts=DB.tracks.filter(t=>t.status==='draft').length,sched=DB.tracks.filter(t=>t.status==='scheduled'&&!isLive(t));
-  return `<button class="btn pri big-add" data-act="aTrack">${I.upload} AJOUTER UNE CHANSON</button>${kpiBlock()}
-  <div class="two" style="margin-top:16px"><div class="panel"><h3 style="font-size:17px;margin-bottom:10px">À traiter</h3><div class="bars">
-   <a class="bar" href="#admin-songs" data-act="goSongs" data-s="draft"><span>Brouillons</span><b class="mono" style="text-align:right">${drafts}</b></a>
-   <a class="bar" href="#admin-songs" data-act="goSongs" data-s="scheduled"><span>Publications programmées</span><b class="mono" style="text-align:right">${sched.length}</b></a>
-   <a class="bar" href="#admin-artists"><span>Artistes sans photo</span><b class="mono" style="text-align:right">${DB.artists.filter(a=>!artistPhoto(a)).length}</b></a></div>
-   ${sched.length?`<div class="t2" style="margin-top:12px;white-space:normal">Prochaine : ${esc(sched.sort((a,b)=>a.publishAt-b.publishAt)[0].title)} le ${frDT(sched[0].publishAt)}</div>`:''}</div>
-  <div class="panel"><h3 style="font-size:17px;margin-bottom:10px">Droits de diffusion</h3><p class="muted" style="font-size:13.5px;margin:0">Une chanson ne peut être publiée ou programmée que si WMA confirme détenir les droits ou une autorisation de diffusion. Une chanson disponible sur une autre plateforme n'est pas autorisée pour autant.</p></div></div>`};
+  return `<button class="btn pri big-add" data-act="aTrack">${I.upload} ADD A SONG</button>${kpiBlock()}
+  <div class="two" style="margin-top:16px"><div class="panel"><h3 style="font-size:17px;margin-bottom:10px">To do</h3><div class="bars">
+   <a class="bar" href="#admin-songs" data-act="goSongs" data-s="draft"><span>Drafts</span><b class="mono" style="text-align:right">${drafts}</b></a>
+   <a class="bar" href="#admin-songs" data-act="goSongs" data-s="scheduled"><span>Scheduled releases</span><b class="mono" style="text-align:right">${sched.length}</b></a>
+   <a class="bar" href="#admin-artists"><span>Artists without a photo</span><b class="mono" style="text-align:right">${DB.artists.filter(a=>!artistPhoto(a)).length}</b></a></div>
+   ${sched.length?`<div class="t2" style="margin-top:12px;white-space:normal">Next: ${esc(sched.sort((a,b)=>a.publishAt-b.publishAt)[0].title)} on ${frDT(sched[0].publishAt)}</div>`:''}</div>
+  <div class="panel"><h3 style="font-size:17px;margin-bottom:10px">Streaming rights</h3><p class="muted" style="font-size:13.5px;margin:0">A song can only be published or scheduled once WMA confirms it holds the streaming rights or a written licence. A song being available on another platform does not make it licensed here.</p></div></div>`};
 
 /* ---------- GESTION DES MUSIQUES ---------- */
 const SQ={q:'',artist:'',album:'',status:'',date:''};
-admin.songs=()=>`<div class="songs-head"><h2 style="font-size:22px">GESTION DES MUSIQUES</h2><button class="btn pri big-add" data-act="aTrack" style="margin:0">${I.upload} AJOUTER UNE CHANSON</button></div>
+admin.songs=()=>`<div class="songs-head"><h2 style="font-size:22px">MUSIC MANAGER</h2><button class="btn pri big-add" data-act="aTrack" style="margin:0">${I.upload} ADD A SONG</button></div>
   <div class="filters">
-   <label class="searchbox" for="sqQ" style="max-width:none;flex:2 1 220px">${I.search}<input id="sqQ" type="search" placeholder="Rechercher un titre, un artiste, un producteur" value="${esc(SQ.q)}" autocomplete="off"></label>
-   <select id="sqArtist" aria-label="Filtrer par artiste"><option value="">Tous les artistes</option>${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value="${a.id}" ${SQ.artist===a.id?'selected':''}>${esc(a.name)}</option>`).join('')}</select>
-   <select id="sqAlbum" aria-label="Filtrer par album"><option value="">Albums et singles</option><option value="_single" ${SQ.album==='_single'?'selected':''}>Singles uniquement</option>${DB.albums.map(al=>`<option value="${al.id}" ${SQ.album===al.id?'selected':''}>${esc(al.title)} — ${esc(api.artist(al.artistId)?.name||'')}</option>`).join('')}</select>
-   <select id="sqStatus" aria-label="Filtrer par statut"><option value="">Tous les statuts</option>${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${SQ.status===k?'selected':''}>${v[0][0]+v[0].slice(1).toLowerCase()}</option>`).join('')}</select>
-   <select id="sqDate" aria-label="Filtrer par date de publication"><option value="">Toutes les dates</option>${[['7','7 derniers jours'],['30','30 derniers jours'],['90','90 derniers jours'],['year','Cette année'],['future','À venir (programmées)']].map(([k,l])=>`<option value="${k}" ${SQ.date===k?'selected':''}>${l}</option>`).join('')}</select>
+   <label class="searchbox" for="sqQ" style="max-width:none;flex:2 1 220px">${I.search}<input id="sqQ" type="search" placeholder="Search a title, artist or producer" value="${esc(SQ.q)}" autocomplete="off"></label>
+   <select id="sqArtist" aria-label="Filter by artist"><option value="">All artists</option>${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value="${a.id}" ${SQ.artist===a.id?'selected':''}>${esc(a.name)}</option>`).join('')}</select>
+   <select id="sqAlbum" aria-label="Filter by album"><option value="">Albums and singles</option><option value="_single" ${SQ.album==='_single'?'selected':''}>Singles only</option>${DB.albums.map(al=>`<option value="${al.id}" ${SQ.album===al.id?'selected':''}>${esc(al.title)} — ${esc(api.artist(al.artistId)?.name||'')}</option>`).join('')}</select>
+   <select id="sqStatus" aria-label="Filter by status"><option value="">All statuses</option>${Object.entries(STATUS).map(([k,v])=>`<option value="${k}" ${SQ.status===k?'selected':''}>${v[0][0]+v[0].slice(1).toLowerCase()}</option>`).join('')}</select>
+   <select id="sqDate" aria-label="Filter by release date"><option value="">All dates</option>${[['7','Last 7 days'],['30','Last 30 days'],['90','Last 90 days'],['year','This year'],['future','Upcoming (scheduled)']].map(([k,l])=>`<option value="${k}" ${SQ.date===k?'selected':''}>${l}</option>`).join('')}</select>
   </div><div id="songsTable">${songsTable()}</div>`;
 function songsFiltered(){
   const q=norm(SQ.q).trim().split(/\s+/).filter(Boolean),now=Date.now(),y0=new Date(new Date().getFullYear(),0,1).getTime();
@@ -1066,13 +1154,13 @@ function songsFiltered(){
 }
 function songsTable(){
   const list=songsFiltered();
-  if(!DB.tracks.length)return `<div class="empty">Aucune chanson enregistrée. Touchez « AJOUTER UNE CHANSON » pour importer votre premier titre.</div>`;
-  if(!list.length)return `<div class="empty">Aucune chanson ne correspond à ces filtres.</div>`;
-  return `<p class="muted" style="font-size:12.5px;margin:0 0 10px"><span class="mono">${list.length}</span> chanson(s) · statistiques calculées à partir des écoutes réellement comptées</p>
-  <div class="tbl-wrap"><table><thead><tr><th></th><th>Titre</th><th>Album</th><th>Statut</th><th>Publication</th><th title="Écoutes comptées">Écoutes</th><th title="Auditeurs uniques">Auditeurs</th><th>Favoris</th><th>Playlists</th></tr></thead><tbody>
-  ${list.map(t=>`<tr><td><button data-act="play" data-id="${t.id}" aria-label="Écouter ${esc(t.title)}"><img src="${trackCover(t)}" alt=""></button></td>
-   <td style="min-width:220px"><b>${esc(t.title)}</b>${t.demo?' <span class="badge">DÉMO</span>':''}<div class="t2">${esc(artistText(t))} · ${fmt(t.duration)}</div>
-    <div class="row-acts"><button class="btn sm" data-act="aTrack" data-id="${t.id}">Modifier</button>${isLive(t)||t.status==='scheduled'?`<button class="btn sm" data-act="aUnpub" data-id="${t.id}">Dépublier</button>`:`<button class="btn sm" data-act="aPubNow" data-id="${t.id}">Publier</button>`}<button class="btn sm danger" data-act="aDel" data-k="tracks" data-id="${t.id}">Supprimer</button></div></td>
+  if(!DB.tracks.length)return `<div class="empty">No songs yet. Tap “ADD A SONG” to upload your first track.</div>`;
+  if(!list.length)return `<div class="empty">No songs match these filters.</div>`;
+  return `<p class="muted" style="font-size:12.5px;margin:0 0 10px"><span class="mono">${list.length}</span> song(s) · statistics based on plays actually counted</p>
+  <div class="tbl-wrap"><table><thead><tr><th></th><th>Title</th><th>Album</th><th>Status</th><th>Release</th><th title="Counted plays">Plays</th><th title="Unique listeners">Listeners</th><th>Favourites</th><th>Playlists</th></tr></thead><tbody>
+  ${list.map(t=>`<tr><td><button data-act="play" data-id="${t.id}" aria-label="Play ${esc(t.title)}"><img src="${trackCover(t)}" alt=""></button></td>
+   <td style="min-width:220px"><b>${esc(t.title)}</b>${t.demo?' <span class="badge">DEMO</span>':''}<div class="t2">${esc(artistText(t))} · ${fmt(t.duration)}</div>
+    <div class="row-acts"><button class="btn sm" data-act="aTrack" data-id="${t.id}">Edit</button>${isLive(t)||t.status==='scheduled'?`<button class="btn sm" data-act="aUnpub" data-id="${t.id}">Unpublish</button>`:`<button class="btn sm" data-act="aPubNow" data-id="${t.id}">Publish</button>`}<button class="btn sm danger" data-act="aDel" data-k="tracks" data-id="${t.id}">Delete</button></div></td>
    <td>${t.albumId?esc(api.album(t.albumId)?.title||'—'):'<span class="muted">Single</span>'}</td><td>${statusBadge(t)}</td>
    <td class="mono" style="white-space:nowrap;font-size:12.5px">${pubDate(t)?frDT(pubDate(t)):'—'}</td>
    <td class="mono">${stat.plays(t.id)}</td><td class="mono">${stat.listeners(t.id)}</td><td class="mono">${stat.favs(t.id)}</td><td class="mono">${stat.inPlaylists(t.id)}</td>
@@ -1087,52 +1175,52 @@ function trackForm(id){
   SF={id:t?.id||null,artistId:t?.artistId||'',featIds:(t?.featIds||[]).slice(),audio:null,img:null,orig:t};
   const mode=t?(t.status==='scheduled'?'scheduled':t.status==='published'?'published':'draft'):'published';
   const pa=t&&t.publishAt?new Date(t.publishAt-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16):'';
-  openModal(`<h3>${t?'Modifier la chanson':'AJOUTER UNE CHANSON'}</h3>
+  openModal(`<h3>${t?'Edit song':'ADD A SONG'}</h3>
   <form class="form sform" id="sForm" novalidate>
-   <fieldset><legend>Fichiers</legend>
-    <div class="drop"><label for="sfAudio">${I.upload}<span><b>${t?'Remplacer le fichier audio':'Fichier audio *'}</b><small>MP3, M4A, WAV, FLAC, OGG · ${supa()?'50':'20'} Mo max</small></span></label><input id="sfAudio" type="file" accept="audio/*,.mp3,.m4a,.mp4,.aac,.wav,.flac,.ogg,.opus,.webm"></div>
-    <div id="sfAudioState" class="t2" style="white-space:normal">${t?(t.audioId||t.audioUrl?'Fichier actuel conservé si vous n\'en choisissez pas de nouveau.':t.demo?'Piste de démonstration : importez le vrai fichier pour la remplacer.':'Aucun fichier audio.'):''}</div>
+   <fieldset><legend>Files</legend>
+    <div class="drop"><label for="sfAudio">${I.upload}<span><b>${t?'Replace the audio file':'Audio file *'}</b><small>MP3, M4A, WAV, FLAC, OGG · ${supa()?'50':'20'} MB max</small></span></label><input id="sfAudio" type="file" accept="audio/*,.mp3,.m4a,.mp4,.aac,.wav,.flac,.ogg,.opus,.webm"></div>
+    <div id="sfAudioState" class="t2" style="white-space:normal">${t?(t.audioId||t.audioUrl?'The current file is kept unless you choose a new one.':t.demo?'Demo track: upload the real file to replace it.':'No audio file.'):''}</div>
     <div class="prog" id="sfProg" hidden><i></i></div>
-    <div class="drop"><label for="sfCover">${t&&(t.coverId||t.cover)?`<img id="sfCovPrev" src="${trackCover(t)}" alt="">`:`<img id="sfCovPrev" alt="" hidden>${I.upload}`}<span><b>${t?'Changer la pochette':'Pochette'}</b><small>Carrée, 3000 × 3000 px recommandé · galerie ou fichiers</small></span></label><input id="sfCover" type="file" accept="image/*"></div>
+    <div class="drop"><label for="sfCover">${t&&(t.coverId||t.cover)?`<img id="sfCovPrev" src="${trackCover(t)}" alt="">`:`<img id="sfCovPrev" alt="" hidden>${I.upload}`}<span><b>${t?'Change the cover':'Cover art'}</b><small>Square, 3000 × 3000 px recommended · gallery or files</small></span></label><input id="sfCover" type="file" accept="image/*"></div>
    </fieldset>
-   <fieldset><legend>Informations</legend>
-    <div class="fld"><label for="sfTitle">Titre de la chanson *</label><input id="sfTitle" maxlength="100" value="${esc(t?.title||'')}" required></div>
-    <div class="fld ac"><label for="sfArtist">Artiste principal *</label><input id="sfArtist" autocomplete="off" placeholder="Commencez à taper un nom…" value="${esc(api.artist(SF.artistId)?.name||'')}" role="combobox" aria-expanded="false" aria-controls="acArtist"><ul class="ac-list" id="acArtist" role="listbox" hidden></ul></div>
-    <div class="fld ac"><label for="sfFeat">Artistes en featuring</label><div class="chipset" id="sfFeatChips"></div><input id="sfFeat" autocomplete="off" placeholder="Ajouter un artiste invité…" role="combobox" aria-expanded="false" aria-controls="acFeat"><ul class="ac-list" id="acFeat" role="listbox" hidden></ul></div>
-    <div class="row2"><div class="fld"><label for="sfAlbum">Album associé</label><select id="sfAlbum"></select></div>
-     <div class="fld"><label for="sfGenre">Genre musical *</label><select id="sfGenre">${DB.genres.map(g=>`<option ${g===(t?.genre||'')?'selected':''}>${esc(g)}</option>`).join('')}</select></div></div>
-    <div class="row2"><div class="fld"><label for="sfRelease">Date de sortie *</label><input id="sfRelease" type="date" value="${esc(t?.releaseDate||today())}" required></div>
-     <div class="fld"><label for="sfDur">Durée</label><input id="sfDur" readonly value="${t?fmt(t.duration):''}" placeholder="Détectée à l'import"></div></div>
-    <div class="row2"><div class="fld"><label for="sfProd">Producteur</label><input id="sfProd" maxlength="120" value="${esc(t?.producer||'')}"></div>
-     <div class="fld"><label for="sfWriters">Auteur et compositeur</label><input id="sfWriters" maxlength="200" value="${esc(t?.writers||'')}"></div></div>
+   <fieldset><legend>Details</legend>
+    <div class="fld"><label for="sfTitle">Song title *</label><input id="sfTitle" maxlength="100" value="${esc(t?.title||'')}" required></div>
+    <div class="fld ac"><label for="sfArtist">Main artist *</label><input id="sfArtist" autocomplete="off" placeholder="Start typing a name…" value="${esc(api.artist(SF.artistId)?.name||'')}" role="combobox" aria-expanded="false" aria-controls="acArtist"><ul class="ac-list" id="acArtist" role="listbox" hidden></ul></div>
+    <div class="fld ac"><label for="sfFeat">Featured artists</label><div class="chipset" id="sfFeatChips"></div><input id="sfFeat" autocomplete="off" placeholder="Add a featured artist…" role="combobox" aria-expanded="false" aria-controls="acFeat"><ul class="ac-list" id="acFeat" role="listbox" hidden></ul></div>
+    <div class="row2"><div class="fld"><label for="sfAlbum">Album</label><select id="sfAlbum"></select></div>
+     <div class="fld"><label for="sfGenre">Genre *</label><select id="sfGenre">${DB.genres.map(g=>`<option ${g===(t?.genre||'')?'selected':''}>${esc(g)}</option>`).join('')}</select></div></div>
+    <div class="row2"><div class="fld"><label for="sfRelease">Release date *</label><input id="sfRelease" type="date" value="${esc(t?.releaseDate||today())}" required></div>
+     <div class="fld"><label for="sfDur">Duration</label><input id="sfDur" readonly value="${t?fmt(t.duration):''}" placeholder="Detected on upload"></div></div>
+    <div class="row2"><div class="fld"><label for="sfProd">Producer</label><input id="sfProd" maxlength="120" value="${esc(t?.producer||'')}"></div>
+     <div class="fld"><label for="sfWriters">Songwriter and composer</label><input id="sfWriters" maxlength="200" value="${esc(t?.writers||'')}"></div></div>
     <div class="fld"><label for="sfDesc">Description</label><textarea id="sfDesc" maxlength="1000">${esc(t?.description||'')}</textarea></div>
    </fieldset>
-   <fieldset><legend>Droits</legend>
-    <label class="check"><input type="checkbox" id="sfRights" ${t&&t.rights==='confirmed'?'checked':''}> Je confirme que WMA UNITED AFRICA détient les droits de diffusion de ce titre, ou une autorisation écrite de l'artiste et des ayants droit. *</label>
-    <div class="fld"><label for="sfRightsNote">Référence du contrat ou de l'autorisation</label><input id="sfRightsNote" maxlength="200" value="${esc(t?.rightsNote||'')}" placeholder="Ex. contrat de distribution n° 2026-014"></div>
+   <fieldset><legend>Rights</legend>
+    <label class="check"><input type="checkbox" id="sfRights" ${t&&t.rights==='confirmed'?'checked':''}> I confirm that WMA UNITED AFRICA holds the streaming rights for this song, or written permission from the artist and rights holders. *</label>
+    <div class="fld"><label for="sfRightsNote">Contract or licence reference</label><input id="sfRightsNote" maxlength="200" value="${esc(t?.rightsNote||'')}" placeholder="e.g. distribution contract no. 2026-014"></div>
    </fieldset>
-   <fieldset><legend>Publication</legend>
-    <div class="seg" role="radiogroup">${[['draft','Brouillon'],['scheduled','Programmer'],['published','Publier maintenant']].map(([k,l])=>`<label><input type="radio" name="sfMode" value="${k}" ${mode===k?'checked':''}><span>${l}</span></label>`).join('')}</div>
-    <div class="fld" id="sfWhenWrap" ${mode==='scheduled'?'':'hidden'}><label for="sfWhen">Date et heure de publication</label><input id="sfWhen" type="datetime-local" value="${pa}"></div>
+   <fieldset><legend>Publishing</legend>
+    <div class="seg" role="radiogroup">${[['draft','Draft'],['scheduled','Schedule'],['published','Publish now']].map(([k,l])=>`<label><input type="radio" name="sfMode" value="${k}" ${mode===k?'checked':''}><span>${l}</span></label>`).join('')}</div>
+    <div class="fld" id="sfWhenWrap" ${mode==='scheduled'?'':'hidden'}><label for="sfWhen">Release date and time</label><input id="sfWhen" type="datetime-local" value="${pa}"></div>
    </fieldset>
-   <fieldset><legend>Aperçu avant publication</legend><div id="sfPreview"></div><audio id="sfPrevAudio" controls preload="metadata" hidden style="width:100%;margin-top:10px"></audio></fieldset>
+   <fieldset><legend>Preview before publishing</legend><div id="sfPreview"></div><audio id="sfPrevAudio" controls preload="metadata" hidden style="width:100%;margin-top:10px"></audio></fieldset>
    <div class="err" id="sfErr" role="alert"></div>
-   <div class="actions sticky-actions"><button class="btn pri" type="submit" id="sfSubmit"></button><button class="btn" type="button" data-act="close">Annuler</button></div>
+   <div class="actions sticky-actions"><button class="btn pri" type="submit" id="sfSubmit"></button><button class="btn" type="button" data-act="close">Cancel</button></div>
   </form>`,true);
   fillAlbums();renderFeat();updateSubmit();sfPreview();
   if(t&&(t.audioId||t.audioUrl)){const a=$('#sfPrevAudio');Promise.resolve(t.audioId?audioSrc(t.audioId):t.audioUrl).then(u=>{a.src=u;a.hidden=false}).catch(()=>{})}
 }
 function fillAlbums(){const s=$('#sfAlbum');if(!s)return;const cur=s.value||SF.orig?.albumId||'';const als=DB.albums.filter(a=>!SF.artistId||a.artistId===SF.artistId);
-  s.innerHTML=`<option value="">Single (sans album)</option>`+als.map(a=>`<option value="${a.id}" ${a.id===cur?'selected':''}>${esc(a.title)}${SF.artistId?'':' — '+esc(api.artist(a.artistId)?.name||'')}</option>`).join('')}
+  s.innerHTML=`<option value="">Single (no album)</option>`+als.map(a=>`<option value="${a.id}" ${a.id===cur?'selected':''}>${esc(a.title)}${SF.artistId?'':' — '+esc(api.artist(a.artistId)?.name||'')}</option>`).join('')}
 function renderFeat(){const c=$('#sfFeatChips');if(!c)return;c.innerHTML=SF.featIds.map(id=>`<span class="fchip">${esc(api.artist(id)?.name||'?')}<button type="button" data-act="sfFeatRm" data-id="${id}" aria-label="Retirer">✕</button></span>`).join('')}
 function sfMode(){return (document.querySelector('input[name=sfMode]:checked')||{}).value||'draft'}
-function updateSubmit(){const m=sfMode();$('#sfSubmit').innerHTML={draft:'Enregistrer le brouillon',scheduled:'Programmer la publication',published:'Publier maintenant'}[m];$('#sfWhenWrap').hidden=m!=='scheduled'}
+function updateSubmit(){const m=sfMode();$('#sfSubmit').innerHTML={draft:'Save draft',scheduled:'Schedule release',published:'Publish now'}[m];$('#sfWhenWrap').hidden=m!=='scheduled'}
 function sfPreview(){const p=$('#sfPreview');if(!p)return;
-  const fake={id:SF.id||'preview',title:$('#sfTitle').value.trim()||'Titre de la chanson',artistId:SF.artistId,featIds:SF.featIds,albumId:$('#sfAlbum').value||null,cover:SF.img?SF.img.url:null,coverId:SF.img?null:SF.orig?.coverId,duration:SF.audio?.duration||SF.orig?.duration||0};
+  const fake={id:SF.id||'preview',title:$('#sfTitle').value.trim()||'Song title',artistId:SF.artistId,featIds:SF.featIds,albumId:$('#sfAlbum').value||null,cover:SF.img?SF.img.url:null,coverId:SF.img?null:SF.orig?.coverId,duration:SF.audio?.duration||SF.orig?.duration||0};
   if(!SF.img&&SF.orig?.cover)fake.cover=SF.orig.cover;
-  const al=fake.albumId&&api.album(fake.albumId),m=sfMode(),when=m==='scheduled'&&$('#sfWhen').value?'Publication le '+frDT(new Date($('#sfWhen').value)):m==='published'?'En ligne dès l\'enregistrement':'Brouillon : visible seulement dans WMA ADMIN';
-  p.innerHTML=`<div class="pv"><img src="${trackCover(fake)}" alt=""><div style="min-width:0"><div class="t1" style="font-size:16px;font-weight:700">${esc(fake.title)}</div><div class="t2">${SF.artistId?esc(artistText(fake)):'<span style="color:var(--warn)">Artiste à sélectionner</span>'}</div>
-   <div class="t2">${al?esc(al.title):'Single'} · ${esc($('#sfGenre').value)} · ${fake.duration?fmt(fake.duration):'durée inconnue'}</div><div class="t2" style="color:var(--accent)">${when}</div></div></div>`;
+  const al=fake.albumId&&api.album(fake.albumId),m=sfMode(),when=m==='scheduled'&&$('#sfWhen').value?'Goes live on '+frDT(new Date($('#sfWhen').value)):m==='published'?'Goes live as soon as you save':'Draft: visible only in WMA ADMIN';
+  p.innerHTML=`<div class="pv"><img src="${trackCover(fake)}" alt=""><div style="min-width:0"><div class="t1" style="font-size:16px;font-weight:700">${esc(fake.title)}</div><div class="t2">${SF.artistId?esc(artistText(fake)):'<span style="color:var(--warn)">Select an artist</span>'}</div>
+   <div class="t2">${al?esc(al.title):'Single'} · ${esc($('#sfGenre').value)} · ${fake.duration?fmt(fake.duration):'unknown duration'}</div><div class="t2" style="color:var(--accent)">${when}</div></div></div>`;
 }
 function acSetup(inputId,listId,onPick,opts={}){
   const inp=$('#'+inputId),ul=$('#'+listId);if(!inp)return;let items=[],hi=-1;
@@ -1140,10 +1228,10 @@ function acSetup(inputId,listId,onPick,opts={}){
   const draw=()=>{const q=key(inp.value);const ex=opts.exclude?opts.exclude():[];
     items=DB.artists.filter(a=>!ex.includes(a.id)&&(!q||key(a.name).includes(q))).sort((a,b)=>(key(a.name).startsWith(q)?0:1)-(key(b.name).startsWith(q)?0:1)||a.name.localeCompare(b.name)).slice(0,8);
     const exact=DB.artists.some(a=>key(a.name)===q);
-    ul.innerHTML=items.map((a,i)=>`<li role="option" data-i="${i}" class="${i===hi?'hi':''}"><span style="width:28px;flex:none">${avatar(a,11)}</span>${esc(a.name)}<small>${esc(a.country||'')}</small></li>`).join('')+(q&&!exact?`<li role="option" data-new="1" class="${hi===items.length?'hi':''}">${I.plus} Créer l'artiste « ${esc(inp.value.trim())} »</li>`:'')+(!items.length&&!q?'<li class="none">Aucun artiste enregistré</li>':'');
+    ul.innerHTML=items.map((a,i)=>`<li role="option" data-i="${i}" class="${i===hi?'hi':''}"><span style="width:28px;flex:none">${avatar(a,11)}</span>${esc(a.name)}<small>${esc(a.country||'')}</small></li>`).join('')+(q&&!exact?`<li role="option" data-new="1" class="${hi===items.length?'hi':''}">${I.plus} Create the artist “${esc(inp.value.trim())}”</li>`:'')+(!items.length&&!q?'<li class="none">No artists yet</li>':'');
     ul.hidden=false;inp.setAttribute('aria-expanded','true')};
   const pick=async li=>{if(!li)return;if(li.dataset.new){const name=inp.value.trim();if(name.length<2)return;const a={id:uid('a'),name,country:'',bio:'',youtube:'',wma:true,home:true,hue:Math.floor(Math.random()*40)+10,createdAt:Date.now()};
-      try{await putDoc('artists',a)}catch(e){return toast("L'artiste n'a pas pu être créé.")}toast(`Artiste « ${name} » créé`);onPick(a)}else onPick(items[+li.dataset.i]);close()};
+      try{await putDoc('artists',a)}catch(e){return toast("The artist could not be created.")}toast(`Artist “${name}” created`);onPick(a)}else onPick(items[+li.dataset.i]);close()};
   inp.addEventListener('input',()=>{hi=-1;opts.onType&&opts.onType();draw()});inp.addEventListener('focus',draw);
   inp.addEventListener('keydown',e=>{const n=ul.querySelectorAll('li[role=option]').length;if(e.key==='ArrowDown'){e.preventDefault();hi=Math.min(n-1,hi+1);draw()}else if(e.key==='ArrowUp'){e.preventDefault();hi=Math.max(0,hi-1);draw()}else if(e.key==='Enter'&&!ul.hidden&&hi>=0){e.preventDefault();pick(ul.querySelectorAll('li[role=option]')[hi])}else if(e.key==='Escape'){e.stopPropagation();close()}});
   ul.addEventListener('mousedown',e=>{e.preventDefault();pick(e.target.closest('li[role=option]'))});
@@ -1155,29 +1243,29 @@ function bindSongForm(){
   acSetup('sfFeat','acFeat',a=>{if(!SF.featIds.includes(a.id))SF.featIds.push(a.id);$('#sfFeat').value='';renderFeat();sfPreview()},{exclude:()=>[SF.artistId,...SF.featIds]});
   f.addEventListener('input',sfPreview);f.addEventListener('change',e=>{if(e.target.name==='sfMode')updateSubmit();sfPreview()});
   $('#sfCover').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{SF.img=await readImg(file,1600);const im=$('#sfCovPrev');im.src=SF.img.url;im.hidden=false;
-      if(SF.img.w!==SF.img.h)toast('Conseil : la pochette n\'est pas carrée, elle sera recadrée à l\'affichage.');sfPreview()}catch(x){$('#sfErr').textContent=x.message;e.target.value=''}};
+      if(SF.img.w!==SF.img.h)toast('Tip: the cover isn\'t square, so it will be cropped on display.');sfPreview()}catch(x){$('#sfErr').textContent=x.message;e.target.value=''}};
   $('#sfAudio').onchange=async e=>{const file=e.target.files[0];if(!file)return;const st=$('#sfAudioState'),pg=$('#sfProg'),bar=pg.firstElementChild;$('#sfErr').textContent='';SF.audio=null;f.dataset.busy='1';$('#sfSubmit').disabled=true;pg.hidden=false;
     try{const r=await prepareAudio(file,(msg,p)=>{st.textContent=`${file.name} · ${msg}`;bar.style.width=Math.round(p*100)+'%'});
       SF.audio=r;r.url=URL.createObjectURL(r.blob);const a=$('#sfPrevAudio');a.src=r.url;a.hidden=false;$('#sfDur').value=fmt(r.duration);
       if(!$('#sfTitle').value.trim())$('#sfTitle').value=file.name.replace(/\.[^.]+$/,'').replace(/[_]+/g,' ').trim();
-      st.innerHTML=`<b style="color:var(--good)">Prêt</b> · ${esc(file.name)} · ${fmt(r.duration)} · ${(r.blob.size/1048576).toFixed(1)} Mo ${r.converted?`· converti en ${r.codec} ${r.kbps} kbit/s`:'· format d\'origine conservé'} · écoutez l'aperçu ci-dessous`;sfPreview()}
+      st.innerHTML=`<b style="color:var(--good)">Ready</b> · ${esc(file.name)} · ${fmt(r.duration)} · ${(r.blob.size/1048576).toFixed(1)} MB ${r.converted?`· converted to ${r.codec} ${r.kbps} kbps`:'· original format kept'} · listen to the preview below`;sfPreview()}
     catch(x){st.textContent='';$('#sfErr').textContent=x.message;e.target.value=''}
     finally{pg.hidden=true;bar.style.width='0';delete f.dataset.busy;$('#sfSubmit').disabled=false}};
   f.onsubmit=async e=>{e.preventDefault();if(f.dataset.busy)return;const err=$('#sfErr');err.textContent='';const t=SF.orig,m=sfMode();
     const title=$('#sfTitle').value.trim(),release=$('#sfRelease').value,rights=$('#sfRights').checked;
-    if(!title)return err.textContent='Indiquez le titre de la chanson.';
-    if(!SF.artistId||!api.artist(SF.artistId))return err.textContent="Sélectionnez l'artiste principal dans la liste (ou créez-le).";
-    if(!release)return err.textContent='Indiquez la date de sortie.';
-    if(!SF.audio&&!(t&&(t.audioId||t.audioUrl||t.demo)))return err.textContent='Importez le fichier audio de la chanson.';
+    if(!title)return err.textContent='Enter the song title.';
+    if(!SF.artistId||!api.artist(SF.artistId))return err.textContent="Select the main artist from the list (or create them).";
+    if(!release)return err.textContent='Enter the release date.';
+    if(!SF.audio&&!(t&&(t.audioId||t.audioUrl||t.demo)))return err.textContent='Upload the song\'s audio file.';
     let publishAt=null;
-    if(m==='scheduled'){const v=$('#sfWhen').value;if(!v)return err.textContent='Choisissez la date et l\'heure de publication.';publishAt=new Date(v).getTime();if(publishAt<=Date.now()+60e3)return err.textContent='La date de publication programmée doit être dans le futur.'}
-    if(m!=='draft'&&!rights&&!(t&&t.rights==='demo'))return err.textContent='Pour publier ou programmer, confirmez que WMA détient les droits de diffusion.';
+    if(m==='scheduled'){const v=$('#sfWhen').value;if(!v)return err.textContent='Choose the release date and time.';publishAt=new Date(v).getTime();if(publishAt<=Date.now()+60e3)return err.textContent='The scheduled release must be in the future.'}
+    if(m!=='draft'&&!rights&&!(t&&t.rights==='demo'))return err.textContent='To publish or schedule, confirm that WMA holds the streaming rights.';
     f.dataset.busy='1';const btn=$('#sfSubmit');btn.disabled=true;const st=$('#sfAudioState');
     try{
       let audioPatch={},coverPatch={};
-      if(SF.audio){btn.textContent='Envoi du fichier audio…';const r=await uploadFile(SF.audio.blob,SF.audio.type);audioPatch=r.id?{audioId:r.id,audioUrl:undefined}:{audioUrl:r.local,audioId:null};audioPatch.duration=SF.audio.duration;audioPatch.demo=false;audioPatch.audioType=SF.audio.type}
-      if(SF.img){btn.textContent='Envoi de la pochette…';const r=await storeImage(SF.img);coverPatch=r.coverId?{coverId:r.coverId,cover:null}:{cover:r.cover,coverId:null}}
-      btn.textContent='Enregistrement…';
+      if(SF.audio){btn.textContent='Uploading the audio…';const r=await uploadFile(SF.audio.blob,SF.audio.type);audioPatch=r.id?{audioId:r.id,audioUrl:undefined}:{audioUrl:r.local,audioId:null};audioPatch.duration=SF.audio.duration;audioPatch.demo=false;audioPatch.audioType=SF.audio.type}
+      if(SF.img){btn.textContent='Uploading the cover…';const r=await storeImage(SF.img);coverPatch=r.coverId?{coverId:r.coverId,cover:null}:{cover:r.cover,coverId:null}}
+      btn.textContent='Saving…';
       const now=Date.now(),albumId=$('#sfAlbum').value||null;
       const tr={...(t||{}),id:t?.id||uid('t'),title,artistId:SF.artistId,featIds:SF.featIds.slice(),albumId,genre:$('#sfGenre').value,releaseDate:release,
         producer:$('#sfProd').value.trim(),writers:$('#sfWriters').value.trim(),description:$('#sfDesc').value.trim(),rightsNote:$('#sfRightsNote').value.trim(),
@@ -1189,100 +1277,100 @@ function bindSongForm(){
       if(t&&SF.audio&&t.audioId&&t.audioId!==tr.audioId)dropFile(t.audioId);
       if(t&&SF.img&&t.coverId&&t.coverId!==tr.coverId)dropFile(t.coverId);
       delete f.dataset.busy;closeModal();
-      toast({draft:'Brouillon enregistré',scheduled:`Publication programmée le ${frDT(publishAt)}`,published:'Chanson publiée : elle est en ligne'}[m]);
+      toast({draft:'Draft saved',scheduled:`Release scheduled for ${frDT(publishAt)}`,published:'Song published: it is now live'}[m]);
       if(location.hash!=='#admin-songs')location.hash='#admin-songs';else rerender();
-    }catch(x){err.textContent=(x&&x.message)||"L'enregistrement a échoué. Vérifiez votre connexion et réessayez.";btn.disabled=false;updateSubmit();delete f.dataset.busy}
+    }catch(x){err.textContent=(x&&x.message)||"Saving failed. Check your connection and try again.";btn.disabled=false;updateSubmit();delete f.dataset.busy}
   };
 }
 function bindAdmin(){
   ['sqQ','sqArtist','sqAlbum','sqStatus','sqDate'].forEach(id=>{const el=$('#'+id);if(!el||el.dataset.b)return;el.dataset.b=1;el.addEventListener(id==='sqQ'?'input':'change',()=>{SQ[{sqQ:'q',sqArtist:'artist',sqAlbum:'album',sqStatus:'status',sqDate:'date'}[id]]=el.value;$('#songsTable').innerHTML=songsTable()})});
-  const gf=$('#genreForm');if(gf&&!gf.dataset.b){gf.dataset.b=1;gf.onsubmit=async e=>{e.preventDefault();const g=$('#gName').value.trim();if(!g)return;if(DB.genres.some(x=>key(x)===key(g)))return toast('Cette catégorie existe déjà.');DB.genres.push(g);try{await putGenres();toast('Catégorie ajoutée')}catch(x){toast("La catégorie n'a pas pu être enregistrée.")}rerender()}}
+  const gf=$('#genreForm');if(gf&&!gf.dataset.b){gf.dataset.b=1;gf.onsubmit=async e=>{e.preventDefault();const g=$('#gName').value.trim();if(!g)return;if(DB.genres.some(x=>key(x)===key(g)))return toast('This genre already exists.');DB.genres.push(g);try{await putGenres();toast('Genre added')}catch(x){toast("The genre could not be saved.")}rerender()}}
 }
 const _openModal=openModal;openModal=function(h,w){_openModal(h,w);bindSongForm()};
 
 /* ---------- Artistes, albums, playlists, catégories ---------- */
-const photoStatus=a=>a.photoUrl?'<span class="badge ok">SITE WMA</span>':(a.photoId||a.photo)?'<span class="badge">AJOUTÉE ICI</span>':'<span class="badge off">MANQUANTE</span>';
-admin.artists=()=>{const miss=DB.artists.filter(a=>!artistPhoto(a));return `<div class="actions" style="margin:0 0 16px"><button class="btn pri" data-act="aArtist">${I.plus} Ajouter un artiste</button><button class="btn" data-act="aPhotoSync">Synchroniser les photos du site WMA</button></div>
- ${miss.length?`<div class="note" style="border-color:var(--bad);margin-bottom:16px"><b style="color:var(--fg)">${miss.length} artiste(s) sans photo de profil :</b> ${miss.map(a=>esc(a.name)).join(', ')}.</div>`:'<div class="note" style="border-color:var(--good);margin-bottom:16px">Tous les artistes ont une photo de profil.</div>'}
- <div class="tbl-wrap"><table><thead><tr><th></th><th>Nom</th><th>Pays</th><th>Photo</th><th>Accueil</th><th>Chansons</th><th>Abonnés</th><th></th></tr></thead><tbody>
- ${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<tr><td style="width:52px"><div style="width:38px">${avatar(a,14)}</div></td><td><b><a href="#artist-${a.id}">${esc(a.name)}</a></b></td><td>${esc(a.country||'—')}</td><td>${photoStatus(a)}</td><td>${a.home!==false?'Oui':'Non'}</td>
+const photoStatus=a=>a.photoUrl?'<span class="badge ok">WMA SITE</span>':(a.photoId||a.photo)?'<span class="badge">ADDED HERE</span>':'<span class="badge off">MISSING</span>';
+admin.artists=()=>{const miss=DB.artists.filter(a=>!artistPhoto(a));return `<div class="actions" style="margin:0 0 16px"><button class="btn pri" data-act="aArtist">${I.plus} Add an artist</button><button class="btn" data-act="aPhotoSync">Sync photos from the WMA site</button></div>
+ ${miss.length?`<div class="note" style="border-color:var(--bad);margin-bottom:16px"><b style="color:var(--fg)">${miss.length} artist(s) without a profile photo:</b> ${miss.map(a=>esc(a.name)).join(', ')}.</div>`:'<div class="note" style="border-color:var(--good);margin-bottom:16px">Every artist has a profile photo.</div>'}
+ <div class="tbl-wrap"><table><thead><tr><th></th><th>Name</th><th>Country</th><th>Photo</th><th>Home</th><th>Songs</th><th>Followers</th><th></th></tr></thead><tbody>
+ ${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<tr><td style="width:52px"><div style="width:38px">${avatar(a,14)}</div></td><td><b><a href="#artist-${a.id}">${esc(a.name)}</a></b></td><td>${esc(a.country||'—')}</td><td>${photoStatus(a)}</td><td>${a.home!==false?'Yes':'No'}</td>
   <td class="mono">${DB.tracks.filter(t=>t.artistId===a.id||t.featIds.includes(a.id)).length}</td><td class="mono">${stat.followers(a.id)}</td>
-  <td style="white-space:nowrap"><button class="btn sm" data-act="aArtist" data-id="${a.id}">Modifier</button> <button class="btn sm danger" data-act="aDel" data-k="artists" data-id="${a.id}">Supprimer</button></td></tr>`).join('')}</tbody></table></div>`};
-admin.albums=()=>`<div class="actions" style="margin:0 0 16px"><button class="btn pri" data-act="aAlbum">${I.plus} Ajouter un album</button></div>
- ${DB.albums.length?`<div class="tbl-wrap"><table><thead><tr><th></th><th>Titre</th><th>Artiste</th><th>Type</th><th>Sortie</th><th>Titres</th><th></th></tr></thead><tbody>
+  <td style="white-space:nowrap"><button class="btn sm" data-act="aArtist" data-id="${a.id}">Edit</button> <button class="btn sm danger" data-act="aDel" data-k="artists" data-id="${a.id}">Delete</button></td></tr>`).join('')}</tbody></table></div>`};
+admin.albums=()=>`<div class="actions" style="margin:0 0 16px"><button class="btn pri" data-act="aAlbum">${I.plus} Add an album</button></div>
+ ${DB.albums.length?`<div class="tbl-wrap"><table><thead><tr><th></th><th>Title</th><th>Artist</th><th>Type</th><th>Released</th><th>Songs</th><th></th></tr></thead><tbody>
  ${DB.albums.map(al=>`<tr><td><img src="${albumCover(al)}" alt=""></td><td><b><a href="#album-${al.id}">${esc(al.title)}</a></b></td><td>${esc(api.artist(al.artistId)?.name||'—')}</td><td>${esc(al.type)}</td><td class="mono">${esc(al.date)}</td><td class="mono">${DB.tracks.filter(t=>t.albumId===al.id).length}</td>
-  <td style="white-space:nowrap"><button class="btn sm" data-act="aAlbum" data-id="${al.id}">Modifier</button> <button class="btn sm danger" data-act="aDel" data-k="albums" data-id="${al.id}">Supprimer</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Aucun album.</div>'}`;
-admin.playlists=()=>`<div class="actions" style="margin:0 0 16px"><button class="btn pri" data-act="aPl">${I.plus} Créer une playlist officielle</button></div>
- ${DB.playlists.length?`<div class="tbl-wrap"><table><thead><tr><th></th><th>Nom</th><th>Titres</th><th></th></tr></thead><tbody>${DB.playlists.map(p=>`<tr><td><img src="${plCover(p)}" alt=""></td><td><b><a href="#playlist-${p.id}">${esc(p.name)}</a></b><div class="t2">${esc(p.desc||'')}</div></td><td class="mono">${p.trackIds.length}</td>
- <td style="white-space:nowrap"><button class="btn sm" data-act="aPl" data-id="${p.id}">Modifier</button> <button class="btn sm danger" data-act="aDel" data-k="playlists" data-id="${p.id}">Supprimer</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Aucune playlist officielle.</div>'}`;
-admin.genres=()=>`<div class="panel" style="max-width:560px"><form class="form" id="genreForm"><div class="fld"><label for="gName">Nouvelle catégorie musicale</label><input id="gName" maxlength="30" placeholder="Ex. Soukous" required></div><div><button class="btn pri" type="submit">Ajouter</button></div></form>
- <div class="tlist" style="margin-top:18px">${DB.genres.map(g=>`<div class="trow" style="grid-template-columns:1fr auto auto"><b>${esc(g)}</b><span class="muted mono" style="font-size:12.5px">${DB.tracks.filter(t=>t.genre===g).length} titres</span><button class="btn sm danger" data-act="gDel" data-g="${esc(g)}">Retirer</button></div>`).join('')}</div></div>`;
+  <td style="white-space:nowrap"><button class="btn sm" data-act="aAlbum" data-id="${al.id}">Edit</button> <button class="btn sm danger" data-act="aDel" data-k="albums" data-id="${al.id}">Delete</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No albums yet.</div>'}`;
+admin.playlists=()=>`<div class="actions" style="margin:0 0 16px"><button class="btn pri" data-act="aPl">${I.plus} Create an official playlist</button></div>
+ ${DB.playlists.length?`<div class="tbl-wrap"><table><thead><tr><th></th><th>Name</th><th>Songs</th><th></th></tr></thead><tbody>${DB.playlists.map(p=>`<tr><td><img src="${plCover(p)}" alt=""></td><td><b><a href="#playlist-${p.id}">${esc(p.name)}</a></b><div class="t2">${esc(p.desc||'')}</div></td><td class="mono">${p.trackIds.length}</td>
+ <td style="white-space:nowrap"><button class="btn sm" data-act="aPl" data-id="${p.id}">Edit</button> <button class="btn sm danger" data-act="aDel" data-k="playlists" data-id="${p.id}">Delete</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No official playlists yet.</div>'}`;
+admin.genres=()=>`<div class="panel" style="max-width:560px"><form class="form" id="genreForm"><div class="fld"><label for="gName">New genre</label><input id="gName" maxlength="30" placeholder="e.g. Soukous" required></div><div><button class="btn pri" type="submit">Add</button></div></form>
+ <div class="tlist" style="margin-top:18px">${DB.genres.map(g=>`<div class="trow" style="grid-template-columns:1fr auto auto"><b>${esc(g)}</b><span class="muted mono" style="font-size:12.5px">${DB.tracks.filter(t=>t.genre===g).length} songs</span><button class="btn sm danger" data-act="gDel" data-g="${esc(g)}">Remove</button></div>`).join('')}</div></div>`;
 admin.users=()=>{
   if(cloud()){const ppl=PEOPLE.filter(p=>p.id!=='anon');setTimeout(fillNames,0);
-    if(supa())return `<p class="note" style="margin-bottom:14px">Un administrateur peut ajouter, modifier et publier les chansons. Les autres comptes sont des auditeurs.</p>
-    <div class="tbl-wrap"><table><thead><tr><th>Compte</th><th>Écoutes</th><th>Favoris</th><th>Playlists</th><th>Rôle</th><th></th></tr></thead><tbody>${Object.values(PROFILES).map(pr=>{const p=PEOPLE.find(x=>x.id===pr.id)||emptyMe();return `<tr><td><b>${esc(pr.display_name||'Auditeur')}</b>${pr.id===UID?' <span class="muted">(vous)</span>':''}</td><td class="mono">${Object.values(p.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td class="mono">${(p.favs||[]).length}</td><td class="mono">${(p.playlists||[]).length}</td><td>${pr.role==='admin'?'<span class="badge">ADMIN</span>':'Auditeur'}</td><td>${pr.id===UID?'':`<button class="btn sm" data-act="uRole" data-id="${pr.id}">${pr.role==='admin'?'Retirer admin':'Nommer admin'}</button>`}</td></tr>`}).join('')||'<tr><td colspan="6" class="muted">Aucun compte.</td></tr>'}</tbody></table></div>`;
-    return `<p class="note" style="margin-bottom:14px">Les droits d'administration se gèrent dans le menu Partager de l'application : un Éditeur est administrateur WMA ; un Contributeur peut écouter et enregistrer favoris, playlists et écoutes.</p>
-    ${ppl.length?`<div class="tbl-wrap"><table><thead><tr><th>Auditeur</th><th>Écoutes</th><th>Titres écoutés</th><th>Favoris</th><th>Playlists</th><th>Dernière activité</th></tr></thead><tbody>${ppl.map(p=>`<tr><td><b data-uname="${esc(p.id)}">${p.id===UID?esc(MYNAME)+' (vous)':'…'}</b></td><td class="mono">${Object.values(p.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td class="mono">${Object.keys(p.listens||{}).length}</td><td class="mono">${(p.favs||[]).length}</td><td class="mono">${(p.playlists||[]).length}</td><td class="mono" style="font-size:12.5px">${p.updatedAt?frDT(p.updatedAt):'—'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Aucun auditeur pour le moment.</div>'}`}
-  return LUSERS.length?`<div class="tbl-wrap"><table><thead><tr><th>Nom</th><th>E-mail</th><th>Inscription</th><th>Écoutes</th><th>Rôle</th><th></th></tr></thead><tbody>${LUSERS.map(u=>`<tr><td><b>${esc(u.name)}</b></td><td>${esc(u.email)}</td><td class="mono">${new Date(u.createdAt).toLocaleDateString('fr-FR')}</td><td class="mono">${Object.values(u.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td>${u.role==='admin'?'<span class="badge">ADMIN</span>':'Auditeur'}</td><td>${u.id===LSESSION?'<span class="muted">Vous</span>':`<button class="btn sm" data-act="uRole" data-id="${u.id}">${u.role==='admin'?'Retirer admin':'Nommer admin'}</button>`}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Aucun compte.</div>';
+    if(supa())return `<p class="note" style="margin-bottom:14px">Administrators can add, edit and publish songs. All other accounts are listeners.</p>
+    <div class="tbl-wrap"><table><thead><tr><th>Account</th><th>Plays</th><th>Favourites</th><th>Playlists</th><th>Role</th><th></th></tr></thead><tbody>${Object.values(PROFILES).map(pr=>{const p=PEOPLE.find(x=>x.id===pr.id)||emptyMe();return `<tr><td><b>${esc(pr.display_name||'Listener')}</b>${pr.id===UID?' <span class="muted">(you)</span>':''}</td><td class="mono">${Object.values(p.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td class="mono">${(p.favs||[]).length}</td><td class="mono">${(p.playlists||[]).length}</td><td>${pr.role==='admin'?'<span class="badge">ADMIN</span>':'Listener'}</td><td>${pr.id===UID?'':`<button class="btn sm" data-act="uRole" data-id="${pr.id}">${pr.role==='admin'?'Remove admin':'Make admin'}</button>`}</td></tr>`}).join('')||'<tr><td colspan="6" class="muted">No accounts yet.</td></tr>'}</tbody></table></div>`;
+    return `<p class="note" style="margin-bottom:14px">Admin rights are managed from the app's Share menu: an Editor is a WMA administrator; a Contributor can listen and save favourites, playlists and plays.</p>
+    ${ppl.length?`<div class="tbl-wrap"><table><thead><tr><th>Listener</th><th>Plays</th><th>Songs played</th><th>Favourites</th><th>Playlists</th><th>Last active</th></tr></thead><tbody>${ppl.map(p=>`<tr><td><b data-uname="${esc(p.id)}">${p.id===UID?esc(MYNAME)+' (you)':'…'}</b></td><td class="mono">${Object.values(p.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td class="mono">${Object.keys(p.listens||{}).length}</td><td class="mono">${(p.favs||[]).length}</td><td class="mono">${(p.playlists||[]).length}</td><td class="mono" style="font-size:12.5px">${p.updatedAt?frDT(p.updatedAt):'—'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No listeners yet.</div>'}`}
+  return LUSERS.length?`<div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Plays</th><th>Role</th><th></th></tr></thead><tbody>${LUSERS.map(u=>`<tr><td><b>${esc(u.name)}</b></td><td>${esc(u.email)}</td><td class="mono">${new Date(u.createdAt).toLocaleDateString('en-GB')}</td><td class="mono">${Object.values(u.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td>${u.role==='admin'?'<span class="badge">ADMIN</span>':'Listener'}</td><td>${u.id===LSESSION?'<span class="muted">You</span>':`<button class="btn sm" data-act="uRole" data-id="${u.id}">${u.role==='admin'?'Remove admin':'Make admin'}</button>`}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No accounts yet.</div>';
 };
-async function fillNames(){if(!USERX)return;const els=[...document.querySelectorAll('[data-uname]')].filter(e=>e.dataset.uname!==UID);if(!els.length)return;try{const ps=await USERX.profiles(els.map(e=>e.dataset.uname));els.forEach(e=>{e.textContent=(ps[e.dataset.uname]&&ps[e.dataset.uname].name)||'Auditeur'})}catch(x){els.forEach(e=>e.textContent='Auditeur')}}
+async function fillNames(){if(!USERX)return;const els=[...document.querySelectorAll('[data-uname]')].filter(e=>e.dataset.uname!==UID);if(!els.length)return;try{const ps=await USERX.profiles(els.map(e=>e.dataset.uname));els.forEach(e=>{e.textContent=(ps[e.dataset.uname]&&ps[e.dataset.uname].name)||'Listener'})}catch(x){els.forEach(e=>e.textContent='Listener')}}
 admin.stats=()=>{
   const topT=DB.tracks.map(t=>[t,stat.plays(t.id)]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).slice(0,8),topA=DB.artists.map(a=>[a,stat.artistPlays(a.id)]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const bars=(rows,lab)=>rows.length?`<div class="bars">${rows.map(([o,n])=>`<div class="bar"><div style="min-width:0"><div class="t1" style="font-size:13px">${esc(lab(o))}</div><i style="width:${n/rows[0][1]*100}%"></i></div><span class="mono" style="text-align:right">${n}</span></div>`).join('')}</div>`:'<div class="empty">Aucune écoute comptée pour l\'instant.</div>';
-  return `${kpiBlock()}<p class="note" style="margin-top:14px">Règles de comptage : une écoute compte après 30 secondes réellement jouées (75 % pour un titre court), son audible et vitesse normale ; au plus une écoute par auditeur et par titre toutes les 30 minutes ; plafond de 200 écoutes par auditeur sur 24 heures. Aucune donnée n'est ajoutée ou estimée.</p>
-   <div class="panel" style="margin-top:18px"><h3 style="font-size:17px;margin-bottom:12px">Évolution des écoutes · 14 derniers jours</h3>${playsChart()}</div>
-   <div class="two" style="margin-top:16px"><div class="panel"><h3 style="font-size:17px;margin-bottom:14px">Chansons les plus écoutées</h3>${bars(topT,t=>t.title+' — '+artistText(t))}</div><div class="panel"><h3 style="font-size:17px;margin-bottom:14px">Artistes les plus populaires</h3>${bars(topA,a=>a.name)}</div></div>`;
+  const bars=(rows,lab)=>rows.length?`<div class="bars">${rows.map(([o,n])=>`<div class="bar"><div style="min-width:0"><div class="t1" style="font-size:13px">${esc(lab(o))}</div><i style="width:${n/rows[0][1]*100}%"></i></div><span class="mono" style="text-align:right">${n}</span></div>`).join('')}</div>`:'<div class="empty">No plays counted yet.</div>';
+  return `${kpiBlock()}<p class="note" style="margin-top:14px">Counting rules: a play counts after 30 seconds actually played (75% for a short song), with sound on and at normal speed; at most one play per listener per song every 30 minutes; a cap of 200 plays per listener per 24 hours. No data is added or estimated.</p>
+   <div class="panel" style="margin-top:18px"><h3 style="font-size:17px;margin-bottom:12px">Plays · last 14 days</h3>${playsChart()}</div>
+   <div class="two" style="margin-top:16px"><div class="panel"><h3 style="font-size:17px;margin-bottom:14px">Most played songs</h3>${bars(topT,t=>t.title+' — '+artistText(t))}</div><div class="panel"><h3 style="font-size:17px;margin-bottom:14px">Most popular artists</h3>${bars(topA,a=>a.name)}</div></div>`;
 };
 function playsChart(){
   const log=stat.log(),days=[],d0=new Date();d0.setHours(0,0,0,0);
   for(let i=13;i>=0;i--){const s=d0.getTime()-i*864e5;days.push({s,n:log.filter(p=>p.ts>=s&&p.ts<s+864e5).length})}
-  const max=Math.max(...days.map(d=>d.n));if(!max)return '<div class="empty">Le graphique apparaîtra dès les premières écoutes comptées.</div>';
+  const max=Math.max(...days.map(d=>d.n));if(!max)return '<div class="empty">The chart will appear after the first counted plays.</div>';
   const top=Math.max(4,Math.ceil(max/4)*4),W=720,H=220,L=36,R=12,T=12,B=28,x=i=>L+i*(W-L-R)/13,y=v=>T+(H-T-B)*(1-v/top),pts=days.map((d,i)=>`${x(i)},${y(d.n)}`).join(' ');
-  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:480px" role="img" aria-label="Écoutes par jour">
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:480px" role="img" aria-label="Plays per day">
    ${[0,.25,.5,.75,1].map(f=>`<line x1="${L}" x2="${W-R}" y1="${y(top*f)}" y2="${y(top*f)}" stroke="#2C2C2E"/><text x="${L-8}" y="${y(top*f)+4}" fill="#8E8E93" font-size="11" text-anchor="end" font-family="ui-monospace,monospace">${top*f}</text>`).join('')}
    <polygon points="${x(0)},${y(0)} ${pts} ${x(13)},${y(0)}" fill="rgba(255,122,26,.20)"/><polyline points="${pts}" fill="none" stroke="#FF7A1A" stroke-width="2.5" stroke-linejoin="round"/>
-   ${days.map((d,i)=>`${i%2===1||i===13?`<text x="${x(i)}" y="${H-8}" fill="#8E8E93" font-size="11" text-anchor="middle" font-family="ui-monospace,monospace">${new Date(d.s).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</text>`:''}${d.n?`<circle cx="${x(i)}" cy="${y(d.n)}" r="${i===13?5:3}" fill="#FF7A1A"><title>${d.n} écoute(s)</title></circle>`:''}`).join('')}</svg></div>`;
+   ${days.map((d,i)=>`${i%2===1||i===13?`<text x="${x(i)}" y="${H-8}" fill="#8E8E93" font-size="11" text-anchor="middle" font-family="ui-monospace,monospace">${new Date(d.s).toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit'})}</text>`:''}${d.n?`<circle cx="${x(i)}" cy="${y(d.n)}" r="${i===13?5:3}" fill="#FF7A1A"><title>${d.n} play(s)</title></circle>`:''}`).join('')}</svg></div>`;
 }
 const opts=(list,sel,lab)=>list.map(o=>`<option value="${esc(o.id??o)}" ${(o.id??o)===sel?'selected':''}>${esc(lab?lab(o):o)}</option>`).join('');
 function artistForm(id){
   const a=id?api.artist(id):null;
-  openModal(`<h3>${a?'Modifier l\'artiste':'Ajouter un artiste'}</h3><form class="form" id="aForm" style="max-width:none" novalidate>
-   <div class="row2"><div class="fld"><label for="fName">Nom de l'artiste</label><input id="fName" maxlength="60" value="${esc(a?.name||'')}" required></div><div class="fld"><label for="fCountry">Pays</label><input id="fCountry" maxlength="40" value="${esc(a?.country||'')}" placeholder="Ex. RDC"></div></div>
-   <div class="fld"><label for="fBio">Biographie</label><textarea id="fBio" maxlength="1500">${esc(a?.bio||'')}</textarea></div>
-   <div class="fld"><label for="fYt">Lien YouTube ou Spotify</label><input id="fYt" type="url" value="${esc(a?.youtube||'')}" placeholder="https://"></div>
-   <div class="fld"><label for="fPhoto">Photo de profil</label><input id="fPhoto" type="file" accept="image/*"></div>
-   <label class="check"><input type="checkbox" id="fWma" ${!a||a.wma?'checked':''}> Artiste accompagné par WMA UNITED AFRICA</label>
-   <label class="check"><input type="checkbox" id="fHome" ${!a||a.home!==false?'checked':''}> Afficher dans la section « Artistes WMA » de l'accueil</label>
-   <div class="err" id="fErr"></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">${a?'Enregistrer':'Ajouter l\'artiste'}</button><button class="btn" type="button" data-act="close">Annuler</button></div></form>`);
+  openModal(`<h3>${a?'Edit artist':'Add an artist'}</h3><form class="form" id="aForm" style="max-width:none" novalidate>
+   <div class="row2"><div class="fld"><label for="fName">Artist name</label><input id="fName" maxlength="60" value="${esc(a?.name||'')}" required></div><div class="fld"><label for="fCountry">Country</label><input id="fCountry" maxlength="40" value="${esc(a?.country||'')}" placeholder="e.g. DR Congo"></div></div>
+   <div class="fld"><label for="fBio">Biography</label><textarea id="fBio" maxlength="1500">${esc(a?.bio||'')}</textarea></div>
+   <div class="fld"><label for="fYt">YouTube or Spotify link</label><input id="fYt" type="url" value="${esc(a?.youtube||'')}" placeholder="https://"></div>
+   <div class="fld"><label for="fPhoto">Profile photo</label><input id="fPhoto" type="file" accept="image/*"></div>
+   <label class="check"><input type="checkbox" id="fWma" ${!a||a.wma?'checked':''}> Managed by WMA UNITED AFRICA (internal)</label>
+   <label class="check"><input type="checkbox" id="fHome" ${!a||a.home!==false?'checked':''}> Show in “Featured artists” on the home page</label>
+   <div class="err" id="fErr"></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">${a?'Save':'Add the artist'}</button><button class="btn" type="button" data-act="close">Cancel</button></div></form>`);
   $('#aForm').onsubmit=async e=>{e.preventDefault();const err=$('#fErr'),name=$('#fName').value.trim(),yt=$('#fYt').value.trim(),btn=e.submitter||$('#aForm button[type=submit]');
-    if(name.length<2)return err.textContent='Le nom doit contenir au moins 2 caractères.';if(yt&&!/^https:\/\/\S+\.\S+/.test(yt))return err.textContent='Le lien doit commencer par https://';
-    if(DB.artists.some(x=>key(x.name)===key(name)&&x.id!==a?.id))return err.textContent='Un artiste porte déjà ce nom.';
+    if(name.length<2)return err.textContent='Your name must be at least 2 characters long.';if(yt&&!/^https:\/\/\S+\.\S+/.test(yt))return err.textContent='The link must start with https://';
+    if(DB.artists.some(x=>key(x.name)===key(name)&&x.id!==a?.id))return err.textContent='An artist with this name already exists.';
     btn.disabled=true;try{let ph={};const img=await readImg($('#fPhoto').files[0],1000);if(img){const r=await storeImage(img);ph=r.coverId?{photoId:r.coverId,photo:null}:{photo:r.cover}}
       const data={...(a||{id:uid('a'),hue:Math.floor(Math.random()*40)+10,createdAt:Date.now()}),name,country:$('#fCountry').value.trim(),bio:$('#fBio').value.trim(),youtube:yt,wma:$('#fWma').checked,home:$('#fHome').checked,...ph};
-      await putDoc('artists',data);if(a&&ph.photoId&&a.photoId)dropFile(a.photoId);closeModal();toast(a?'Artiste mis à jour':'Artiste ajouté');rerender()}catch(x){err.textContent=x.message||'Enregistrement impossible.';btn.disabled=false}};
+      await putDoc('artists',data);if(a&&ph.photoId&&a.photoId)dropFile(a.photoId);closeModal();toast(a?'Artist updated':'Artist added');rerender()}catch(x){err.textContent=x.message||'This could not be saved.';btn.disabled=false}};
 }
 function albumForm(id){
   const al=id?api.album(id):null;
-  openModal(`<h3>${al?'Modifier l\'album':'Ajouter un album'}</h3><form class="form" id="aForm" style="max-width:none" novalidate>
-   <div class="fld"><label for="fTitle">Titre</label><input id="fTitle" maxlength="100" value="${esc(al?.title||'')}" required></div>
-   <div class="row2"><div class="fld"><label for="fArtist">Artiste</label><select id="fArtist">${opts(DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)),al?.artistId,a=>a.name)}</select></div><div class="fld"><label for="fType">Type</label><select id="fType">${opts(['Album','EP','Mixtape','Compilation'],al?.type)}</select></div></div>
-   <div class="fld"><label for="fDate">Date de sortie</label><input id="fDate" type="date" value="${esc(al?.date||today())}" required></div>
-   <div class="fld"><label for="fCover">Pochette (carrée, 3000 × 3000 px recommandé)</label><input id="fCover" type="file" accept="image/*"></div>
-   <div class="err" id="fErr"></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">${al?'Enregistrer':'Ajouter l\'album'}</button><button class="btn" type="button" data-act="close">Annuler</button></div></form>`);
-  $('#aForm').onsubmit=async e=>{e.preventDefault();const err=$('#fErr'),title=$('#fTitle').value.trim(),date=$('#fDate').value,btn=$('#aForm button[type=submit]');if(!title)return err.textContent='Indiquez le titre de l\'album.';if(!date)return err.textContent='Indiquez la date de sortie.';
+  openModal(`<h3>${al?'Edit album':'Add an album'}</h3><form class="form" id="aForm" style="max-width:none" novalidate>
+   <div class="fld"><label for="fTitle">Title</label><input id="fTitle" maxlength="100" value="${esc(al?.title||'')}" required></div>
+   <div class="row2"><div class="fld"><label for="fArtist">Artist</label><select id="fArtist">${opts(DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)),al?.artistId,a=>a.name)}</select></div><div class="fld"><label for="fType">Type</label><select id="fType">${opts(['Album','EP','Mixtape','Compilation'],al?.type)}</select></div></div>
+   <div class="fld"><label for="fDate">Release date</label><input id="fDate" type="date" value="${esc(al?.date||today())}" required></div>
+   <div class="fld"><label for="fCover">Cover (square, 3000 × 3000 px recommended)</label><input id="fCover" type="file" accept="image/*"></div>
+   <div class="err" id="fErr"></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">${al?'Save':'Add the album'}</button><button class="btn" type="button" data-act="close">Cancel</button></div></form>`);
+  $('#aForm').onsubmit=async e=>{e.preventDefault();const err=$('#fErr'),title=$('#fTitle').value.trim(),date=$('#fDate').value,btn=$('#aForm button[type=submit]');if(!title)return err.textContent='Enter the album title.';if(!date)return err.textContent='Enter the release date.';
     btn.disabled=true;try{let cv={};const img=await readImg($('#fCover').files[0],1600);if(img)cv=await storeImage(img);
       const data={...(al||{id:uid('al'),createdAt:Date.now()}),title,artistId:$('#fArtist').value,type:$('#fType').value,date,...cv};await putDoc('albums',data);if(al&&cv.coverId&&al.coverId)dropFile(al.coverId);
-      closeModal();toast(al?'Album mis à jour':'Album ajouté. Associez-y des chansons depuis « AJOUTER UNE CHANSON ».');rerender()}catch(x){err.textContent=x.message||'Enregistrement impossible.';btn.disabled=false}};
+      closeModal();toast(al?'Album updated':'Album added. Add songs to it from “ADD A SONG”.');rerender()}catch(x){err.textContent=x.message||'This could not be saved.';btn.disabled=false}};
 }
 function plForm(id){
   const p=id?DB.playlists.find(x=>x.id===id):null,sel=new Set(p?.trackIds||[]);
-  openModal(`<h3>${p?'Modifier la playlist':'Nouvelle playlist officielle'}</h3><form class="form" id="aForm" style="max-width:none" novalidate>
-   <div class="fld"><label for="fName">Nom</label><input id="fName" maxlength="60" value="${esc(p?.name||'')}" required></div><div class="fld"><label for="fDesc">Description</label><input id="fDesc" maxlength="140" value="${esc(p?.desc||'')}"></div>
-   <div class="fld"><label>Titres</label><div style="max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:6px 10px">${DB.tracks.map(t=>`<label class="check" style="padding:5px 0"><input type="checkbox" name="plt" value="${t.id}" ${sel.has(t.id)?'checked':''}> ${esc(t.title)} — ${esc(artistText(t))}${isLive(t)?'':' <span class="badge off">HORS LIGNE</span>'}</label>`).join('')}</div></div>
-   <div class="err" id="fErr"></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">Enregistrer</button><button class="btn" type="button" data-act="close">Annuler</button></div></form>`);
-  $('#aForm').onsubmit=async e=>{e.preventDefault();const name=$('#fName').value.trim();if(!name)return $('#fErr').textContent='Indiquez un nom.';
+  openModal(`<h3>${p?'Edit playlist':'New official playlist'}</h3><form class="form" id="aForm" style="max-width:none" novalidate>
+   <div class="fld"><label for="fName">Name</label><input id="fName" maxlength="60" value="${esc(p?.name||'')}" required></div><div class="fld"><label for="fDesc">Description</label><input id="fDesc" maxlength="140" value="${esc(p?.desc||'')}"></div>
+   <div class="fld"><label>Songs</label><div style="max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:6px 10px">${DB.tracks.map(t=>`<label class="check" style="padding:5px 0"><input type="checkbox" name="plt" value="${t.id}" ${sel.has(t.id)?'checked':''}> ${esc(t.title)} — ${esc(artistText(t))}${isLive(t)?'':' <span class="badge off">HORS LIGNE</span>'}</label>`).join('')}</div></div>
+   <div class="err" id="fErr"></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">Save</button><button class="btn" type="button" data-act="close">Cancel</button></div></form>`);
+  $('#aForm').onsubmit=async e=>{e.preventDefault();const name=$('#fName').value.trim();if(!name)return $('#fErr').textContent='Enter a name.';
     const data={...(p||{id:uid('pl'),createdAt:Date.now()}),name,desc:$('#fDesc').value.trim(),trackIds:[...document.querySelectorAll('input[name=plt]:checked')].map(i=>i.value)};
-    try{await putDoc('playlists',data);closeModal();toast('Playlist enregistrée');rerender()}catch(x){$('#fErr').textContent='Enregistrement impossible.'}};
+    try{await putDoc('playlists',data);closeModal();toast('Playlist saved');rerender()}catch(x){$('#fErr').textContent='This could not be saved.'}};
 }
 function parsePhotoList(txt){
   txt=txt.trim();if(!txt)return [];
@@ -1291,37 +1379,37 @@ function parsePhotoList(txt){
   return txt.split(/\r?\n/).filter(l=>l.trim()&&!/^\s*(nom|name)\s*[,;]/i.test(l)).map(l=>{const p=l.split(/[;,\t]/);return {id:null,name:(p[0]||'').trim(),url:(p.slice(1).join(',')||'').trim()}});
 }
 function photoSyncModal(){
-  openModal(`<h3>Synchroniser les photos du site WMA</h3><p class="muted" style="font-size:13.5px">Collez l'export des artistes du site (JSON de la table Supabase, ou une ligne « Nom, URL de la photo » par artiste), ou choisissez le fichier exporté. Seule la photo est mise à jour : noms et biographies ne changent pas.</p>
-   <form class="form" id="psForm" style="max-width:none" novalidate><div class="fld"><label for="psFile">Fichier d'export (.json ou .csv)</label><input id="psFile" type="file" accept=".json,.csv,.txt,application/json,text/csv"></div>
-   <div class="fld"><label for="psText">Ou collez les données</label><textarea id="psText" style="min-height:130px;font-family:var(--mono);font-size:12.5px" placeholder='[{"name":"BELMA","photo_url":"https://…/belma.jpg"}]'></textarea></div>
-   <div class="err" id="psErr"></div><div id="psReport"></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">Synchroniser</button><button class="btn" type="button" data-act="close">Fermer</button></div></form>`);
+  openModal(`<h3>Sync photos from the WMA site</h3><p class="muted" style="font-size:13.5px">Paste the artist export from the site (JSON from the Supabase table, or one “Name, photo URL” line per artist), or choose the exported file. Only the photo is updated: names and biographies stay the same.</p>
+   <form class="form" id="psForm" style="max-width:none" novalidate><div class="fld"><label for="psFile">Export file (.json or .csv)</label><input id="psFile" type="file" accept=".json,.csv,.txt,application/json,text/csv"></div>
+   <div class="fld"><label for="psText">Or paste the data</label><textarea id="psText" style="min-height:130px;font-family:var(--mono);font-size:12.5px" placeholder='[{"name":"BELMA","photo_url":"https://…/belma.jpg"}]'></textarea></div>
+   <div class="err" id="psErr"></div><div id="psReport"></div><div class="actions" style="margin-top:0"><button class="btn pri" type="submit">Sync</button><button class="btn" type="button" data-act="close">Close</button></div></form>`);
   $('#psFile').onchange=async e=>{const f=e.target.files[0];if(f)$('#psText').value=await f.text()};
-  $('#psForm').onsubmit=async e=>{e.preventDefault();const err=$('#psErr');err.textContent='';let rows;try{rows=parsePhotoList($('#psText').value)}catch(x){return err.textContent='Format illisible : vérifiez que le JSON est complet.'}
-    if(!rows.length)return err.textContent='Aucune donnée à synchroniser.';const done=[],same=[],unmatched=[],bad=[];
+  $('#psForm').onsubmit=async e=>{e.preventDefault();const err=$('#psErr');err.textContent='';let rows;try{rows=parsePhotoList($('#psText').value)}catch(x){return err.textContent='Unreadable format: check that the JSON is complete.'}
+    if(!rows.length)return err.textContent='Nothing to sync.';const done=[],same=[],unmatched=[],bad=[];
     for(const r of rows){const a=DB.artists.find(x=>(r.id&&x.id===r.id)||key(x.name)===key(r.name));if(!a){unmatched.push(r.name||r.id||'?');continue}if(!/^https:\/\//.test(r.url)){bad.push(a.name);continue}if(a.photoUrl===r.url){same.push(a.name);continue}
       await putDoc('artists',{...a,photoUrl:r.url,photoSource:'wma-site',photoSyncedAt:Date.now()});done.push(a.name)}
     const miss=DB.artists.filter(a=>!artistPhoto(a)).map(a=>a.name);
-    $('#psReport').innerHTML=`<div class="note" style="margin-bottom:6px"><b style="color:var(--fg)">${done.length} photo(s) associée(s)</b>${done.length?' : '+done.map(esc).join(', '):''}.<br>${same.length?`Déjà à jour : ${same.map(esc).join(', ')}.<br>`:''}${unmatched.length?`<span style="color:var(--warn)">Sans artiste correspondant : ${unmatched.map(esc).join(', ')}.</span><br>`:''}${bad.length?`<span style="color:var(--bad)">URL invalide : ${bad.map(esc).join(', ')}.</span><br>`:''}${miss.length?`Toujours sans photo : ${miss.map(esc).join(', ')}.`:'Tous les artistes ont maintenant une photo.'}</div>`;rerender()};
+    $('#psReport').innerHTML=`<div class="note" style="margin-bottom:6px"><b style="color:var(--fg)">${done.length} photo(s) linked</b>${done.length?' : '+done.map(esc).join(', '):''}.<br>${same.length?`Already up to date: ${same.map(esc).join(', ')}.<br>`:''}${unmatched.length?`<span style="color:var(--warn)">No matching artist: ${unmatched.map(esc).join(', ')}.</span><br>`:''}${bad.length?`<span style="color:var(--bad)">Invalid URL: ${bad.map(esc).join(', ')}.</span><br>`:''}${miss.length?`Still without a photo: ${miss.map(esc).join(', ')}.`:'Every artist now has a photo.'}</div>`;rerender()};
 }
 const adminActs={
   goSongs:el=>{SQ.status=el.dataset.s||'';if(location.hash==='#admin-songs')rerender();else location.hash='#admin-songs'},
   aTrack:(el,id)=>trackForm(id),aArtist:(el,id)=>artistForm(id),aAlbum:(el,id)=>albumForm(id),aPl:(el,id)=>plForm(id),aPhotoSync:()=>photoSyncModal(),
   sfFeatRm:(el,id)=>{SF.featIds=SF.featIds.filter(x=>x!==id);renderFeat();sfPreview()},
-  aUnpub:async(el,id)=>{const t=api.track(id);try{await putDoc('tracks',{...t,status:'unpublished',publishAt:null,updatedAt:Date.now()});toast('Chanson dépubliée : elle n\'est plus visible des auditeurs')}catch(x){toast('Action impossible.')}rerender()},
-  aPubNow:async(el,id)=>{const t=api.track(id);if(t.rights!=='confirmed'&&t.rights!=='demo'){toast('Confirmez d\'abord les droits de diffusion dans « Modifier ».');return trackForm(id)}if(!t.audioId&&!t.audioUrl&&!t.demo){toast('Ajoutez d\'abord le fichier audio.');return trackForm(id)}
-    try{await putDoc('tracks',{...t,status:'published',publishAt:null,publishedAt:Date.now(),updatedAt:Date.now()});toast('Chanson publiée')}catch(x){toast('Action impossible.')}rerender()},
+  aUnpub:async(el,id)=>{const t=api.track(id);try{await putDoc('tracks',{...t,status:'unpublished',publishAt:null,updatedAt:Date.now()});toast('Song unpublished: listeners can no longer see it')}catch(x){toast('This action could not be completed.')}rerender()},
+  aPubNow:async(el,id)=>{const t=api.track(id);if(t.rights!=='confirmed'&&t.rights!=='demo'){toast('First confirm the streaming rights in “Edit”.');return trackForm(id)}if(!t.audioId&&!t.audioUrl&&!t.demo){toast('Add the audio file first.');return trackForm(id)}
+    try{await putDoc('tracks',{...t,status:'published',publishAt:null,publishedAt:Date.now(),updatedAt:Date.now()});toast('Song published')}catch(x){toast('This action could not be completed.')}rerender()},
   aDel:(el,id)=>{const k=el.dataset.k,o=(k==='playlists'?DB.playlists:DB[k]).find(x=>x.id===id);if(!o)return;
-    if(k==='artists'&&DB.tracks.some(t=>t.artistId===id))return toast('Supprimez ou réattribuez d\'abord les chansons de cet artiste.');
-    confirmModal(`Supprimer définitivement « ${esc(o.title||o.name)} » ?${k==='tracks'?' Le fichier audio et la pochette seront aussi supprimés du stockage. Les statistiques de ce titre seront perdues.':''}`,'Supprimer',async()=>{
+    if(k==='artists'&&DB.tracks.some(t=>t.artistId===id))return toast('First delete or reassign this artist\'s songs.');
+    confirmModal(`Permanently delete “${esc(o.title||o.name)}”?${k==='tracks'?' The audio file and the cover will also be deleted from storage. This song\'s statistics will be lost.':''}`,'Delete',async()=>{
       const playing=k==='tracks'&&curTrack()&&curTrack().id===id;
       await delDoc(k,id);
       if(playing){audio.pause();audio.removeAttribute('src');audio.load();P.order=P.order.filter(x=>x!==id);P.queue=P.queue.filter(x=>x!==id);P.idx=-1;renderPlayer()}
       if(k==='tracks'){dropFile(o.audioId);dropFile(o.coverId);for(const p of DB.playlists.filter(p=>p.trackIds.includes(id)))await putDoc('playlists',{...p,trackIds:p.trackIds.filter(x=>x!==id)})}
       if(k==='albums'){dropFile(o.coverId);for(const t of DB.tracks.filter(t=>t.albumId===id))await putDoc('tracks',{...t,albumId:null})}
       if(k==='artists'){dropFile(o.photoId);for(const t of DB.tracks.filter(t=>t.featIds.includes(id)))await putDoc('tracks',{...t,featIds:t.featIds.filter(x=>x!==id)})}
-      toast('Supprimé');rerender()})},
-  gDel:async el=>{const g=el.dataset.g;if(DB.tracks.some(t=>t.genre===g))return toast('Des chansons utilisent encore cette catégorie.');DB.genres=DB.genres.filter(x=>x!==g);try{await putGenres()}catch(x){toast('Action impossible.')}rerender()},
-  uRole:async(el,id)=>{if(supa()){const pr=PROFILES[id];const role=pr.role==='admin'?'user':'admin';try{await sbx(SB.from('music_profiles').update({role}).eq('id',id));pr.role=role;toast(`${pr.display_name||'Compte'} : ${role==='admin'?'administrateur':'auditeur'}`)}catch(x){toast('Changement de rôle refusé.')}return rerender()}const u=LUSERS.find(x=>x.id===id);u.role=u.role==='admin'?'user':'admin';store.set('users2',LUSERS);toast(`${u.name} : ${u.role==='admin'?'administrateur':'auditeur'}`);rerender()}
+      toast('Deleted');rerender()})},
+  gDel:async el=>{const g=el.dataset.g;if(DB.tracks.some(t=>t.genre===g))return toast('Some songs still use this genre.');DB.genres=DB.genres.filter(x=>x!==g);try{await putGenres()}catch(x){toast('This action could not be completed.')}rerender()},
+  uRole:async(el,id)=>{if(supa()){const pr=PROFILES[id];const role=pr.role==='admin'?'user':'admin';try{await sbx(SB.from('music_profiles').update({role}).eq('id',id));pr.role=role;toast(`${pr.display_name||'Account'}: ${role==='admin'?'administrator':'listener'}`)}catch(x){toast('Role change refused.')}return rerender()}const u=LUSERS.find(x=>x.id===id);u.role=u.role==='admin'?'user':'admin';store.set('users2',LUSERS);toast(`${u.name}: ${u.role==='admin'?'administrator':'listener'}`);rerender()}
 };
 
 
@@ -1332,18 +1420,18 @@ async function hash(pw,salt){const b=await crypto.subtle.digest('SHA-256',new Te
 const ADMIN_EMAILS=['worldmusicactus@gmail.com'];
 function bindForms(){
   const su=$('#signupForm');if(su)su.onsubmit=async e=>{e.preventDefault();const err=$('#suErr'),name=$('#suName').value.trim(),email=$('#suEmail').value.trim().toLowerCase(),pw=$('#suPass').value;
-    if(name.length<2)return err.textContent='Le nom doit contenir au moins 2 caractères.';if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))return err.textContent='Adresse e-mail invalide.';if(pw.length<8)return err.textContent='Le mot de passe doit contenir au moins 8 caractères.';
+    if(name.length<2)return err.textContent='Your name must be at least 2 characters long.';if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))return err.textContent='Please enter a valid email address.';if(pw.length<8)return err.textContent='Your password must be at least 8 characters long.';
     if(supa()){const btn=su.querySelector('[type=submit]');btn.disabled=true;const {data,error}=await SB.auth.signUp({email,password:pw,options:{data:{name},emailRedirectTo:location.origin+location.pathname}});btn.disabled=false;
-      if(error)return err.textContent=/registered|exists/i.test(error.message)?'Un compte existe déjà avec cet e-mail. Connectez-vous.':error.message;
-      if(!data.session){su.innerHTML='<div class="note">Compte créé. Ouvrez l\'e-mail de confirmation envoyé à <b>'+esc(email)+'</b>, puis revenez vous connecter.</div>';return}
-      toast(`Bienvenue, ${name} !`);location.hash='#home';return}
-    if(LUSERS.some(u=>u.email===email))return err.textContent='Un compte existe déjà avec cet e-mail. Connectez-vous.';
+      if(error)return err.textContent=/registered|exists/i.test(error.message)?'An account already exists with this email. Please sign in.':error.message;
+      if(!data.session){su.innerHTML='<div class="note">Account created. Open the confirmation email sent to <b>'+esc(email)+'</b>, then come back and sign in.</div>';return}
+      toast(`Welcome, ${name}!`);location.hash='#home';return}
+    if(LUSERS.some(u=>u.email===email))return err.textContent='An account already exists with this email. Please sign in.';
     const salt=uid('s'),u={id:uid('u'),name,email,salt,pass:await hash(pw,salt),role:ADMIN_EMAILS.includes(email)?'admin':'user',hue:Math.floor(Math.random()*40)+10,...emptyMe(),createdAt:Date.now()};
-    LUSERS.push(u);store.set('users2',LUSERS);LSESSION=u.id;store.set('session2',u.id);ME=u;PEOPLE=[...LUSERS,ANON];toast(`Bienvenue, ${name} !`);location.hash=u.role==='admin'?'#admin':'#home';chrome()};
+    LUSERS.push(u);store.set('users2',LUSERS);LSESSION=u.id;store.set('session2',u.id);ME=u;PEOPLE=[...LUSERS,ANON];toast(`Welcome, ${name}!`);location.hash=u.role==='admin'?'#admin':'#home';chrome()};
   const lg=$('#loginForm');if(lg)lg.onsubmit=async e=>{e.preventDefault();const err=$('#lgErr'),email=$('#lgEmail').value.trim().toLowerCase(),pw=$('#lgPass').value,u=LUSERS.find(x=>x.email===email);
-    if(supa()){const {error}=await SB.auth.signInWithPassword({email,password:pw});if(error)return err.textContent=/confirm/i.test(error.message)?'Confirmez d\'abord votre adresse e-mail (lien reçu par e-mail).':'E-mail ou mot de passe incorrect.';toast('Connexion réussie');location.hash='#home';return}
-    if(!u||await hash(pw,u.salt)!==u.pass)return err.textContent='E-mail ou mot de passe incorrect.';LSESSION=u.id;store.set('session2',u.id);ME=u;toast(`Bon retour, ${u.name}`);location.hash='#home';chrome()};
-  const pf=$('#profForm');if(pf)pf.onsubmit=e=>{e.preventDefault();const n=$('#pfName').value.trim();if(n.length<2)return $('#pfErr').textContent='Le nom doit contenir au moins 2 caractères.';ME.name=n;ME.bio=$('#pfBio').value.trim();saveMe();if(supa()){MYNAME=n;SB.from('music_profiles').update({display_name:n}).eq('id',UID).then(()=>{})}toast('Profil enregistré');chrome();rerender()};
+    if(supa()){const {error}=await SB.auth.signInWithPassword({email,password:pw});if(error)return err.textContent=/confirm/i.test(error.message)?'Please confirm your email address first (check your inbox).':'Incorrect email or password.';toast('Signed in');location.hash='#home';return}
+    if(!u||await hash(pw,u.salt)!==u.pass)return err.textContent='Incorrect email or password.';LSESSION=u.id;store.set('session2',u.id);ME=u;toast(`Welcome back, ${u.name}`);location.hash='#home';chrome()};
+  const pf=$('#profForm');if(pf)pf.onsubmit=e=>{e.preventDefault();const n=$('#pfName').value.trim();if(n.length<2)return $('#pfErr').textContent='Your name must be at least 2 characters long.';ME.name=n;ME.bio=$('#pfBio').value.trim();saveMe();if(supa()){MYNAME=n;SB.from('music_profiles').update({display_name:n}).eq('id',UID).then(()=>{})}toast('Profile saved');chrome();rerender()};
   const ps=$('#pageSearch');if(ps){ps.addEventListener('input',()=>{searchState.q=ps.value;$('#topSearch').value=ps.value;$('#sResults').innerHTML=searchResults();refreshPlaying()});if(!matchMedia('(hover:none)').matches)ps.focus()}
   bindAdmin();
 }
@@ -1356,15 +1444,16 @@ document.addEventListener('click',e=>{
   const acts={
     play(){if(!id)return;const t=curTrack();if(t&&t.id===id&&!P.loading){toggle();return}playTrack(id,(el.dataset.q||id).split(','))},
     fav(){toggleFav(id)},addpl(){addToPlaylistModal(id)},follow(){toggleFollow(id)},libalbum(){toggleLibAlbum(id)},
-    pladd(){const p=myPl(el.dataset.pl);if(!p.trackIds.includes(id))p.trackIds.push(id);saveMe();closeModal();toast(`Ajouté à « ${p.name} »`)},
+    pladd(){const p=myPl(el.dataset.pl);if(!p.trackIds.includes(id))p.trackIds.push(id);saveMe();closeModal();toast(`Added to “${p.name}”`)},
     plrm(){const p=myPl(el.dataset.pl);p.trackIds=p.trackIds.filter(x=>x!==id);saveMe();rerender()},
-    plnew(){const m=api.me();m.playlists=m.playlists||[];const p={id:uid('p'),name:'Ma playlist n°'+(m.playlists.length+1),desc:'',trackIds:[],createdAt:Date.now()};m.playlists.push(p);saveMe();location.hash='#playlist-'+p.id},
-    plrename(){const p=myPl(el.dataset.pl);openModal(`<h3>Renommer</h3><form class="form" id="rnF"><div class="fld"><label for="rnN">Nom</label><input id="rnN" maxlength="60" value="${esc(p.name)}" required></div><div class="actions" style="margin-top:0"><button class="btn pri">Enregistrer</button><button class="btn" type="button" data-act="close">Annuler</button></div></form>`);$('#rnF').onsubmit=ev=>{ev.preventDefault();const n=$('#rnN').value.trim();if(n){p.name=n;saveMe();closeModal();rerender();chrome()}}},
-    pldel(){const p=myPl(el.dataset.pl);confirmModal(`Supprimer la playlist « ${esc(p.name)} » ?`,'Supprimer',()=>{ME.playlists=ME.playlists.filter(x=>x.id!==p.id);saveMe();location.hash='#library-playlists'})},
+    plnew(){const m=api.me();m.playlists=m.playlists||[];const p={id:uid('p'),name:'My playlist #'+(m.playlists.length+1),desc:'',trackIds:[],createdAt:Date.now()};m.playlists.push(p);saveMe();location.hash='#playlist-'+p.id},
+    plrename(){const p=myPl(el.dataset.pl);openModal(`<h3>Rename</h3><form class="form" id="rnF"><div class="fld"><label for="rnN">Name</label><input id="rnN" maxlength="60" value="${esc(p.name)}" required></div><div class="actions" style="margin-top:0"><button class="btn pri">Save</button><button class="btn" type="button" data-act="close">Cancel</button></div></form>`);$('#rnF').onsubmit=ev=>{ev.preventDefault();const n=$('#rnN').value.trim();if(n){p.name=n;saveMe();closeModal();rerender();chrome()}}},
+    pldel(){const p=myPl(el.dataset.pl);confirmModal(`Delete the playlist “${esc(p.name)}”?`,'Delete',()=>{ME.playlists=ME.playlists.filter(x=>x.id!==p.id);saveMe();location.hash='#library-playlists'})},
     google(){SB&&SB.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}})},
-    forgot(){const em=($('#lgEmail')||{}).value;if(!em)return toast('Saisissez d\'abord votre e-mail.');SB.auth.resetPasswordForEmail(em.trim(),{redirectTo:location.origin+location.pathname}).then(()=>toast('E-mail de réinitialisation envoyé.'))},
-    logout(){if(supa()){SB.auth.signOut();toast('Vous êtes déconnecté');location.hash='#home';return}LSESSION=null;store.set('session2',null);ME=null;toast('Vous êtes déconnecté');location.hash='#home';chrome();rerender()},
+    forgot(){const em=($('#lgEmail')||{}).value;if(!em)return toast('Enter your email first.');SB.auth.resetPasswordForEmail(em.trim(),{redirectTo:location.origin+location.pathname}).then(()=>toast('Password reset email sent.'))},
+    logout(){if(supa()){SB.auth.signOut();toast('You are signed out');location.hash='#home';return}LSESSION=null;store.set('session2',null);ME=null;toast('You are signed out');location.hash='#home';chrome();rerender()},
     sfilter(){searchState.f=el.dataset.f;rerender()},sgenre(){searchState.q=el.dataset.g;rerender()},close(){closeModal()},
+    heroGo(){heroShow(HERO_I+(+el.dataset.d))},heroTo(){heroShow(+el.dataset.n)},
     ctl(){({play:toggle,next:()=>next(false),prev,shuffle:()=>$('#bShuffle').click(),repeat:()=>$('#bRepeat').click()})[el.dataset.c]()}
   };
   if(acts[a])acts[a]();else if(adminActs[a]&&api.isAdmin())adminActs[a](el,id);
@@ -1375,23 +1464,23 @@ function closeModal(){$('#modal').hidden=true;$('#modal').innerHTML=''}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal'&&!$('#modal').querySelector('[data-busy]'))closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#modal').querySelector('[data-busy]'))closeModal();if(e.code==='Space'&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(document.activeElement.tagName)){e.preventDefault();toggle()}});
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,3000)}
-function confirmModal(text,label,fn){openModal(`<h3>Confirmer</h3><p class="muted">${text}</p><div class="actions"><button class="btn pri" id="cfOk" style="background:var(--bad);color:#fff">${label}</button><button class="btn" data-act="close">Annuler</button></div>`);$('#cfOk').onclick=async()=>{$('#cfOk').disabled=true;try{await fn()}catch(e){toast(e.message||'Action impossible.')}closeModal()}}
+function confirmModal(text,label,fn){openModal(`<h3>Confirm</h3><p class="muted">${text}</p><div class="actions"><button class="btn pri" id="cfOk" style="background:var(--bad);color:#fff">${label}</button><button class="btn" data-act="close">Cancel</button></div>`);$('#cfOk').onclick=async()=>{$('#cfOk').disabled=true;try{await fn()}catch(e){toast(e.message||'This action could not be completed.')}closeModal()}}
 
 /* =========================================================
    NAVIGATION
    ========================================================= */
 function chrome(){
   const h=location.hash.slice(1)||'home',m=api.me(),is=k=>h===k||h.startsWith(k+'-'),adm=api.isAdmin();
-  $('#sideNav').innerHTML=`<a href="#home" class="${is('home')?'on':''}">${I.home} Accueil</a><a href="#search" class="${is('search')?'on':''}">${I.search} Recherche</a><a href="#artists" class="${is('artists')||is('artist')?'on':''}">${I.star} Artistes</a><a href="#library" class="${is('library')||is('favorites')?'on':''}">${I.lib} Bibliothèque</a><a href="#profile" class="${is('profile')?'on':''}">${I.user} Profil</a>
-   ${adm?`<div style="height:14px"></div><div class="nav-label">WMA ADMIN</div><a href="#admin-songs" class="${h==='admin-songs'?'on':''}">${I.star} Gestion des musiques</a><a href="#admin" class="${is('admin')&&h!=='admin-songs'?'on':''}">${I.admin} Administration</a><button class="btn pri" style="margin:8px 10px 0;width:calc(100% - 20px)" data-act="aTrack">${I.upload} AJOUTER UNE CHANSON</button>`:''}
-   ${m?`<div style="height:14px"></div><div class="nav-label">Vos playlists</div>${(m.playlists||[]).slice(0,8).map(p=>`<a href="#playlist-${p.id}" class="${h==='playlist-'+p.id?'on':''}" style="font-weight:500">${esc(p.name)}</a>`).join('')||'<span class="muted" style="font-size:12.5px;padding:0 10px">Aucune pour l\'instant</span>'}`:''}`;
-  $('#tabs').innerHTML=`<a href="#home" class="${is('home')?'on':''}">${I.home}Accueil</a><a href="#search" class="${is('search')?'on':''}">${I.search}Recherche</a><a href="#library" class="${is('library')||is('favorites')?'on':''}">${I.lib}Bibliothèque</a><a href="#profile" class="${is('profile')||is('admin')?'on':''}">${adm?I.admin:I.user}${adm?'Admin':'Profil'}</a>`;
-  $('#topActions').innerHTML=art()?(adm?`<button class="btn pri sm" data-act="aTrack">${I.plus} Chanson</button>`:'')+`<a class="me" href="#profile"><span style="width:32px">${avatar({name:MYNAME,hue:24},13)}</span><span class="t1" style="max-width:140px">${esc(MYNAME)}</span></a>`
-    :m?(adm?`<button class="btn pri sm" data-act="aTrack">${I.plus} Chanson</button>`:'')+`<a class="me" href="#profile"><span style="width:32px">${avatar({name:m.name,hue:m.hue},13)}</span><span class="t1" style="max-width:140px">${esc(m.name)}</span></a>`:`<a class="btn ghost" href="#signup">S'inscrire</a><a class="btn pri" href="#login">Se connecter</a>`;
+  $('#sideNav').innerHTML=`<a href="#home" class="${is('home')?'on':''}">${I.home} Home</a><a href="#search" class="${is('search')?'on':''}">${I.search} Search</a><a href="#artists" class="${is('artists')||is('artist')?'on':''}">${I.star} Artists</a><a href="#library" class="${is('library')||is('favorites')?'on':''}">${I.lib} Library</a><a href="#profile" class="${is('profile')?'on':''}">${I.user} Profile</a>
+   ${adm?`<div style="height:14px"></div><div class="nav-label">WMA ADMIN</div><a href="#admin-songs" class="${h==='admin-songs'?'on':''}">${I.star} Music manager</a><a href="#admin" class="${is('admin')&&h!=='admin-songs'?'on':''}">${I.admin} Administration</a><button class="btn pri" style="margin:8px 10px 0;width:calc(100% - 20px)" data-act="aTrack">${I.upload} ADD A SONG</button>`:''}
+   ${m?`<div style="height:14px"></div><div class="nav-label">Your playlists</div>${(m.playlists||[]).slice(0,8).map(p=>`<a href="#playlist-${p.id}" class="${h==='playlist-'+p.id?'on':''}" style="font-weight:500">${esc(p.name)}</a>`).join('')||'<span class="muted" style="font-size:12.5px;padding:0 10px">None yet</span>'}`:''}`;
+  $('#tabs').innerHTML=`<a href="#home" class="${is('home')?'on':''}">${I.home}Home</a><a href="#search" class="${is('search')?'on':''}">${I.search}Search</a><a href="#library" class="${is('library')||is('favorites')?'on':''}">${I.lib}Library</a><a href="#profile" class="${is('profile')||is('admin')?'on':''}">${adm?I.admin:I.user}${adm?'Admin':'Profile'}</a>`;
+  $('#topActions').innerHTML=art()?(adm?`<button class="btn pri sm" data-act="aTrack">${I.plus} Song</button>`:'')+`<a class="me" href="#profile"><span style="width:32px">${avatar({name:MYNAME,hue:24},13)}</span><span class="t1" style="max-width:140px">${esc(MYNAME)}</span></a>`
+    :m?(adm?`<button class="btn pri sm" data-act="aTrack">${I.plus} Song</button>`:'')+`<a class="me" href="#profile"><span style="width:32px">${avatar({name:m.name,hue:m.hue},13)}</span><span class="t1" style="max-width:140px">${esc(m.name)}</span></a>`:`<a class="btn ghost" href="#signup">Sign up</a><a class="btn pri" href="#login">Sign in</a>`;
 }
 function rerender(){
   const h=location.hash.slice(1)||'home',i=h.indexOf('-'),name=i>0?h.slice(0,i):h,arg=i>0?h.slice(i+1):undefined,fn=pages[name]||notFound;
-  $('#view').innerHTML=fn(arg);bindForms();refreshPlaying();if(name==='now')renderNowControls();
+  $('#view').innerHTML=fn(arg);bindForms();bindHero();bindReveal();refreshPlaying();if(name==='now')renderNowControls();
 }
 function route(){if(!$('#modal').querySelector('[data-busy]'))closeModal();chrome();rerender();window.scrollTo(0,0)}
 window.addEventListener('hashchange',route);
