@@ -361,9 +361,11 @@ td button img{display:block}
 .sec.rv.in{transform:none}
 .card,.acard{transition:transform .25s ease}
 .card:hover,.acard:hover{transform:translateY(-3px)}
-.logo svg rect+g rect{transform-box:fill-box;transform-origin:center}
-body.is-playing .logo svg g rect{animation:eq 1s ease-in-out infinite alternate}
-body.is-playing .logo svg g rect:nth-child(2){animation-delay:-.4s}body.is-playing .logo svg g rect:nth-child(3){animation-delay:-.7s}body.is-playing .logo svg g rect:nth-child(4){animation-delay:-.2s}body.is-playing .logo svg g rect:nth-child(5){animation-delay:-.55s}
+.logo b em{font-style:normal;color:var(--accent)}
+.logo svg .sun{transform-box:view-box;transform-origin:0 0}
+body.is-playing .logo svg .sun{animation:sunSpin 14s linear infinite}
+@keyframes sunSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){body.is-playing .logo svg .sun{animation:none}}
 @keyframes eq{from{transform:scaleY(.45)}to{transform:scaleY(1.05)}}
 @media (max-width:860px){
   .hs-slide{min-height:0}
@@ -388,6 +390,75 @@ body.is-playing .logo svg g rect:nth-child(2){animation-delay:-.4s}body.is-playi
 .card-t .ic{width:28px;height:28px}
 .card-t .ic svg{width:16px;height:16px}
 @media (max-width:860px){.trow{grid-template-columns:44px minmax(0,1fr) auto auto auto}.trow .ic{width:30px}}
+
+/* ================= Plateforme v2 ================= */
+.btn.pri-o{background:transparent;border:1.5px solid var(--accent);color:var(--accent)}
+.btn.pri-o:hover{background:var(--accent-soft)}
+.vbadge{display:inline-block;vertical-align:-.12em;margin-left:.28em;flex:none}
+.aname .vbadge{width:.62em;height:.62em}
+/* Profil artiste */
+.ahero{position:relative;border-radius:16px;overflow:hidden;min-height:340px;display:flex;align-items:flex-end;background:#120a04;isolation:isolate}
+.ahero-bg{position:absolute;inset:-30px;background:var(--bgimg,linear-gradient(135deg,#2A1405,#000)) center 30%/cover no-repeat;z-index:-2}
+.ahero-shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.55) 45%,rgba(0,0,0,.1) 100%);z-index:-1}
+.ahero-in{display:flex;gap:26px;align-items:flex-end;padding:30px;width:100%}
+.ahero-av{width:180px;flex:none;border-radius:50%;box-shadow:0 18px 50px rgba(0,0,0,.6);border:4px solid rgba(255,255,255,.12);border-radius:50%}
+.aname{font-size:clamp(34px,6vw,72px);font-weight:800;letter-spacing:-.04em;line-height:1;margin-top:8px;overflow-wrap:anywhere}
+.astats{display:flex;flex-wrap:wrap;gap:18px;margin-top:12px;color:rgba(255,255,255,.85);font-size:14px}
+.astats b{color:#fff;font-size:16px}
+.socs{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.soc{height:34px;padding:0 14px;border-radius:999px;background:rgba(118,118,128,.24);display:inline-flex;align-items:center;font-weight:600;font-size:13px}
+.soc:hover{background:var(--accent);color:var(--accent-ink)}
+.about{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;align-items:start}
+.about>div:first-child{display:flex;gap:18px;align-items:flex-start}
+.about-ph{width:120px;height:120px;border-radius:12px;object-fit:cover;object-position:50% 20%;flex:none}
+.ainfo{margin:0;display:grid;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.ainfo div{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;font-size:14px}
+.ainfo dt{color:var(--muted)}.ainfo dd{margin:0;overflow-wrap:anywhere}
+/* Pre-save */
+.up-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.up-card{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.up-card .cov{width:110px;flex:none;position:relative}
+.up-tag{position:absolute;left:6px;top:6px;font-size:9.5px;font-weight:800;letter-spacing:.08em;background:var(--accent);color:var(--accent-ink);padding:3px 6px;border-radius:4px}
+.up-body{min-width:0;display:flex;flex-direction:column;gap:4px;flex:1}
+.up-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:auto}
+.cd{display:flex;gap:6px;margin:6px 0 4px;font-variant-numeric:tabular-nums}
+.cd span{background:rgba(255,122,26,.12);color:#FFB37A;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:600}
+.cd b{color:#fff;font-size:14px;margin-right:1px}
+.cd.big{margin:16px 0 4px}.cd.big span{padding:8px 12px;font-size:13px}.cd.big b{font-size:26px}
+/* Vidéos */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+.vlist{display:grid;gap:14px}
+.vcard .cov{border-radius:10px}
+.vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;backdrop-filter:blur(8px);transition:.2s}
+.vcard:hover .vplay{background:var(--accent);color:var(--accent-ink)}
+.vtype{position:absolute;left:8px;bottom:8px;font-size:9.5px;font-weight:800;letter-spacing:.08em;background:rgba(0,0,0,.7);padding:3px 6px;border-radius:4px}
+.vpage{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:30px;align-items:start}
+.vframe{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:14px;overflow:hidden;background:#000}
+.vframe iframe,.vframe video,.vframe #ytPlayer{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vgate{aspect-ratio:16/9;max-width:100%;border-radius:14px;background:#000 center/cover;position:relative;display:grid;place-items:center;text-align:center;padding:20px;overflow:hidden}
+.vgate::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.72)}
+.vgate>div{position:relative}
+.vgate h3{font-size:22px}
+/* Liens rapides, cloche, dashboard */
+.qlinks{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.qlinks a{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;background:var(--surface2);font-weight:600;font-size:14px}
+.qlinks a svg{width:18px;height:18px;color:var(--accent)}
+.qlinks a:hover{background:var(--accent-soft)}
+.bell{position:relative}
+.bell i{position:absolute;top:2px;right:2px;min-width:16px;height:16px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-size:10px;font-weight:800;font-style:normal;display:grid;place-items:center;padding:0 3px}
+.notif.unread .t1{color:var(--fg);font-weight:700}
+.notif.unread{background:rgba(255,122,26,.08)}
+.studio-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.studio-head select{height:36px;border-radius:9px;border:0;background:rgba(118,118,128,.24);color:var(--fg);font:inherit;padding:0 10px}
+@media (max-width:860px){
+  .ahero{min-height:0}.ahero-in{flex-direction:column;align-items:flex-start;padding:22px 18px;gap:14px;padding-top:120px}
+  .ahero-av{width:120px}
+  .about{grid-template-columns:1fr}.about>div:first-child{flex-direction:column}
+  .vpage{grid-template-columns:1fr}
+  .up-card .cov{width:86px}
+  .qlinks a{height:36px;padding:0 12px;font-size:13px}
+  .vgrid{grid-template-columns:1fr 1fr;gap:12px}
+}
 @media (max-width:1100px){.p-right input{display:none}}
 @media (max-width:860px){
   :root{--player:64px}
@@ -426,8 +497,8 @@ body.is-playing .logo svg g rect:nth-child(2){animation-delay:-.4s}body.is-playi
 <body>
 <aside class="side">
   <a class="logo" href="#home" aria-label="WMA MUSIC, home">
-    <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect width="38" height="38" rx="9" fill="#FF7A1A"/><g fill="#fff"><rect x="7" y="15" width="3" height="8" rx="1.5"/><rect x="12" y="10" width="3" height="18" rx="1.5"/><rect x="17" y="13" width="3" height="12" rx="1.5"/><rect x="22" y="7" width="3" height="24" rx="1.5"/><rect x="27" y="14" width="3" height="10" rx="1.5"/></g></svg>
-    <span><b>WMA MUSIC</b><small>WMA UNITED AFRICA</small></span>
+    <svg width="38" height="38" viewBox="-50 -50 100 100" aria-hidden="true"><g class="sun" fill="#FF7A1A"><circle r="12"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(0)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(22.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(45)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(67.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(90)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(112.5)"/><rect x="-2.8" y="-48" width="5.6" height="28" rx="2.8" transform="rotate(135)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(157.5)"/><rect x="-2.8" y="-42" width="5.6" height="22" rx="2.8" transform="rotate(180)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(202.5)"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(225)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(247.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(270)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(292.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(315)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(337.5)"/></g></svg>
+    <span><b>WMA <em>MUSIC</em></b><small>WMA UNITED AFRICA</small></span>
   </a>
   <nav class="nav" id="sideNav"></nav>
   <div class="side-foot">YOUR MUSIC. YOUR AFRICA. YOUR SOUND.<br>A WMA HUB platform.</div>
@@ -435,8 +506,8 @@ body.is-playing .logo svg g rect:nth-child(2){animation-delay:-.4s}body.is-playi
 
 <header class="top">
   <a class="logo" href="#home" aria-label="WMA MUSIC, home">
-    <svg width="32" height="32" viewBox="0 0 38 38" aria-hidden="true"><rect width="38" height="38" rx="9" fill="#FF7A1A"/><g fill="#fff"><rect x="7" y="15" width="3" height="8" rx="1.5"/><rect x="12" y="10" width="3" height="18" rx="1.5"/><rect x="17" y="13" width="3" height="12" rx="1.5"/><rect x="22" y="7" width="3" height="24" rx="1.5"/><rect x="27" y="14" width="3" height="10" rx="1.5"/></g></svg>
-    <span><b>WMA MUSIC</b><small>WMA UNITED AFRICA</small></span>
+    <svg width="32" height="32" viewBox="-50 -50 100 100" aria-hidden="true"><g class="sun" fill="#FF7A1A"><circle r="12"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(0)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(22.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(45)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(67.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(90)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(112.5)"/><rect x="-2.8" y="-48" width="5.6" height="28" rx="2.8" transform="rotate(135)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(157.5)"/><rect x="-2.8" y="-42" width="5.6" height="22" rx="2.8" transform="rotate(180)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(202.5)"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(225)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(247.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(270)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(292.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(315)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(337.5)"/></g></svg>
+    <span><b>WMA <em>MUSIC</em></b><small>WMA UNITED AFRICA</small></span>
   </a>
   <label class="searchbox" for="topSearch">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -541,13 +612,14 @@ function seedCatalog(){
 let MODE='local';                 // 'local' | 'cloud' (claude.ai) | 'supa' (Supabase, ex. Vercel)
 let SB=null, MYEMAIL='';
 let DBX=null, ASSETS=null, USERX=null, UID=null, CAN_EDIT=false, MYNAME='';
-const DB={artists:[],albums:[],tracks:[],playlists:[],genres:GENRES0.slice()};
+const DB={artists:[],albums:[],tracks:[],playlists:[],videos:[],genres:GENRES0.slice()};
+let PUB=null, MYARTISTS=[];   // statistiques publiques agrégées (Supabase) ; artistes accessibles dans le dashboard
 let ME=null;                      // profil auditeur courant (favoris, playlists, écoutes…)
 let PEOPLE=[];                    // tous les profils auditeurs (admin) — base des statistiques
 let LOCAL=null, LUSERS=[], LSESSION=null, ANON=null;
 const cloud=()=>MODE!=='local', art=()=>MODE==='cloud', supa=()=>MODE==='supa';
-const SUPA_IMG='music-images',SUPA_AUDIO='music-audio';
-const blob=id=>supa()&&/^img\//.test(id)?SB.storage.from(SUPA_IMG).getPublicUrl(id).data.publicUrl:'/_blob/'+id;
+const SUPA_IMG='music-images',SUPA_AUDIO='music-audio',SUPA_VIDEO='music-video';
+const blob=id=>supa()&&/^img\//.test(id)?SB.storage.from(SUPA_IMG).getPublicUrl(id).data.publicUrl:supa()&&/^video\//.test(id)?SB.storage.from(SUPA_VIDEO).getPublicUrl(id).data.publicUrl:'/_blob/'+id;
 const signed={};
 async function audioSrc(id){if(!supa()||!/^audio\//.test(id))return blob(id);const c=signed[id];if(c&&c.exp>Date.now())return c.url;
   const {data,error}=await SB.storage.from(SUPA_AUDIO).createSignedUrl(id,6*3600);if(error||!data)throw new Error('nofile');signed[id]={url:data.signedUrl,exp:Date.now()+5.5*3600e3};return data.signedUrl}
@@ -559,15 +631,15 @@ function normTrack(t){
 }
 const isLive=t=>t.status==='published'||(t.status==='scheduled'&&t.publishAt&&t.publishAt<=Date.now());
 const pubDate=t=>t.status==='scheduled'?t.publishAt:(t.publishedAt||null);
-const emptyMe=()=>({favs:[],follows:[],albums:[],history:[],playlists:[],listens:{},log:[]});
+const emptyMe=()=>({favs:[],follows:[],albums:[],history:[],playlists:[],listens:{},log:[],presaves:[],presaveDone:[],views:{},notifs:[],notifCheck:0,country:''});
 
 function bootLocal(){
   MODE='local';LOCAL=store.get('catalog2',null);if(!LOCAL||LOCAL.v!==3){LOCAL=seedCatalog();store.set('catalog2',LOCAL)}
-  Object.assign(DB,{artists:LOCAL.artists,albums:LOCAL.albums,tracks:LOCAL.tracks.map(normTrack),playlists:LOCAL.playlists,genres:LOCAL.genres});
+  Object.assign(DB,{artists:LOCAL.artists,albums:LOCAL.albums,tracks:LOCAL.tracks.map(normTrack),playlists:LOCAL.playlists,videos:LOCAL.videos||[],genres:LOCAL.genres});
   LUSERS=store.get('users2',[]);LSESSION=store.get('session2',null);ANON=store.get('anon2',null)||{id:'anon',...emptyMe()};
   const u=LUSERS.find(x=>x.id===LSESSION);ME=u||null;PEOPLE=[...LUSERS,ANON];
 }
-function saveLocalCatalog(){LOCAL.tracks=DB.tracks;LOCAL.artists=DB.artists;LOCAL.albums=DB.albums;LOCAL.playlists=DB.playlists;LOCAL.genres=DB.genres;if(!store.set('catalog2',LOCAL))toast("Browser storage is full: this change was not saved.")}
+function saveLocalCatalog(){LOCAL.videos=DB.videos;LOCAL.tracks=DB.tracks;LOCAL.artists=DB.artists;LOCAL.albums=DB.albums;LOCAL.playlists=DB.playlists;LOCAL.genres=DB.genres;if(!store.set('catalog2',LOCAL))toast("Browser storage is full: this change was not saved.")}
 const clean=o=>JSON.parse(JSON.stringify(o,(k,v)=>k==='audioUrl'||k==='_local'?undefined:v));
 
 /* Écritures catalogue (admin) */
@@ -577,6 +649,10 @@ async function putDoc(kind,obj){
   upsert(kind,obj);
   if(!cloud()){saveLocalCatalog();return}
   const body=clean(obj);delete body.id;
+  if(kind==='videos'){const live=obj.status==='published',to=live?'videos':'videodrafts',from=live?'videodrafts':'videos';
+    if(supa()){await sbx(SB.from('music_docs').upsert({kind:to,id:obj.id,data:body}));await sbx(SB.from('music_docs').delete().eq('kind',from).eq('id',obj.id))}
+    else{await DBX.collection(to).doc(obj.id).set(body);await DBX.collection(from).doc(obj.id).delete().catch(()=>{})}
+    return}
   if(supa()){if(kind==='tracks'){const live=obj.status==='published'||obj.status==='scheduled',to=live?'tracks':'drafts',from=live?'drafts':'tracks';
       await sbx(SB.from('music_docs').upsert({kind:to,id:obj.id,data:body}));await sbx(SB.from('music_docs').delete().eq('kind',from).eq('id',obj.id))}
     else await sbx(SB.from('music_docs').upsert({kind,id:obj.id,data:body}));return}
@@ -587,7 +663,8 @@ async function putDoc(kind,obj){
 async function delDoc(kind,id){
   DB[kind]=DB[kind].filter(x=>x.id!==id);
   if(!cloud()){saveLocalCatalog();return}
-  if(supa()){await sbx(SB.from('music_docs').delete().in('kind',kind==='tracks'?['tracks','drafts']:[kind]).eq('id',id));return}
+  if(supa()){await sbx(SB.from('music_docs').delete().in('kind',kind==='tracks'?['tracks','drafts']:kind==='videos'?['videos','videodrafts']:[kind]).eq('id',id));return}
+  if(kind==='videos'){await DBX.collection('videos').doc(id).delete().catch(()=>{});await DBX.collection('videodrafts').doc(id).delete().catch(()=>{});return}
   if(kind==='tracks'){await DBX.collection('tracks').doc(id).delete().catch(()=>{});await DBX.collection('drafts').doc(id).delete().catch(()=>{})}
   else await DBX.collection(kind).doc(id).delete();
 }
@@ -602,13 +679,17 @@ function saveMe(){
 }
 async function flushMe(){
   if(meWriting||!meDirty||!UID)return;meWriting=true;meDirty=false;
-  const body=clean({favs:ME.favs,follows:ME.follows,albums:ME.albums,history:ME.history.slice(0,100),playlists:ME.playlists,listens:ME.listens,log:ME.log.slice(-400),updatedAt:Date.now()});
+  const body=clean({favs:ME.favs,follows:ME.follows,albums:ME.albums,history:ME.history.slice(0,100),playlists:ME.playlists,listens:ME.listens,log:ME.log.slice(-400),presaves:ME.presaves||[],presaveDone:(ME.presaveDone||[]).slice(-200),views:ME.views||{},notifs:(ME.notifs||[]).slice(0,50),notifCheck:ME.notifCheck||0,country:ME.country||'',updatedAt:Date.now()});
   try{if(supa())await sbx(SB.from('music_people').upsert({user_id:UID,data:body,updated_at:new Date().toISOString()}));else await DBX.doc('people/'+UID).set(body)}catch(e){if(!flushMe.warned){flushMe.warned=1;toast(e&&e.code==='quota_exceeded'?'Storage is full.':"Your favourites and plays can't be saved with your access level.")}}
   meWriting=false;if(meDirty)flushMe();
 }
 
 /* Fichiers : stockage serveur (cloud) ou session (local) */
-async function uploadFile(b,type){
+async function uploadFile(b,type,o={}){
+  if(supa()&&o.video){const ext={'video/mp4':'mp4','video/webm':'webm','video/quicktime':'mov'}[type]||'mp4',path='video/'+(crypto.randomUUID?crypto.randomUUID():uid('f'))+'.'+ext;
+    const r=await SB.storage.from(SUPA_VIDEO).upload(path,b,{contentType:type,cacheControl:'31536000',upsert:false});
+    if(r.error)throw new Error(/size|large/i.test(r.error.message)?'This video is too large for storage (50 MB maximum).':/row-level|policy|permission|Unauthorized/i.test(r.error.message)?"Upload refused: your account is not an administrator.":"The upload failed: "+r.error.message);
+    return {id:path}}
   if(supa()){const img=/^image\//.test(type),ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','video/mp4':'m4a','video/webm':'webm','audio/mpeg':'mp3','audio/mp4':'m4a','audio/x-m4a':'m4a','audio/aac':'aac','audio/ogg':'ogg','audio/webm':'webm','audio/flac':'flac','audio/wav':'wav'}[type]||'bin';
     const path=(img?'img/':'audio/')+(crypto.randomUUID?crypto.randomUUID():uid('f'))+'.'+ext;
     const r=await SB.storage.from(img?SUPA_IMG:SUPA_AUDIO).upload(path,b,{contentType:type,cacheControl:'31536000',upsert:false});
@@ -618,7 +699,7 @@ async function uploadFile(b,type){
     try{const r=await ASSETS.upload(b,{type});return {id:r.id}}catch(e){throw new Error({too_large:'File too large (20 MB maximum).',quota_or_state:'Storage is full: delete unused files.',unsupported_type:'This file format was refused by the storage.'}[e&&e.code]||"The upload failed. Please try again.")}}
   return {local:URL.createObjectURL(b)};
 }
-async function dropFile(id){if(!id)return;if(supa()){try{await SB.storage.from(/^img\//.test(id)?SUPA_IMG:SUPA_AUDIO).remove([id])}catch(e){}return}if(cloud()&&ASSETS){try{await ASSETS.delete(id)}catch(e){}}}
+async function dropFile(id){if(!id)return;if(supa()){try{await SB.storage.from(/^img\//.test(id)?SUPA_IMG:/^video\//.test(id)?SUPA_VIDEO:SUPA_AUDIO).remove([id])}catch(e){}return}if(cloud()&&ASSETS){try{await ASSETS.delete(id)}catch(e){}}}
 
 /* Lecture */
 const api={
@@ -668,7 +749,8 @@ async function bootCloud(){
   sub('albums',d=>DB.albums=d.map(a=>({...a})));
   sub('playlists',d=>DB.playlists=d.map(p=>({...p,trackIds:p.trackIds||[]})));
   sub('tracks',d=>{pubT=d;mergeT()});
-  if(CAN_EDIT){sub('drafts',d=>{draftT=d;mergeT()});
+  let pubV=[],draftV=[];const mergeV=()=>{DB.videos=[...pubV,...draftV]};sub('videos',d=>{pubV=d;mergeV()});
+  if(CAN_EDIT){sub('drafts',d=>{draftT=d;mergeT()});sub('videodrafts',d=>{draftV=d;mergeV()});
     sub('people',d=>{PEOPLE=d.map(p=>p.id===UID?ME:{...emptyMe(),...p});if(!PEOPLE.includes(ME))PEOPLE.push(ME)})}
   db.doc('meta/genres').onSnapshot(s=>{if(s.exists&&Array.isArray(s.data().list))DB.genres=s.data().list.slice();scheduleRender()},()=>{});
   db.doc('people/'+UID).onSnapshot(s=>{if(s.exists&&!meDirty&&!meWriting){const d=s.data();Object.assign(ME,emptyMe(),JSON.parse(JSON.stringify(d)),{id:UID})}scheduleRender()},()=>{});
@@ -688,21 +770,24 @@ async function bootSupa(){
   setInterval(()=>supaLoad(),60e3);route();return true;
 }
 async function supaSession(s){
-  UID=s?.user?.id||null;MYEMAIL=s?.user?.email||'';CAN_EDIT=false;ME=null;PEOPLE=[];
-  if(UID){const {data:pr}=await SB.from('music_profiles').select('display_name,role').eq('id',UID).maybeSingle();
+  UID=s?.user?.id||null;MYEMAIL=s?.user?.email||'';CAN_EDIT=false;ME=null;PEOPLE=[];MYARTISTS=[];
+  if(UID){const {data:pr}=await SB.from('music_profiles').select('display_name,role,artist_ids').eq('id',UID).maybeSingle();MYARTISTS=(pr&&pr.artist_ids)||[];
     MYNAME=pr?.display_name||s.user.user_metadata?.name||MYEMAIL.split('@')[0];CAN_EDIT=pr?.role==='admin';
     const {data:pp}=await SB.from('music_people').select('data').eq('user_id',UID).maybeSingle();
-    ME={...emptyMe(),...(pp?.data||{}),id:UID,name:MYNAME,email:MYEMAIL,role:CAN_EDIT?'admin':'user',hue:24};PEOPLE=[ME]}
+    ME={...emptyMe(),...(pp?.data||{}),id:UID,name:MYNAME,email:MYEMAIL,role:CAN_EDIT?'admin':'user',hue:24};PEOPLE=[ME];
+    if(!ME.country)fetch('/api/geo',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.country){ME.country=j.country;saveMe()}}).catch(()=>{})}
   await supaLoad();
 }
 async function supaLoad(){
   const {data,error}=await SB.from('music_docs').select('kind,id,data').limit(5000);if(error){console.warn(error);return}
   const by=k=>data.filter(r=>r.kind===k).map(r=>({...r.data,id:r.id}));
   DB.artists=by('artists');DB.albums=by('albums');DB.playlists=by('playlists').map(p=>({...p,trackIds:p.trackIds||[]}));
-  DB.tracks=[...by('tracks'),...by('drafts')].map(normTrack);const g=data.find(r=>r.kind==='meta'&&r.id==='genres');if(g&&Array.isArray(g.data.list))DB.genres=g.data.list.slice();
-  if(CAN_EDIT){const [pp,pr]=await Promise.all([SB.from('music_people').select('user_id,data,updated_at').limit(5000),SB.from('music_profiles').select('id,display_name,role').limit(5000)]);
+  DB.tracks=[...by('tracks'),...by('drafts')].map(normTrack);DB.videos=[...by('videos'),...by('videodrafts')];const g=data.find(r=>r.kind==='meta'&&r.id==='genres');if(g&&Array.isArray(g.data.list))DB.genres=g.data.list.slice();
+  if(CAN_EDIT){const [pp,pr]=await Promise.all([SB.from('music_people').select('user_id,data,updated_at').limit(5000),SB.from('music_profiles').select('id,display_name,role,artist_ids').limit(5000)]);
     PROFILES=Object.fromEntries((pr.data||[]).map(p=>[p.id,p]));
     PEOPLE=(pp.data||[]).map(r=>r.user_id===UID?ME:{...emptyMe(),...r.data,id:r.user_id,updatedAt:r.data?.updatedAt||Date.parse(r.updated_at)});if(ME&&!PEOPLE.includes(ME))PEOPLE.push(ME)}
+  try{const r=await SB.rpc('music_public_stats');if(!r.error&&r.data)PUB=r.data}catch(e){}
+  if(typeof onDataLoaded==='function')onDataLoaded();
   scheduleRender();
 }
 
@@ -720,7 +805,7 @@ function genCover(seed){
 }
 const albumCover=a=>a.coverId?blob(a.coverId):a.cover||genCover(a.id);
 const trackCover=t=>t.coverId?blob(t.coverId):t.cover||(t.albumId&&api.album(t.albumId)?albumCover(api.album(t.albumId)):genCover(t.id));
-const plCover=p=>p.coverId?blob(p.coverId):genCover('pl'+p.id);
+let plCover=p=>p.coverId?blob(p.coverId):genCover('pl'+p.id);
 const artistPhoto=a=>a.photoUrl||(a.photoId?blob(a.photoId):a.photo)||null;
 function avatar(a,size){
   const ini=String(a.name||'?').split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase(),src=artistPhoto(a);
@@ -793,6 +878,7 @@ function muxM4A(frames,asc,sampleRate,channels,frameLen){
   for(const f of frames){out.set(f,p);p+=f.length}
   return out;
 }
+if(typeof module!=='undefined')module.exports={muxM4A};
 
 /* Muxer WebM minimal pour un flux Opus — avec SeekHead + Cues pour permettre l'avance rapide en streaming */
 function muxWebM(frames,head,durMs){
@@ -951,13 +1037,13 @@ function addToPlaylistModal(tid){
 /* =========================================================
    COMPOSANTS
    ========================================================= */
-const showCounts=()=>api.isAdmin();
+const showCounts=()=>!!PUB||api.isAdmin();
 function trackCard(t,q){return `<div class="card"><div class="cov"><img src="${trackCover(t)}" alt="" loading="lazy"><button class="pbtn play" data-act="play" data-id="${t.id}" data-q="${q||t.id}" aria-label="Play ${esc(t.title)}">${I.play}</button></div>
   <div class="card-t"><div><div class="t1"><a href="#track-${t.id}">${esc(t.title)}</a></div><div class="t2">${artistLinks(t)}${t.demo?' <span class="badge">DEMO</span>':''}</div></div><button class="ic ${isFav(t.id)?'on':''}" data-act="fav" data-id="${t.id}" aria-label="${isFav(t.id)?'Remove from favourites':'Add to favourites'}">${isFav(t.id)?I.heartF:I.heart}</button><button class="ic" data-act="share" data-k="track" data-id="${t.id}" aria-label="Share ${esc(t.title)}" title="Share">${I.share}</button></div></div>`}
 function albumCard(al){const a=api.artist(al.artistId),tr=api.albumTracks(al.id),q=tr.map(t=>t.id).join(',');return `<div class="card"><a class="cov" href="#album-${al.id}"><img src="${albumCover(al)}" alt="" loading="lazy">${q?`<button class="pbtn play" data-act="play" data-id="${tr[0].id}" data-q="${q}" aria-label="Play ${esc(al.title)}">${I.play}</button>`:''}</a>
   <div><div class="t1"><a href="#album-${al.id}">${esc(al.title)}</a></div><div class="t2">${esc(al.type||'Album')} · <a href="#artist-${a?.id}">${esc(a?.name||'')}</a></div></div></div>`}
 function plCard(p){const ids=p.trackIds.filter(id=>{const t=api.track(id);return t&&isLive(t)}),q=ids.join(',');return `<div class="card"><a class="cov" href="#playlist-${p.id}"><img src="${plCover(p)}" alt="" loading="lazy">${q?`<button class="pbtn play" data-act="play" data-id="${ids[0]}" data-q="${q}" aria-label="Play ${esc(p.name)}">${I.play}</button>`:''}</a>
-  <div><div class="t1"><a href="#playlist-${p.id}">${esc(p.name)}</a></div><div class="t2">${p.official?'WMA MUSIC':'Your playlist'} · ${ids.length} songs</div></div></div>`}
+  <div><div class="t1"><a href="#playlist-${p.id}">${esc(p.name)}</a></div><div class="t2">${p.official?'WMA MUSIC':'Your playlist'} · ${ids.length} song${ids.length===1?'':'s'}</div></div></div>`}
 function artistCard(a){return `<a class="acard" href="#artist-${a.id}">${avatar(a)}<div><div class="t1">${esc(a.name)}</div><div class="t2">${a.country?esc(a.country)+' · ':''}Artist</div></div></a>`}
 function trackRows(list,opts={}){
   if(!list.length)return `<div class="empty">${opts.empty||'No songs yet.'}</div>`;
@@ -1024,7 +1110,7 @@ pages.home=()=>{
   ${singles.length?sec('Latest singles',rail(singles.slice(0,10).map(t=>trackCard(t,q(singles))))):''}
   ${pop.length?sec('Popular artists',rail(pop.slice(0,10).map(artistCard))):''}
   ${DB.playlists.length?sec('Recommended playlists',rail(api.playlists().filter(p=>p.official).map(plCard))):''}
-  ${clips.length?sec('Music videos',rail(clips.map(a=>`<a class="card" href="${esc(a.youtube)}" target="_blank" rel="noopener"><div class="cov" style="aspect-ratio:16/9;display:grid;place-items:center;background:hsl(${a.hue??24} 40% 14%)"><span class="pbtn" style="width:54px;height:54px">${I.yt}</span></div><div><div class="t1">${esc(a.name)}</div><div class="t2">Official videos on YouTube ↗</div></div></a>`))):''}
+  ${clips.length&&!(DB.videos||[]).some(v=>v.status==='published')?sec('Music videos',rail(clips.map(a=>`<a class="card" href="${esc(a.youtube)}" target="_blank" rel="noopener"><div class="cov" style="aspect-ratio:16/9;display:grid;place-items:center;background:hsl(${a.hue??24} 40% 14%)"><span class="pbtn" style="width:54px;height:54px">${I.yt}</span></div><div><div class="t1">${esc(a.name)}</div><div class="t2">Official videos on YouTube ↗</div></div></a>`))):''}
   ${sec('Featured artists',`<div class="grid">${DB.artists.filter(a=>a.wma&&a.home!==false).map(artistCard).join('')}</div>`,['#artists','All artists'])}`;
 };
 pages.artists=()=>`<h1 class="ltitle">Artists</h1><p class="muted">Discover the artists on WMA MUSIC.</p><div class="grid" style="margin-top:24px">${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(artistCard).join('')||'<div class="empty">No artists yet.</div>'}</div>`;
@@ -1062,14 +1148,14 @@ pages.artist=id=>{
 pages.album=id=>{
   const al=api.album(id);if(!al)return notFound();const a=api.artist(al.artistId),tr=api.albumTracks(al.id),tot=tr.reduce((s,t)=>s+(t.duration||0),0),inLib=(api.me()?.albums||[]).includes(al.id);
   return `<div class="phead"><div class="art"><img src="${albumCover(al)}" alt=""></div><div class="info"><div class="eyebrow">${esc(al.type||'Album')}</div><h1 style="margin-top:8px">${esc(al.title)}</h1>
-    <div class="meta"><a href="#artist-${a?.id}">${esc(a?.name||'')}</a> · Released ${frDate(al.date)} · ${tr.length} songs · <span class="mono">${fmt(tot)}</span></div>
+    <div class="meta"><a href="#artist-${a?.id}">${esc(a?.name||'')}</a> · Released ${frDate(al.date)} · ${tr.length} song${tr.length===1?'':'s'} · <span class="mono">${fmt(tot)}</span></div>
     <div class="actions">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${tr.map(t=>t.id).join(',')}">${I.play} Play</button>`:''}<button class="btn" data-act="libalbum" data-id="${al.id}">${inLib?'In your library ✓':'Add to library'}</button><button class="btn" data-act="share" data-k="album" data-id="${al.id}">${I.share} Share</button></div></div></div>
    ${sec('Songs',trackRows(tr,{noAlbum:true,empty:'No released songs in this album.'}))}`;
 };
 pages.playlist=id=>{
   const p=api.playlist(id);if(!p)return notFound();const tr=p.trackIds.map(api.track).filter(t=>t&&isLive(t)),own=!!p.mine;
   return `<div class="phead"><div class="art"><img src="${plCover(p)}" alt=""></div><div class="info"><div class="eyebrow">${p.official?'Official playlist':'Your playlist'}</div><h1 style="margin-top:8px">${esc(p.name)}</h1>
-    <div class="meta">${esc(p.desc||'')} ${tr.length} songs · <span class="mono">${fmt(tr.reduce((s,t)=>s+(t.duration||0),0))}</span></div>
+    <div class="meta">${esc(p.desc||'')} ${tr.length} song${tr.length===1?'':'s'} · <span class="mono">${fmt(tr.reduce((s,t)=>s+(t.duration||0),0))}</span></div>
     <div class="actions">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${tr.map(t=>t.id).join(',')}">${I.play} Play</button>`:''}${p.official?`<button class="btn" data-act="share" data-k="playlist" data-id="${p.id}">${I.share} Share</button>`:''}${own?`<button class="btn" data-act="plrename" data-pl="${p.id}">Rename</button><button class="btn danger" data-act="pldel" data-pl="${p.id}">Delete</button>`:''}</div></div></div>
    ${sec('Songs',trackRows(tr,{removeFrom:own?p.id:null,empty:'This playlist is empty. Add songs with the + button on any song.'}))}`;
 };
@@ -1162,7 +1248,7 @@ pages.admin=sub=>{
     :api.me()?`<div class="auth"><h1>Access denied</h1><p class="muted">WMA ADMIN is reserved for the WMA team.</p><div class="actions"><a class="btn" href="#home">Back to home</a></div></div>`
     :`<div class="auth"><h1>WMA ADMIN</h1><p class="muted">Sign in with a WMA administrator account.</p><div class="actions"><a class="btn pri" href="#login">Sign in</a></div></div>`;
   sub=sub||'overview';
-  const nav=[['overview','Overview'],['songs','Music manager'],['artists','Artists'],['albums','Albums'],['playlists','Official playlists'],['genres','Genres'],['users','Listeners'],['stats','Statistics']];
+  const nav=[['overview','Overview'],['songs','Music manager'],['artists','Artists'],['albums','Albums'],['playlists','Official playlists'],['genres','Genres'],['videos','Videos'],['users','Listeners'],['stats','Statistics']];
   return `<div class="eyebrow">WMA UNITED AFRICA</div><h1 class="ltitle" style="margin-top:4px">WMA ADMIN</h1>
    ${cloud()?'':`<div class="note" style="margin-bottom:12px;border-color:var(--warn)"><b style="color:var(--fg)">Demo mode: nothing is published for other listeners.</b> Songs added here stay in this browser.<br>${/claude/.test(location.hostname)?'Open the app from your Claude account to use the shared database.':!window.WMA_CONFIG?'The config.js file is missing or has a typo (a missing quote or comma). Fix it, then redeploy the site on Vercel.':!window.WMA_CONFIG.supabaseUrl||!window.WMA_CONFIG.supabaseAnonKey?'config.js is empty: paste the Supabase URL and the public key, then redeploy.':!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(window.WMA_CONFIG.supabaseUrl)?'The Supabase URL in config.js is wrong: it must look exactly like https://xxxx.supabase.co (no /rest/v1/ and no trailing slash).':'The Supabase library could not load: check your internet connection and reload the page.'}</div>`}
    <nav class="adm-nav">${nav.map(([k,l])=>`<a href="#admin${k==='overview'?'':'-'+k}" class="${sub===k?'on':''}">${l}</a>`).join('')}</nav>${(admin[sub]||admin.overview)()}`;
@@ -1356,7 +1442,7 @@ admin.genres=()=>`<div class="panel" style="max-width:560px"><form class="form" 
 admin.users=()=>{
   if(cloud()){const ppl=PEOPLE.filter(p=>p.id!=='anon');setTimeout(fillNames,0);
     if(supa())return `<p class="note" style="margin-bottom:14px">Administrators can add, edit and publish songs. All other accounts are listeners.</p>
-    <div class="tbl-wrap"><table><thead><tr><th>Account</th><th>Plays</th><th>Favourites</th><th>Playlists</th><th>Role</th><th></th></tr></thead><tbody>${Object.values(PROFILES).map(pr=>{const p=PEOPLE.find(x=>x.id===pr.id)||emptyMe();return `<tr><td><b>${esc(pr.display_name||'Listener')}</b>${pr.id===UID?' <span class="muted">(you)</span>':''}</td><td class="mono">${Object.values(p.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td class="mono">${(p.favs||[]).length}</td><td class="mono">${(p.playlists||[]).length}</td><td>${pr.role==='admin'?'<span class="badge">ADMIN</span>':'Listener'}</td><td>${pr.id===UID?'':`<button class="btn sm" data-act="uRole" data-id="${pr.id}">${pr.role==='admin'?'Remove admin':'Make admin'}</button>`}</td></tr>`}).join('')||'<tr><td colspan="6" class="muted">No accounts yet.</td></tr>'}</tbody></table></div>`;
+    <div class="tbl-wrap"><table><thead><tr><th>Account</th><th>Plays</th><th>Favourites</th><th>Playlists</th><th>Role</th><th>Artist Dashboard</th><th></th></tr></thead><tbody>${Object.values(PROFILES).map(pr=>{const p=PEOPLE.find(x=>x.id===pr.id)||emptyMe();return `<tr><td><b>${esc(pr.display_name||'Listener')}</b>${pr.id===UID?' <span class="muted">(you)</span>':''}</td><td class="mono">${Object.values(p.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td class="mono">${(p.favs||[]).length}</td><td class="mono">${(p.playlists||[]).length}</td><td>${pr.role==='admin'?'<span class="badge">ADMIN</span>':'Listener'}</td><td>${(pr.artist_ids||[]).map(x=>esc(api.artist(x)?.name||x)).join(', ')||'<span class="muted">—</span>'} <button class="btn sm" data-act="uArtists" data-id="${pr.id}">Artist access</button></td><td>${pr.id===UID?'':`<button class="btn sm" data-act="uRole" data-id="${pr.id}">${pr.role==='admin'?'Remove admin':'Make admin'}</button>`}</td></tr>`}).join('')||'<tr><td colspan="6" class="muted">No accounts yet.</td></tr>'}</tbody></table></div>`;
     return `<p class="note" style="margin-bottom:14px">Admin rights are managed from the app's Share menu: an Editor is a WMA administrator; a Contributor can listen and save favourites, playlists and plays.</p>
     ${ppl.length?`<div class="tbl-wrap"><table><thead><tr><th>Listener</th><th>Plays</th><th>Songs played</th><th>Favourites</th><th>Playlists</th><th>Last active</th></tr></thead><tbody>${ppl.map(p=>`<tr><td><b data-uname="${esc(p.id)}">${p.id===UID?esc(MYNAME)+' (you)':'…'}</b></td><td class="mono">${Object.values(p.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td class="mono">${Object.keys(p.listens||{}).length}</td><td class="mono">${(p.favs||[]).length}</td><td class="mono">${(p.playlists||[]).length}</td><td class="mono" style="font-size:12.5px">${p.updatedAt?frDT(p.updatedAt):'—'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No listeners yet.</div>'}`}
   return LUSERS.length?`<div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Plays</th><th>Role</th><th></th></tr></thead><tbody>${LUSERS.map(u=>`<tr><td><b>${esc(u.name)}</b></td><td>${esc(u.email)}</td><td class="mono">${new Date(u.createdAt).toLocaleDateString('en-GB')}</td><td class="mono">${Object.values(u.listens||{}).reduce((s,l)=>s+(l.n||0),0)}</td><td>${u.role==='admin'?'<span class="badge">ADMIN</span>':'Listener'}</td><td>${u.id===LSESSION?'<span class="muted">You</span>':`<button class="btn sm" data-act="uRole" data-id="${u.id}">${u.role==='admin'?'Remove admin':'Make admin'}</button>`}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No accounts yet.</div>';
@@ -1459,6 +1545,404 @@ const adminActs={
   gDel:async el=>{const g=el.dataset.g;if(DB.tracks.some(t=>t.genre===g))return toast('Some songs still use this genre.');DB.genres=DB.genres.filter(x=>x!==g);try{await putGenres()}catch(x){toast('This action could not be completed.')}rerender()},
   uRole:async(el,id)=>{if(supa()){const pr=PROFILES[id];const role=pr.role==='admin'?'user':'admin';try{await sbx(SB.from('music_profiles').update({role}).eq('id',id));pr.role=role;toast(`${pr.display_name||'Account'}: ${role==='admin'?'administrator':'listener'}`)}catch(x){toast('Role change refused.')}return rerender()}const u=LUSERS.find(x=>x.id===id);u.role=u.role==='admin'?'user':'admin';store.set('users2',LUSERS);toast(`${u.name}: ${u.role==='admin'?'administrator':'listener'}`);rerender()}
 };
+
+/* =========================================================
+   WMA MUSIC — PLATEFORME v2
+   1. Profil artiste pro · 2. Playlists intelligentes · 3. WMA Artist Dashboard
+   4. Clips vidéo et sessions live · 5. Pre-save
+   Toutes les données viennent du catalogue (music_docs), des profils auditeurs (music_people)
+   et des fonctions agrégées Supabase (music_public_stats, music_artist_report).
+   ========================================================= */
+const FI={
+ verified:'<svg class="vbadge" width="22" height="22" viewBox="0 0 24 24" aria-label="Verified artist" role="img"><path fill="#FF7A1A" d="M12 1.6l2.6 1.9 3.2-.2 1 3.1 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3.1-3.2-.2L12 22.4l-2.6-1.9-3.2.2-1-3.1L2.6 15.7l1-3.1-1-3.1 2.6-1.9 1-3.1 3.2.2z"/><path d="m8 12.3 2.7 2.7L16.3 9.4" fill="none" stroke="#0A0A0A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ video:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3z"/></svg>',
+ list:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h12M4 12h12M4 18h8"/><circle cx="18" cy="17" r="2.5"/><path d="M20.5 17V9"/></svg>',
+ clock:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+ chart:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+ bell:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
+ down:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>'
+};
+const nf=n=>Number(n||0).toLocaleString('en-GB');
+const regionName=(()=>{let dn=null;try{dn=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}const fix={CD:'DR Congo',CG:'Republic of the Congo'};return c=>{if(!c||c==='XX')return 'Unknown';if(fix[c])return fix[c];try{return dn?dn.of(c):c}catch(e){return c}}})();
+const flag=c=>c&&/^[A-Z]{2}$/.test(c)&&c!=='XX'?String.fromCodePoint(...[...c].map(x=>127397+x.charCodeAt(0))):'🌍';
+
+/* ---------- Statistiques réelles : agrégats publics si disponibles ---------- */
+const _stat={...stat};
+stat.plays=tid=>PUB?(+(PUB.plays||{})[tid]||0):_stat.plays(tid);
+stat.listeners=tid=>PUB?(+(PUB.listeners||{})[tid]||0):_stat.listeners(tid);
+stat.favs=tid=>PUB?(+(PUB.favs||{})[tid]||0):_stat.favs(tid);
+stat.followers=aid=>PUB?(+(PUB.followers||{})[aid]||0):_stat.followers(aid);
+stat.presaves=tid=>PUB?(+(PUB.presaves||{})[tid]||0):PEOPLE.filter(p=>(p.presaves||[]).includes(tid)).length;
+stat.views=vid=>PUB?(+(PUB.views||{})[vid]||0):PEOPLE.reduce((s,p)=>s+((p.views||{})[vid]?.n||0),0);
+stat.recent=tid=>PUB?(+(PUB.recent||{})[tid]||0):PEOPLE.reduce((s,p)=>s+(p.log||[]).filter(x=>x.t===tid&&Date.now()-x.ts<30*864e5).length,0);
+
+/* =========================================================
+   5. PRE-SAVE : prochaines sorties, compte à rebours, notifications
+   ========================================================= */
+const isUpcoming=t=>t.status==='scheduled'&&t.publishAt&&t.publishAt>Date.now();
+api.upcoming=()=>DB.tracks.filter(isUpcoming).sort((a,b)=>a.publishAt-b.publishAt);
+const isPresaved=id=>(api.me()?.presaves||[]).includes(id);
+function cdText(ts){let d=Math.max(0,ts-Date.now());const D=Math.floor(d/864e5);d-=D*864e5;const H=Math.floor(d/36e5);d-=H*36e5;const M=Math.floor(d/6e4);const S=Math.floor((d-M*6e4)/1e3);
+  return `<span><b>${D}</b>d</span><span><b>${String(H).padStart(2,'0')}</b>h</span><span><b>${String(M).padStart(2,'0')}</b>m</span><span><b>${String(S).padStart(2,'0')}</b>s</span>`}
+setInterval(()=>{document.querySelectorAll('[data-cd]').forEach(el=>{const ts=+el.dataset.cd;if(ts<=Date.now()&&!el.dataset.done){el.dataset.done=1;el.innerHTML='<span><b>Out now</b></span>';setTimeout(()=>{onDataLoaded();rerender()},1500)}else if(!el.dataset.done)el.innerHTML=cdText(ts)})},1000);
+function presaveBtn(t,cls='btn'){const on=isPresaved(t.id);return `<button class="${cls} ${on?'':'pri'}" data-act="presave" data-id="${t.id}">${on?'Pre-saved ✓':FI.clock.replace(/22/g,'18')+' Pre-save'}</button>`}
+function upcomingCard(t){return `<div class="up-card"><a class="cov" href="#track-${t.id}"><img src="${trackCover(t)}" alt="" loading="lazy"><span class="up-tag">COMING SOON</span></a>
+  <div class="up-body"><div class="t1"><a href="#track-${t.id}">${esc(t.title)}</a></div><div class="t2">${artistLinks(t)}</div>
+  <div class="t2">Out ${frDT(t.publishAt)}</div><div class="cd" data-cd="${t.publishAt}">${cdText(t.publishAt)}</div>
+  <div class="up-foot">${presaveBtn(t,'btn sm')}<span class="t2 mono">${nf(stat.presaves(t.id))} pre-save${stat.presaves(t.id)===1?'':'s'}</span></div></div></div>`}
+function togglePresave(id){const m=api.me();if(!m)return needLogin('Create a free account to pre-save this release.');m.presaves=m.presaves||[];const i=m.presaves.indexOf(id);
+  if(i>=0){m.presaves.splice(i,1);toast('Pre-save removed')}else{m.presaves.push(id);toast('Pre-saved! It will be added to your favourites on release day.');askNotifyOnce()}
+  if(PUB){PUB.presaves=PUB.presaves||{};PUB.presaves[id]=Math.max(0,(+PUB.presaves[id]||0)+(i>=0?-1:1))}saveMe();rerender()}
+pages.upcoming=()=>{const up=api.upcoming();return `<h1 class="ltitle">Coming soon</h1><p class="muted">Pre-save upcoming releases: they are added to your favourites the moment they come out, and you get a notification.</p>
+  ${up.length?`<div class="up-grid" style="margin-top:22px">${up.map(upcomingCard).join('')}</div>`:'<div class="empty" style="margin-top:22px">No upcoming releases right now. Check back soon.</div>'}`};
+/* Notifications : sorties pré-enregistrées et nouveautés des artistes suivis */
+function notify(n){const m=api.me();if(!m)return;m.notifs=m.notifs||[];if(m.notifs.some(x=>x.key===n.key))return;m.notifs.unshift({...n,ts:Date.now(),read:false});m.notifs=m.notifs.slice(0,50);
+  try{if('Notification' in window&&Notification.permission==='granted')new Notification('WMA MUSIC',{body:n.text,icon:'/icon-192.png',tag:n.key})}catch(e){}}
+function processReleases(){const m=api.me();if(!m||!DB.tracks.length)return;let ch=false;m.presaveDone=m.presaveDone||[];m.favs=m.favs||[];
+  for(const tid of (m.presaves||[])){const t=api.track(tid);if(t&&isLive(t)&&!m.presaveDone.includes(tid)){m.presaveDone.push(tid);if(!m.favs.includes(tid))m.favs.unshift(tid);
+    notify({key:'rel-'+tid,tid,text:`“${t.title}” by ${artistText(t)} is out now. It's in your favourites.`});ch=true}}
+  const since=m.notifCheck||0,now=Date.now();
+  if(since){for(const t of api.pub()){const d=pubDate(t)||t.createdAt;if(d>since&&d<=now&&(m.follows||[]).some(a=>a===t.artistId||t.featIds.includes(a))&&!(m.presaves||[]).includes(t.id)){notify({key:'new-'+t.id,tid:t.id,text:`New release: “${t.title}” by ${artistText(t)}.`});ch=true}}}
+  if(m.notifCheck!==now){m.notifCheck=now;ch=true}if(ch)saveMe()}
+function onDataLoaded(){processReleases()}
+setTimeout(()=>{if(api.me()){processReleases();chrome()}},1500);
+setInterval(()=>{if(api.me())processReleases()},60e3);
+let notifAsked=false;function askNotifyOnce(){if(notifAsked||!('Notification' in window)||Notification.permission!=='default')return;notifAsked=true;Notification.requestPermission().catch(()=>{})}
+function unreadCount(){return (api.me()?.notifs||[]).filter(n=>!n.read).length}
+function openNotifs(){const m=api.me();if(!m)return needLogin();const list=m.notifs||[];
+  openModal(`<h3>Notifications</h3>${list.length?`<div class="tlist">${list.map(n=>{const t=n.tid&&api.track(n.tid);return `<a class="trow notif ${n.read?'':'unread'}" href="${t?'#track-'+t.id:'#home'}" data-act="close" style="grid-template-columns:44px minmax(0,1fr)">${t?`<img src="${trackCover(t)}" alt="">`:'<span></span>'}<div style="min-width:0"><div class="t1" style="white-space:normal">${esc(n.text)}</div><div class="t2">${frDT(n.ts)}</div></div></a>`}).join('')}</div>`:'<div class="empty">No notifications yet. Pre-save a release or follow artists to get notified when new music comes out.</div>'}
+   ${'Notification' in window&&Notification.permission==='default'?'<button class="btn" data-act="notifPerm" style="margin-top:14px">Turn on notifications on this device</button>':''}
+   <p class="muted" style="font-size:12.5px;margin:12px 0 0">Device notifications appear while WMA MUSIC is open in your browser.</p>
+   <div class="actions"><button class="btn" data-act="close">Close</button></div>`);
+  if(list.some(n=>!n.read)){list.forEach(n=>n.read=true);saveMe();chrome()}}
+
+/* =========================================================
+   4. CLIPS VIDÉO ET SESSIONS LIVE
+   ========================================================= */
+const ytId=u=>{const m=String(u||'').match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/);return m?m[1]:null};
+api.video=id=>(DB.videos||[]).find(v=>v.id===id);
+api.videos=()=>(DB.videos||[]).filter(v=>v.status==='published').sort((a,b)=>(b.publishedAt||b.createdAt)-(a.publishedAt||a.createdAt));
+const videoThumb=v=>v.thumbId?blob(v.thumbId):v.thumb?v.thumb:v.youtubeId?`https://i.ytimg.com/vi/${v.youtubeId}/hqdefault.jpg`:genCover('v'+v.id);
+function videoCard(v){const a=api.artist(v.artistId);return `<a class="card vcard" href="#video-${v.id}"><div class="cov" style="aspect-ratio:16/9"><img src="${esc(videoThumb(v))}" alt="" loading="lazy"><span class="vplay">${I.play}</span><span class="vtype">${v.type==='live'?'LIVE SESSION':'OFFICIAL VIDEO'}</span></div>
+  <div><div class="t1">${esc(v.title)}</div><div class="t2">${esc(a?.name||'')} · ${nf(stat.views(v.id))} view${stat.views(v.id)===1?'':'s'}</div></div></a>`}
+let VQ={q:'',type:'all',artist:''};
+pages.videos=()=>`<h1 class="ltitle">Videos</h1><p class="muted">Official music videos and live sessions.</p>
+  <div class="filters" style="margin-top:16px"><label class="searchbox" for="vQ" style="max-width:none;flex:2 1 220px">${I.search}<input id="vQ" type="search" placeholder="Search a video or an artist" value="${esc(VQ.q)}" autocomplete="off"></label>
+   <select id="vArtist" aria-label="Filter by artist"><option value="">All artists</option>${DB.artists.filter(a=>api.videos().some(v=>v.artistId===a.id)).sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value="${a.id}" ${VQ.artist===a.id?'selected':''}>${esc(a.name)}</option>`).join('')}</select></div>
+  <div class="chips">${[['all','All'],['clip','Music videos'],['live','Live sessions']].map(([k,l])=>`<button class="chip ${VQ.type===k?'on':''}" data-act="vType" data-t="${k}">${l}</button>`).join('')}</div>
+  <div id="vGrid" style="margin-top:20px">${videoGrid()}</div>`;
+function videoGrid(){const q=norm(VQ.q).trim().split(/\s+/).filter(Boolean);const list=api.videos().filter(v=>(VQ.type==='all'||v.type===VQ.type)&&(!VQ.artist||v.artistId===VQ.artist)&&(!q.length||q.every(w=>norm(v.title+' '+(api.artist(v.artistId)?.name||'')+' '+(v.trackId?api.track(v.trackId)?.title||'':'')).includes(w))));
+  return list.length?`<div class="vgrid">${list.map(videoCard).join('')}</div>`:`<div class="empty">${api.videos().length?'No videos match your search.':'No videos yet.'}</div>`}
+let VP={id:null,watched:0,counted:false,timer:null,yt:null};
+function countView(v){const m=api.me();if(!m||VP.counted)return;VP.counted=true;m.views=m.views||{};const r=m.views[v.id]||{n:0,last:0};if(Date.now()-r.last<30*60e3)return;r.n++;r.last=Date.now();m.views[v.id]=r;
+  if(PUB){PUB.views=PUB.views||{};PUB.views[v.id]=(+PUB.views[v.id]||0)+1}saveMe()}
+function videoTick(v,playing){clearInterval(VP.timer);if(!playing)return;if(!audio.paused)audio.pause();VP.timer=setInterval(()=>{if(VP.id!==v.id)return clearInterval(VP.timer);VP.watched+=1;if(VP.watched>=10){countView(v);clearInterval(VP.timer)}},1000)}
+pages.video=id=>{const v=api.video(id);if(!v||(v.status!=='published'&&!api.isAdmin()))return notFound();const a=api.artist(v.artistId),t=v.trackId&&api.track(v.trackId);
+  const more=api.videos().filter(x=>x.id!==v.id&&x.artistId===v.artistId).slice(0,8),me=api.me()||art();
+  const player=!me?`<div class="vgate" style="background-image:url('${esc(videoThumb(v))}')"><div><h3>Create a free account to watch</h3><p class="muted">Sign up in seconds to watch music videos and live sessions.</p><div class="actions" style="justify-content:center"><a class="btn pri" href="#signup">Sign up</a><a class="btn" href="#login">Sign in</a></div></div></div>`
+    :v.source==='youtube'&&v.youtubeId?(art()?`<a class="vgate" href="https://www.youtube.com/watch?v=${esc(v.youtubeId)}" target="_blank" rel="noopener" style="background-image:url('${esc(videoThumb(v))}')"><div><h3>Watch on YouTube ↗</h3></div></a>`:`<div class="vframe"><div id="ytPlayer" data-yt="${esc(v.youtubeId)}"></div></div>`)
+    :(v.fileId||v.fileUrl)?`<div class="vframe"><video id="vFile" controls playsinline preload="metadata" poster="${esc(v.thumbId?blob(v.thumbId):v.thumb||'')}" src="${esc(v.fileId?blob(v.fileId):v.fileUrl)}"></video></div>`:'<div class="empty">This video is not available.</div>';
+  return `<div class="vpage"><div>${player}
+    <div class="eyebrow" style="margin-top:18px">${v.type==='live'?'Live session':'Official music video'}${v.status!=='published'?' · <span class="badge off">DRAFT</span>':''}</div><h1 style="font-size:clamp(24px,3.4vw,36px);margin-top:6px">${esc(v.title)}</h1>
+    <div class="meta" style="margin-top:8px"><a href="#artist-${a?.id}" style="font-weight:700">${esc(a?.name||'')}</a> · <span class="mono">${nf(stat.views(v.id))}</span> view${stat.views(v.id)===1?'':'s'}${v.publishedAt?' · '+frDate(v.publishedAt):''}</div>
+    <div class="actions"><button class="btn" data-act="share" data-k="video" data-id="${v.id}">${I.share} Share</button>${t&&isLive(t)?`<button class="btn pri" data-act="play" data-id="${t.id}">${I.play} Listen to the song</button>`:''}</div>
+    ${v.desc?`<p class="bio">${esc(v.desc)}</p>`:''}
+    ${t?`<a class="feat" href="#track-${t.id}" style="margin-top:18px;max-width:460px"><img src="${trackCover(t)}" alt=""><div style="min-width:0"><div class="eyebrow">The song</div><div class="t1" style="font-size:16px;margin-top:4px">${esc(t.title)}</div><div class="t2">${esc(artistText(t))}</div></div></a>`:''}</div>
+   <div>${more.length?sec('More from '+esc(a?.name||''),`<div class="vlist">${more.map(videoCard).join('')}</div>`):''}</div></div>`};
+let ytApi=null;function loadYT(){if(ytApi)return ytApi;ytApi=new Promise(res=>{if(window.YT&&YT.Player)return res();window.onYouTubeIframeAPIReady=()=>res();const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.onerror=()=>res('fail');document.head.appendChild(s)});return ytApi}
+function bindVideo(){const h=location.hash.slice(1);if(!h.startsWith('video-'))return;const v=api.video(h.slice(6));if(!v)return;if(VP.id!==v.id){VP={id:v.id,watched:0,counted:false,timer:null}}
+  const f=$('#vFile');if(f&&!f.dataset.b){f.dataset.b=1;f.addEventListener('play',()=>videoTick(v,true));f.addEventListener('pause',()=>videoTick(v,false));f.addEventListener('ended',()=>videoTick(v,false))}
+  const y=$('#ytPlayer');if(y&&!y.dataset.b){y.dataset.b=1;loadYT().then(r=>{const el=$('#ytPlayer');if(!el)return;
+    if(r==='fail'||!window.YT){el.outerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${esc(v.youtubeId)}?rel=0&playsinline=1" title="${esc(v.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;return}
+    new YT.Player('ytPlayer',{videoId:v.youtubeId,host:'https://www.youtube-nocookie.com',playerVars:{rel:0,playsinline:1,modestbranding:1},events:{onStateChange:e=>videoTick(v,e.data===1)}})})}}
+
+/* =========================================================
+   2. PLAYLISTS INTELLIGENTES
+   ========================================================= */
+const byPlays=(a,b)=>stat.plays(b.id)-stat.plays(a.id)||(pubDate(b)||b.createdAt)-(pubDate(a)||a.createdAt);
+const CONGO_GENRES=['Rumba','Ndombolo','Soukous'];
+function recommend(){const m=api.me();const pub=api.pub();if(!m)return [];
+  const gw={},aw={};const add=(t,w)=>{if(!t)return;gw[t.genre]=(gw[t.genre]||0)+w;aw[t.artistId]=(aw[t.artistId]||0)+w;t.featIds.forEach(x=>aw[x]=(aw[x]||0)+w/2)};
+  Object.entries(m.listens||{}).forEach(([tid,l])=>add(api.track(tid),Math.min(l.n||0,10)));(m.favs||[]).forEach(tid=>add(api.track(tid),4));(m.follows||[]).forEach(a=>aw[a]=(aw[a]||0)+6);
+  const known=Object.keys(gw).length+Object.keys(aw).length;if(!known)return [];
+  return pub.filter(t=>((m.listens||{})[t.id]?.n||0)<3).map(t=>({t,s:(gw[t.genre]||0)+(aw[t.artistId]||0)*1.5+t.featIds.reduce((s,x)=>s+(aw[x]||0),0)+Math.log1p(stat.plays(t.id))})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,30).map(x=>x.t)}
+const SMART=[
+ {id:'smart-top',name:'Top WMA MUSIC',desc:'The most played songs on WMA MUSIC.',hue:24,empty:'This chart fills up as listeners play songs.',build:()=>api.pub().filter(t=>stat.plays(t.id)>0).sort(byPlays).slice(0,50)},
+ {id:'smart-new',name:'New Releases',desc:'Songs released in the last 30 days.',hue:200,empty:'No releases in the last 30 days.',build:()=>sortNew(api.pub()).filter(t=>Date.now()-(pubDate(t)||t.createdAt)<30*864e5).slice(0,50)},
+ {id:'smart-hits',name:'African Hits',desc:'The songs listeners played most in the last 30 days.',hue:350,empty:'This chart fills up as listeners play songs.',build:()=>api.pub().filter(t=>stat.recent(t.id)>0).sort((a,b)=>stat.recent(b.id)-stat.recent(a.id)).slice(0,50)},
+ {id:'smart-afrobeat',name:'Afrobeat',desc:'Afrobeat, afro-pop and amapiano.',hue:40,empty:'No afrobeat songs yet.',build:()=>api.pub().filter(t=>['Afrobeat','Afro-pop','Amapiano'].includes(t.genre)).sort(byPlays).slice(0,60)},
+ {id:'smart-gospel',name:'Gospel',desc:'Gospel songs from across Africa.',hue:280,empty:'No gospel songs yet.',build:()=>api.pub().filter(t=>t.genre==='Gospel').sort(byPlays).slice(0,60)},
+ {id:'smart-congo',name:'Congolese Music',desc:'Rumba, ndombolo, soukous and artists from the DR Congo.',hue:12,empty:'No Congolese music yet.',build:()=>api.pub().filter(t=>CONGO_GENRES.includes(t.genre)||/congo|rdc|drc/i.test(api.artist(t.artistId)?.country||'')).sort(byPlays).slice(0,60)},
+ {id:'smart-foryou',name:'Made for You',desc:'Picked from the songs, genres and artists you listen to.',hue:160,personal:true,empty:'Listen to a few songs, add favourites or follow artists, and your recommendations will appear here.',build:recommend}
+];
+const smartPl=id=>{const d=SMART.find(x=>x.id===id);if(!d)return null;if(d.personal&&!api.me())return null;return {id:d.id,name:d.name,desc:d.desc,trackIds:d.build().map(t=>t.id),official:true,smart:true,hue:d.hue,emptyMsg:d.empty,category:'WMA MUSIC'}};
+api.smartPlaylists=()=>SMART.map(d=>smartPl(d.id)).filter(Boolean);
+const _apiPlaylist=api.playlist;api.playlist=id=>smartPl(id)||_apiPlaylist(id);
+const smartCovers={};function smartCover(p){const k=p.id+p.name;if(smartCovers[k])return smartCovers[k];const c=document.createElement('canvas');c.width=c.height=480;const g=c.getContext('2d');const h=p.hue??24;
+  const gr=g.createLinearGradient(0,0,480,480);gr.addColorStop(0,`hsl(${h},85%,52%)`);gr.addColorStop(1,`hsl(${(h+40)%360},70%,14%)`);g.fillStyle=gr;g.fillRect(0,0,480,480);
+  g.fillStyle='rgba(0,0,0,.25)';for(let i=0;i<5;i++){g.beginPath();g.arc(380-i*30,380-i*20,180-i*28,0,7);g.fill()}
+  g.fillStyle='#fff';g.font='800 54px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';const words=p.name.split(' ');let line='',y=300;const lines=[];
+  for(const w of words){if(g.measureText(line+w).width>400&&line){lines.push(line.trim());line=''}line+=w+' '}lines.push(line.trim());lines.slice(-2).forEach((l,i,arr)=>g.fillText(l,36,400-(arr.length-1-i)*62));
+  g.font='700 22px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';g.fillStyle='rgba(255,255,255,.85)';g.fillText('WMA MUSIC',36,64);return smartCovers[k]=c.toDataURL('image/jpeg',.88)}
+const _plCover=plCover;plCover=p=>p.smart?smartCover(p):_plCover(p);
+pages.playlists=()=>{const smart=api.smartPlaylists(),offi=DB.playlists.map(p=>({...p,official:true})),mine=api.myPlaylists();const cats={};offi.forEach(p=>{const c=p.category||'Editorial picks';(cats[c]=cats[c]||[]).push(p)});
+  return `<h1 class="ltitle">Playlists</h1>
+   ${sec('Charts &amp; picks',`<div class="grid">${smart.map(plCard).join('')}</div>`)}
+   ${Object.entries(cats).map(([c,l])=>sec(esc(c),`<div class="grid">${l.map(plCard).join('')}</div>`)).join('')}
+   ${api.me()?sec('Your playlists',mine.length?`<div class="grid">${mine.map(plCard).join('')}</div>`:`<div class="empty">No playlists yet. <button class="btn sm pri" data-act="plnew" style="margin-left:8px">${I.plus} New playlist</button></div>`):''}
+   ${sec('Browse by genre',`<div class="genres">${DB.genres.map((g,i)=>`<a class="genre" style="--h:${[18,8,30,350,40,200,26,12][i%8]}" href="#genre-${encodeURIComponent(g)}">${esc(g)}</a>`).join('')}</div>`)}`};
+pages.genre=g=>{g=decodeURIComponent(g||'');const tr=api.pub().filter(t=>t.genre===g).sort(byPlays);return `<div class="eyebrow">Genre</div><h1 class="ltitle" style="margin-top:4px">${esc(g)}</h1>
+  <div class="actions" style="margin:0 0 6px">${tr.length?`<button class="btn pri" data-act="play" data-id="${tr[0].id}" data-q="${tr.map(t=>t.id).join(',')}">${I.play} Play all</button>`:''}</div>${sec('Songs',trackRows(tr,{empty:'No songs in this genre yet.'}))}`};
+/* Playlist page : message honnête pour les playlists intelligentes vides */
+const _plPage=pages.playlist;pages.playlist=id=>{const p=api.playlist(id);if(p&&p.smart&&!p.trackIds.length)return _plPage(id).replace('This playlist is empty. Add songs with the + button on any song.',esc(p.emptyMsg||'No songs yet.'));return _plPage(id)};
+
+/* =========================================================
+   1. PROFIL ARTISTE PROFESSIONNEL
+   ========================================================= */
+const SOCIALS=[['instagram','Instagram'],['tiktok','TikTok'],['youtube','YouTube'],['spotify','Spotify'],['apple','Apple Music'],['audiomack','Audiomack'],['boomplay','Boomplay'],['facebook','Facebook'],['x','X'],['website','Website']];
+const artistCoverSrc=a=>a.coverId?blob(a.coverId):a.coverUrl||null;
+const vName=a=>`${esc(a.name)}${a.verified?FI.verified:''}`;
+pages.artist=id=>{
+  const a=api.artist(id);if(!a)return notFound();
+  const tr=api.tracksOf(a.id),popular=tr.slice().sort(byPlays).slice(0,5),newest=sortNew(tr),als=DB.albums.filter(x=>x.artistId===a.id&&api.albumTracks(x.id).length),sg=newest.filter(t=>!t.albumId);
+  const vids=api.videos().filter(v=>v.artistId===a.id),clips=vids.filter(v=>v.type!=='live'),lives=vids.filter(v=>v.type==='live'),up=api.upcoming().filter(t=>t.artistId===a.id||t.featIds.includes(a.id));
+  const pls=[...api.smartPlaylists(),...api.playlists()].filter(p=>p.trackIds.some(tid=>{const t=api.track(tid);return t&&isLive(t)&&(t.artistId===a.id||t.featIds.includes(a.id))})).filter((p,i,arr)=>arr.findIndex(x=>x.id===p.id)===i);
+  const fol=(api.me()?.follows||[]).includes(a.id),q=newest.map(t=>t.id).join(','),cov=artistCoverSrc(a),ph=artistPhoto(a);
+  const soc=SOCIALS.map(([k,l])=>{const u=(a.socials||{})[k]||(k==='youtube'?a.youtube:'');return u&&/^https:\/\//.test(u)?`<a class="soc" href="${esc(u)}" target="_blank" rel="noopener">${esc(l)} ↗</a>`:''}).join('');
+  const info=[['From',[a.city,a.country].filter(Boolean).join(', ')],['Genres',a.genres],['Label',a.label],['Active since',a.since],['Booking',a.booking]].filter(x=>x[1]);
+  return `<section class="ahero"><div class="ahero-bg" style="${cov?`--bgimg:url('${esc(cov)}')`:ph?`--bgimg:url('${esc(ph)}');filter:blur(16px) saturate(1.15)`:''}"></div><div class="ahero-shade"></div>
+    <div class="ahero-in"><div class="ahero-av">${avatar(a,64)}</div><div class="info" style="min-width:0">
+     <div class="eyebrow">${a.verified?'Verified artist':'Artist'}</div><h1 class="aname">${vName(a)}</h1>
+     <div class="astats"><span><b class="mono">${nf(stat.artistPlays(a.id))}</b> plays</span><span><b class="mono">${nf(stat.followers(a.id))}</b> follower${stat.followers(a.id)===1?'':'s'}</span>${a.country?`<span>${flag(({'DR Congo':'CD','RDC':'CD'})[a.country]||'')} ${esc(a.country)}</span>`:''}</div>
+     <div class="actions">${tr.length?`<button class="btn pri" data-act="play" data-id="${(popular[0]||newest[0]).id}" data-q="${popular.length?[...popular,...newest.filter(t=>!popular.includes(t))].map(t=>t.id).join(','):q}">${I.play} Play</button>`:''}<button class="btn ${fol?'':'pri-o'}" data-act="follow" data-id="${a.id}">${fol?'Following ✓':'Follow'}</button><button class="btn" data-act="share" data-k="artist" data-id="${a.id}">${I.share} Share</button></div></div></div></section>
+   ${soc?`<div class="socs">${soc}</div>`:''}
+   ${up.length?sec('Coming soon',`<div class="up-grid">${up.map(upcomingCard).join('')}</div>`,['#upcoming','All upcoming']):''}
+   ${sec('Popular',trackRows(popular.length?popular:newest.slice(0,5),{empty:'No songs released by this artist yet.'}),tr.length>5?['#artist-'+a.id+'-songs','All songs']:null)}
+   ${als.length?sec('Albums',`<div class="grid">${als.map(albumCard).join('')}</div>`):''}
+   ${sg.length?sec('Singles',rail(sg.map(t=>trackCard(t,sg.map(x=>x.id).join(','))))):''}
+   ${clips.length?sec('Music videos',`<div class="vgrid">${clips.map(videoCard).join('')}</div>`):''}
+   ${lives.length?sec('Live sessions',`<div class="vgrid">${lives.map(videoCard).join('')}</div>`):''}
+   ${!vids.length&&a.youtube?sec('Videos',`<a class="card" style="max-width:320px" href="${esc(a.youtube)}" target="_blank" rel="noopener"><div class="cov" style="aspect-ratio:16/9;display:grid;place-items:center;background:hsl(${a.hue??24} 40% 14%)"><span class="pbtn" style="width:54px;height:54px">${I.yt}</span></div><div class="t1">Watch videos on YouTube ↗</div></a>`):''}
+   ${pls.length?sec('Featured on',rail(pls.slice(0,10).map(plCard))):''}
+   ${sec('About',`<div class="about"><div>${ph?`<img src="${esc(ph)}" alt="${esc(a.name)}" class="about-ph">`:''}<p class="bio" style="margin:0">${esc(a.bio||'')}</p></div>${info.length?`<dl class="ainfo">${info.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`:''}</div>`)}`;
+};
+const _artistPage=pages.artist;pages.artist=arg=>{const m=String(arg||'').match(/^(.+)-songs$/);if(m&&api.artist(m[1])){const a=api.artist(m[1]),tr=sortNew(api.tracksOf(a.id));return `<div class="eyebrow">${vName(a)}</div><h1 class="ltitle" style="margin-top:6px">All songs</h1>${trackRows(tr)}`}return _artistPage(arg)};
+/* Badge vérifié sur les cartes d'artistes */
+const _artistCard=artistCard;artistCard=a=>_artistCard(a).replace(`<div class="t1">${esc(a.name)}</div>`,`<div class="t1">${vName(a)}</div>`);
+
+/* =========================================================
+   3. WMA ARTIST DASHBOARD
+   ========================================================= */
+const studioArtists=()=>api.isAdmin()?DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)):DB.artists.filter(a=>MYARTISTS.includes(a.id));
+const canStudio=()=>api.isAdmin()||(!!api.me()&&MYARTISTS.length>0);
+let STUDIO={aid:null,data:null,loading:false,err:null,at:0};
+function localReport(aid){const tids=DB.tracks.filter(t=>t.artistId===aid||t.featIds.includes(aid)).map(t=>t.id),r={artist:aid,trackIds:tids,streams:0,listeners:0,followers:PEOPLE.filter(p=>(p.follows||[]).includes(aid)).length,tracks:{},favs:{},presaves:{},countries:{},days:{}};const L=new Set();
+  for(const p of PEOPLE){const c=(p.country||'XX').toUpperCase();let heard=false;for(const tid of tids){const n=(p.listens||{})[tid]?.n||0;if(!n)continue;heard=true;r.streams+=n;const x=r.tracks[tid]=r.tracks[tid]||{streams:0,listeners:0};x.streams+=n;x.listeners++;const cc=r.countries[c]=r.countries[c]||{streams:0,listeners:0};cc.streams+=n}
+    if(heard){L.add(p.id);(r.countries[c]=r.countries[c]||{streams:0,listeners:0}).listeners++}
+    (p.favs||[]).forEach(t=>{if(tids.includes(t))r.favs[t]=(r.favs[t]||0)+1});(p.presaves||[]).forEach(t=>{if(tids.includes(t))r.presaves[t]=(r.presaves[t]||0)+1});
+    (p.log||[]).forEach(x=>{if(tids.includes(x.t)&&Date.now()-x.ts<90*864e5){const d=new Date(x.ts).toISOString().slice(0,10);r.days[d]=(r.days[d]||0)+1}})}
+  r.listeners=L.size;return r}
+async function loadStudio(aid,force){if(!aid)return;if(STUDIO.aid===aid&&STUDIO.data&&!force&&Date.now()-STUDIO.at<60e3)return;STUDIO={aid,data:STUDIO.aid===aid?STUDIO.data:null,loading:true,err:null,at:0};rerender();
+  try{if(supa()){const {data,error}=await SB.rpc('music_artist_report',{p_artist:aid});if(error)throw new Error(/42501|Accès|denied/i.test(error.code+error.message)?'You do not have access to this artist.':error.message);STUDIO.data=data}
+    else STUDIO.data=localReport(aid);STUDIO.at=Date.now()}catch(e){STUDIO.err=e.message||'The report could not be loaded.'}STUDIO.loading=false;if(location.hash.startsWith('#studio'))rerender()}
+function daysChart(days,n=30){const out=[],d0=new Date();d0.setUTCHours(0,0,0,0);for(let i=n-1;i>=0;i--){const d=new Date(d0.getTime()-i*864e5).toISOString().slice(0,10);out.push({d,n:+(days||{})[d]||0})}
+  const max=Math.max(...out.map(x=>x.n));if(!max)return '<div class="empty">The chart will appear after the first counted streams.</div>';
+  const top=Math.max(4,Math.ceil(max/4)*4),W=720,H=220,L=40,R=12,T=12,B=28,x=i=>L+i*(W-L-R)/(n-1),y=v=>T+(H-T-B)*(1-v/top),pts=out.map((o,i)=>`${x(i)},${y(o.n)}`).join(' '),step=Math.ceil(n/8);
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="width:100%;min-width:480px" role="img" aria-label="Streams per day">${[0,.25,.5,.75,1].map(f=>`<line x1="${L}" x2="${W-R}" y1="${y(top*f)}" y2="${y(top*f)}" stroke="#2C2C2E"/><text x="${L-8}" y="${y(top*f)+4}" fill="#8E8E93" font-size="11" text-anchor="end" font-family="ui-monospace,monospace">${top*f}</text>`).join('')}
+   <polygon points="${x(0)},${y(0)} ${pts} ${x(n-1)},${y(0)}" fill="rgba(255,122,26,.20)"/><polyline points="${pts}" fill="none" stroke="#FF7A1A" stroke-width="2.5" stroke-linejoin="round"/>
+   ${out.map((o,i)=>`${(n-1-i)%step===0?`<text x="${x(i)}" y="${H-8}" fill="#8E8E93" font-size="11" text-anchor="middle" font-family="ui-monospace,monospace">${o.d.slice(8,10)}/${o.d.slice(5,7)}</text>`:''}${o.n?`<circle cx="${x(i)}" cy="${y(o.n)}" r="${i===n-1?5:2.5}" fill="#FF7A1A"><title>${o.d}: ${o.n} stream(s)</title></circle>`:''}`).join('')}</svg></div>`}
+let STUDIO_DAYS=30;
+pages.studio=()=>{
+  if(!api.me()&&!art())return `<div class="auth"><h1>WMA Artist Dashboard</h1><p class="muted">Sign in with the account WMA linked to your artist profile.</p><div class="actions"><a class="btn pri" href="#login">Sign in</a></div></div>`;
+  if(!canStudio())return `<div class="auth"><h1>WMA Artist Dashboard</h1><p class="muted">This space is for WMA artists and their teams. Ask the WMA team to link your account to your artist profile.</p><div class="actions"><a class="btn" href="#home">Back to home</a></div></div>`;
+  const list=studioArtists();if(!list.length)return `<div class="empty">No artist is linked to your account yet.</div>`;
+  if(!STUDIO.aid||!list.some(a=>a.id===STUDIO.aid)){setTimeout(()=>loadStudio(list[0].id),0);STUDIO.aid=list[0].id}
+  else if(!STUDIO.data&&!STUDIO.loading&&!STUDIO.err)setTimeout(()=>loadStudio(STUDIO.aid),0);
+  const a=api.artist(STUDIO.aid),r=STUDIO.data;
+  const head=`<div class="eyebrow">WMA Artist Dashboard</div><div class="studio-head"><h1 class="ltitle" style="margin:4px 0 0">${a?vName(a):''}</h1>
+    ${list.length>1?`<select id="stArtist" aria-label="Choose an artist">${list.map(x=>`<option value="${x.id}" ${x.id===STUDIO.aid?'selected':''}>${esc(x.name)}</option>`).join('')}</select>`:''}
+    <button class="btn sm" data-act="stRefresh">Refresh</button></div>`;
+  if(STUDIO.err)return head+`<div class="empty" style="margin-top:20px">${esc(STUDIO.err)}</div>`;
+  if(!r)return head+`<div class="empty" style="margin-top:20px">Loading the statistics…</div>`;
+  const trs=(r.trackIds||[]).map(api.track).filter(Boolean).map(t=>({t,s:(r.tracks[t.id]||{}).streams||0,l:(r.tracks[t.id]||{}).listeners||0,f:r.favs[t.id]||0,p:r.presaves[t.id]||0})).sort((x,y)=>y.s-x.s||y.f-x.f);
+  const ctry=Object.entries(r.countries||{}).map(([c,v])=>({c,s:v.streams||0,l:v.listeners||0})).filter(x=>x.s||x.l).sort((x,y)=>y.s-x.s),cmax=ctry[0]?.s||1;
+  const presaves=Object.values(r.presaves||{}).reduce((s,n)=>s+n,0),favs=Object.values(r.favs||{}).reduce((s,n)=>s+n,0);
+  return head+`<p class="muted" style="font-size:12.5px;margin:6px 0 16px">Real data from WMA MUSIC listeners · updated ${frDT(r.at||Date.now())}</p>
+   <div class="kpis"><div class="kpi"><b>${nf(r.streams)}</b><span>Streams</span></div><div class="kpi"><b>${nf(r.listeners)}</b><span>Listeners</span></div><div class="kpi"><b>${nf(r.followers)}</b><span>Followers</span></div><div class="kpi"><b>${nf(favs)}</b><span>Favourites</span></div><div class="kpi"><b>${nf(presaves)}</b><span>Pre-saves</span></div></div>
+   <div class="panel" style="margin-top:16px"><div class="studio-head"><h3 style="font-size:17px">Streams over time</h3><div class="chips">${[7,30,90].map(n=>`<button class="chip ${STUDIO_DAYS===n?'on':''}" data-act="stDays" data-n="${n}">${n} days</button>`).join('')}</div></div>${daysChart(r.days,STUDIO_DAYS)}</div>
+   <div class="panel" style="margin-top:16px"><div class="studio-head"><h3 style="font-size:17px">Songs ranking</h3><button class="btn sm" data-act="stCsv" data-r="songs">${FI.down} Download CSV</button></div>
+    ${trs.length?`<div class="tbl-wrap"><table><thead><tr><th>#</th><th></th><th>Song</th><th>Status</th><th>Streams</th><th>Listeners</th><th>Favourites</th><th>Pre-saves</th></tr></thead><tbody>${trs.map((x,i)=>`<tr><td class="mono">${i+1}</td><td><img src="${trackCover(x.t)}" alt=""></td><td><b>${esc(x.t.title)}</b><div class="t2">${esc(artistText(x.t))}</div></td><td>${statusBadge(x.t)}</td><td class="mono">${nf(x.s)}</td><td class="mono">${nf(x.l)}</td><td class="mono">${nf(x.f)}</td><td class="mono">${nf(x.p)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No songs yet.</div>'}</div>
+   <div class="panel" style="margin-top:16px"><div class="studio-head"><h3 style="font-size:17px">Listeners by country</h3><button class="btn sm" data-act="stCsv" data-r="countries">${FI.down} Download CSV</button></div>
+    ${ctry.length?`<div class="bars">${ctry.map(x=>`<div class="bar"><div style="min-width:0"><div class="t1" style="font-size:13px">${flag(x.c)} ${esc(regionName(x.c))} <span class="muted">· ${nf(x.l)} listener${x.l===1?'':'s'}</span></div><i style="width:${x.s/cmax*100}%"></i></div><span class="mono" style="text-align:right">${nf(x.s)}</span></div>`).join('')}</div>
+     <p class="muted" style="font-size:12px;margin:12px 0 0">Country is detected from each listener's connection when they use WMA MUSIC. “Unknown” covers listeners whose country could not be detected.</p>`:'<div class="empty">No listeners yet.</div>'}</div>
+   <div class="actions"><button class="btn" data-act="stCsv" data-r="days">${FI.down} Daily streams (CSV)</button></div>`;
+};
+function csvDownload(name,rows){const csv=rows.map(r=>r.map(v=>{const s=String(v??'');return /[",\n;]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(',')).join('\r\n');
+  if(MODE==='cloud'&&window.claude&&claude.use){claude.use('downloads').then(d=>{if(!d)return toast("Downloads aren't available here");return d.save({filename:name,data:new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'})}).then(()=>toast('Report downloaded'))}).catch(()=>toast('Download cancelled'));return}
+  const b=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},500);toast('Report downloaded')}
+function studioCsv(kind){const r=STUDIO.data,a=api.artist(STUDIO.aid);if(!r||!a)return;const day=today(),slug=key(a.name)||a.id;
+  if(kind==='songs')csvDownload(`wma-${slug}-songs-${day}.csv`,[['Rank','Song','Artists','Album','Status','Release date','Streams','Listeners','Favourites','Pre-saves'],...(r.trackIds||[]).map(api.track).filter(Boolean).map(t=>({t,s:(r.tracks[t.id]||{}).streams||0})).sort((x,y)=>y.s-x.s).map((x,i)=>[i+1,x.t.title,artistText(x.t),x.t.albumId?api.album(x.t.albumId)?.title||'':'Single',x.t.status,x.t.releaseDate||'',x.s,(r.tracks[x.t.id]||{}).listeners||0,r.favs[x.t.id]||0,r.presaves[x.t.id]||0])]);
+  if(kind==='countries')csvDownload(`wma-${slug}-countries-${day}.csv`,[['Country','Code','Streams','Listeners'],...Object.entries(r.countries||{}).sort((x,y)=>(y[1].streams||0)-(x[1].streams||0)).map(([c,v])=>[regionName(c),c,v.streams||0,v.listeners||0])]);
+  if(kind==='days'){const rows=[['Date','Streams']],d0=new Date();d0.setUTCHours(0,0,0,0);for(let i=89;i>=0;i--){const d=new Date(d0.getTime()-i*864e5).toISOString().slice(0,10);rows.push([d,+(r.days||{})[d]||0])}csvDownload(`wma-${slug}-daily-streams-${day}.csv`,rows)}}
+
+/* =========================================================
+   Intégration : accueil, recherche, chanson, navigation, partage
+   ========================================================= */
+function quickLinks(){return `<nav class="qlinks" aria-label="Explore"><a href="#playlists">${FI.list} Playlists</a><a href="#videos">${FI.video} Videos</a><a href="#upcoming">${FI.clock} Coming soon</a>${canStudio()?`<a href="#studio">${FI.chart} Artist Dashboard</a>`:''}</nav>`}
+function homeExtra(){const up=api.upcoming(),fy=api.me()?smartPl('smart-foryou'):null,vids=api.videos();
+  return `${up.length?sec('Coming soon',`<div class="up-grid">${up.slice(0,4).map(upcomingCard).join('')}</div>`,['#upcoming','See all']):''}
+   ${fy&&fy.trackIds.length?sec('Made for you',rail(fy.trackIds.slice(0,12).map(id=>trackCard(api.track(id),fy.trackIds.join(',')))),['#playlist-smart-foryou','Open playlist']):''}
+   ${sec('Charts &amp; picks',rail(api.smartPlaylists().filter(p=>!p.personal).map(plCard)),['#playlists','All playlists'])}
+   ${vids.length?sec('Music videos',rail(vids.slice(0,10).map(videoCard)),['#videos','All videos']):''}`}
+/* Accueil : liens rapides + sections ajoutées, sans toucher au reste */
+const _home=pages.home;pages.home=()=>{let h=_home();
+  const i=h.indexOf('<section class="sec"><div class="sec-h"><h2>Popular albums');const j=h.indexOf('<section class="sec"><div class="sec-h"><h2>Latest singles');const k=i>=0?i:j;
+  const extra=homeExtra();h=k>=0?h.slice(0,k)+extra+h.slice(k):h+extra;
+  return h};
+/* Le lien rapide est inséré après le diaporama */
+const _homeRender=pages.home;pages.home=()=>{let h=_homeRender();if(!h.includes('class="qlinks"'))h=h.replace(/(<\/section>)/,'$1'+quickLinks());return h};
+/* Chanson : vidéo associée + pre-save pour les sorties programmées */
+const _track=pages.track;pages.track=id=>{const t=api.track(id);if(t&&isUpcoming(t)){const a=api.artist(t.artistId),al=t.albumId&&api.album(t.albumId);
+    return `<div class="phead"><div class="art"><img src="${trackCover(t)}" alt=""></div><div class="info"><div class="eyebrow">Coming soon</div><h1 style="margin-top:8px">${esc(t.title)}</h1>
+     <div class="meta">${artistLinks(t)} · ${al?esc(al.title):'Single'} · Out ${frDT(t.publishAt)}</div><div class="cd big" data-cd="${t.publishAt}">${cdText(t.publishAt)}</div>
+     <div class="actions">${presaveBtn(t)}<button class="btn" data-act="share" data-k="track" data-id="${t.id}">${I.share} Share</button><span class="t2 mono">${nf(stat.presaves(t.id))} pre-save${stat.presaves(t.id)===1?'':'s'}</span></div></div></div>
+     ${t.description?`<p class="bio">${esc(t.description)}</p>`:''}`}
+  let h=_track(id);if(!t)return h;const vs=api.videos().filter(v=>v.trackId===t.id);if(vs.length){const block=sec(vs.length>1?'Videos':'Official video',`<div class="vgrid">${vs.map(videoCard).join('')}</div>`);const k=h.search(/<div class="panel"|<section class="sec"/);h=k>=0?h.slice(0,k)+block+h.slice(k):h+block}return h};
+/* Recherche : vidéos */
+const _sr=searchResults;searchResults=function(){const q=norm(searchState.q).trim();
+  if(searchState.f==='videos'&&!q)return `<div class="empty" style="margin-top:28px">Type an artist name or a video title.</div>`;
+  let h=searchState.f==='videos'?'':_sr();if(!q||!(searchState.f==='all'||searchState.f==='videos'))return h;
+  const w=q.split(/\s+/),vs=api.videos().filter(v=>w.every(x=>norm(v.title+' '+(api.artist(v.artistId)?.name||'')+' '+(v.type==='live'?'live session':'video clip')).includes(x)));
+  const block=vs.length?sec('Videos',`<div class="vgrid">${vs.slice(0,searchState.f==='all'?4:40).map(videoCard).join('')}</div>`):'';
+  if(searchState.f==='videos')return block||`<div class="empty" style="margin-top:28px">No videos match “${esc(searchState.q)}”.</div>`;
+  return h.includes('No results for')&&block?block:h+block};
+const _searchPage=pages.search;pages.search=()=>_searchPage().replace("['playlists','Playlists']","['playlists','Playlists']").replace(/(data-f="playlists">Playlists<\/button>)/,'$1<button class="chip '+(searchState.f==='videos'?'on':'')+'" data-act="sfilter" data-f="videos">Videos</button>');
+/* Partage des vidéos */
+const _shareInfo=shareInfo;shareInfo=(k,id)=>{if(k==='video'){const v=api.video(id);if(!v)return null;const a=api.artist(v.artistId);return {url:location.origin+location.pathname+'#video-'+id,title:v.title,sub:(v.type==='live'?'Live session':'Music video')+' · '+(a?.name||''),img:videoThumb(v),text:`Watch “${v.title}” by ${a?.name||''} on WMA MUSIC 🎬`}}return _shareInfo(k,id)};
+/* Navigation : liens supplémentaires + cloche de notifications */
+const _chrome=chrome;chrome=function(){_chrome();const h=location.hash.slice(1)||'home',is=k=>h===k||h.startsWith(k+'-');
+  const nav=$('#sideNav'),art_=nav.querySelector('a[href="#artists"]');
+  if(art_)art_.insertAdjacentHTML('afterend',`<a href="#playlists" class="${is('playlists')||is('playlist')||is('genre')?'on':''}">${FI.list} Playlists</a><a href="#videos" class="${is('videos')||is('video')?'on':''}">${FI.video} Videos</a><a href="#upcoming" class="${is('upcoming')?'on':''}">${FI.clock} Coming soon</a>`);
+  if(canStudio()){const prof=nav.querySelector('a[href="#profile"]');prof&&prof.insertAdjacentHTML('afterend',`<a href="#studio" class="${is('studio')?'on':''}">${FI.chart} Artist Dashboard</a>`)}
+  if(api.me()){const n=unreadCount();$('#topActions').insertAdjacentHTML('afterbegin',`<button class="ic bell" data-act="notifs" aria-label="Notifications${n?' ('+n+' new)':''}" title="Notifications">${FI.bell}${n?`<i>${n>9?'9+':n}</i>`:''}</button>`)}};
+/* Profil : accès au dashboard */
+const _profile=pages.profile;pages.profile=()=>{let h=_profile();if(canStudio())h=h.replace('<div class="actions">','<div class="actions"><a class="btn pri" href="#studio">'+FI.chart+' Artist Dashboard</a>');return h};
+/* Liens bindings */
+const _bindForms=bindForms;bindForms=function(){_bindForms();
+  const vq=$('#vQ');if(vq&&!vq.dataset.b){vq.dataset.b=1;vq.addEventListener('input',()=>{VQ.q=vq.value;$('#vGrid').innerHTML=videoGrid()})}
+  const va=$('#vArtist');if(va&&!va.dataset.b){va.dataset.b=1;va.addEventListener('change',()=>{VQ.artist=va.value;$('#vGrid').innerHTML=videoGrid()})}
+  const sa=$('#stArtist');if(sa&&!sa.dataset.b){sa.dataset.b=1;sa.addEventListener('change',()=>{STUDIO={aid:sa.value,data:null,loading:false,err:null,at:0};loadStudio(sa.value,true)})}
+  bindVideo()};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,id=el.dataset.id;
+  const acts={presave:()=>togglePresave(id),notifs:openNotifs,notifPerm:()=>{Notification.requestPermission().then(()=>{closeModal();toast(Notification.permission==='granted'?'Notifications are on':'Notifications are off')})},
+    vType:()=>{VQ.type=el.dataset.t;rerender()},stRefresh:()=>loadStudio(STUDIO.aid,true),stDays:()=>{STUDIO_DAYS=+el.dataset.n;rerender()},stCsv:()=>studioCsv(el.dataset.r)};
+  if(acts[a]){e.preventDefault();e.stopImmediatePropagation();acts[a]()}},true);
+
+/* =========================================================
+   WMA ADMIN — ajouts plateforme
+   ========================================================= */
+/* Profil artiste pro : formulaire complet (remplace l'ancien, mêmes données + nouveaux champs) */
+artistForm=function(id){
+  const a=id?api.artist(id):null,so=a?.socials||{};
+  openModal(`<h3>${a?'Edit artist':'Add an artist'}</h3><form class="form sform" id="aForm" style="max-width:none" novalidate>
+   <fieldset><legend>Identity</legend>
+    <div class="row2"><div class="fld"><label for="fName">Artist name *</label><input id="fName" maxlength="60" value="${esc(a?.name||'')}" required></div><div class="fld"><label for="fCountry">Country</label><input id="fCountry" maxlength="40" value="${esc(a?.country||'')}" placeholder="e.g. DR Congo"></div></div>
+    <div class="row2"><div class="fld"><label for="fCity">City</label><input id="fCity" maxlength="60" value="${esc(a?.city||'')}" placeholder="e.g. Kinshasa"></div><div class="fld"><label for="fGenres">Genres</label><input id="fGenres" maxlength="100" value="${esc(a?.genres||'')}" placeholder="e.g. Afrobeats, Rumba"></div></div>
+    <div class="row2"><div class="fld"><label for="fLabel">Label</label><input id="fLabel" maxlength="80" value="${esc(a?.label||'')}" placeholder="e.g. WMA UNITED AFRICA"></div><div class="fld"><label for="fSince">Active since</label><input id="fSince" maxlength="10" value="${esc(a?.since||'')}" placeholder="e.g. 2016"></div></div>
+    <div class="fld"><label for="fBooking">Booking contact (shown on the profile)</label><input id="fBooking" maxlength="120" value="${esc(a?.booking||'')}" placeholder="e.g. booking@wmaua.com"></div>
+    <div class="fld"><label for="fBio">Biography</label><textarea id="fBio" maxlength="2000">${esc(a?.bio||'')}</textarea></div>
+    <label class="check"><input type="checkbox" id="fVerified" ${a?.verified?'checked':''}> Verified artist (shows the verification badge)</label>
+    <label class="check"><input type="checkbox" id="fWma" ${!a||a.wma?'checked':''}> Managed by WMA UNITED AFRICA (internal)</label>
+    <label class="check"><input type="checkbox" id="fHome" ${!a||a.home!==false?'checked':''}> Show in “Featured artists” on the home page</label></fieldset>
+   <fieldset><legend>Images</legend>
+    <div class="drop"><label for="fPhoto">${artistPhoto(a||{})?`<img src="${esc(artistPhoto(a))}" alt="">`:I.upload}<span><b>Profile photo</b><small>Square or portrait</small></span></label><input id="fPhoto" type="file" accept="image/*"></div>
+    <div class="drop"><label for="fCoverImg">${a&&artistCoverSrc(a)?`<img src="${esc(artistCoverSrc(a))}" alt="" style="width:120px;height:44px">`:I.upload}<span><b>Cover image</b><small>Wide banner, 2400 × 800 px recommended</small></span></label><input id="fCoverImg" type="file" accept="image/*"></div>
+    ${a&&artistCoverSrc(a)?'<label class="check"><input type="checkbox" id="fCoverRm"> Remove the current cover</label>':''}</fieldset>
+   <fieldset><legend>Social networks and platforms</legend><div class="row2">${SOCIALS.map(([k,l])=>`<div class="fld"><label for="fs_${k}">${l}</label><input id="fs_${k}" type="url" placeholder="https://" value="${esc(so[k]||(k==='youtube'?a?.youtube||'':''))}"></div>`).join('')}</div></fieldset>
+   <div class="err" id="fErr"></div><div class="actions sticky-actions"><button class="btn pri" type="submit">${a?'Save':'Add the artist'}</button><button class="btn" type="button" data-act="close">Cancel</button></div></form>`,true);
+  $('#aForm').onsubmit=async e=>{e.preventDefault();const err=$('#fErr'),name=$('#fName').value.trim(),btn=$('#aForm button[type=submit]');err.textContent='';
+    if(name.length<2)return err.textContent='The name must be at least 2 characters long.';
+    if(DB.artists.some(x=>key(x.name)===key(name)&&x.id!==a?.id))return err.textContent='An artist with this name already exists.';
+    const socials={};for(const [k,l] of SOCIALS){const v=$('#fs_'+k).value.trim();if(v&&!/^https:\/\/\S+\.\S+/.test(v))return err.textContent=`The ${l} link must start with https://`;if(v)socials[k]=v}
+    btn.disabled=true;btn.textContent='Saving…';
+    try{let ph={},cv={};const img=await readImg($('#fPhoto').files[0],1200);if(img){const r=await storeImage(img);ph=r.coverId?{photoId:r.coverId,photo:null}:{photo:r.cover}}
+      const ci=await readImg($('#fCoverImg').files[0],2400);if(ci){const r=await storeImage(ci);cv=r.coverId?{coverId:r.coverId,coverUrl:null}:{coverUrl:r.cover,coverId:null}}else if($('#fCoverRm')?.checked)cv={coverId:null,coverUrl:null};
+      const data={...(a||{id:uid('a'),hue:Math.floor(Math.random()*40)+10,createdAt:Date.now()}),name,country:$('#fCountry').value.trim(),city:$('#fCity').value.trim(),genres:$('#fGenres').value.trim(),label:$('#fLabel').value.trim(),since:$('#fSince').value.trim(),booking:$('#fBooking').value.trim(),
+        bio:$('#fBio').value.trim(),verified:$('#fVerified').checked,wma:$('#fWma').checked,home:$('#fHome').checked,socials,youtube:socials.youtube||'',...ph,...cv};
+      await putDoc('artists',data);if(a&&ph.photoId&&a.photoId&&a.photoId!==ph.photoId)dropFile(a.photoId);if(a&&a.coverId&&('coverId' in cv)&&cv.coverId!==a.coverId)dropFile(a.coverId);
+      closeModal();toast(a?'Artist updated':'Artist added');rerender()}catch(x){err.textContent=x.message||'This could not be saved.';btn.disabled=false;btn.textContent=a?'Save':'Add the artist'}};
+};
+/* Artistes : colonne « vérifié » */
+const _admArtists=admin.artists;admin.artists=()=>_admArtists().replace(/<b><a href="#artist-([^"]+)">([^<]*)<\/a><\/b>/g,(m,id,n)=>`<b><a href="#artist-${id}">${n}</a></b>${api.artist(id)?.verified?' '+FI.verified.replace('width="22" height="22"','width="16" height="16"'):''}`);
+/* Playlists officielles : catégorie */
+const _plForm=plForm;plForm=function(id){_plForm(id);const p=id?DB.playlists.find(x=>x.id===id):null,cats=[...new Set(['Editorial picks','Moods','Genres','Charts',...DB.playlists.map(x=>x.category).filter(Boolean)])];
+  $('#fDesc').closest('.fld').insertAdjacentHTML('afterend',`<div class="fld"><label for="fCat">Category</label><input id="fCat" list="catList" maxlength="40" value="${esc(p?.category||'')}" placeholder="e.g. Editorial picks"><datalist id="catList">${cats.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></div>`);
+  const f=$('#aForm'),orig=f.onsubmit;f.onsubmit=async e=>{e.preventDefault();const cat=$('#fCat').value.trim(),name=$('#fName').value.trim();if(!name)return $('#fErr').textContent='Enter a name.';
+    const data={...(p||{id:uid('pl'),createdAt:Date.now()}),name,desc:$('#fDesc').value.trim(),category:cat,trackIds:[...document.querySelectorAll('input[name=plt]:checked')].map(i=>i.value)};
+    try{await putDoc('playlists',data);closeModal();toast('Playlist saved');rerender()}catch(x){$('#fErr').textContent='This could not be saved.'}}};
+admin.playlists=()=>`<p class="note" style="margin-bottom:14px">Automatic playlists (Top WMA MUSIC, New Releases, African Hits, Afrobeat, Gospel, Congolese Music, Made for You) update themselves from real listening data and genres. The playlists below are the ones you curate.</p>
+ <div class="actions" style="margin:0 0 16px"><button class="btn pri" data-act="aPl">${I.plus} Create an official playlist</button></div>
+ ${DB.playlists.length?`<div class="tbl-wrap"><table><thead><tr><th></th><th>Name</th><th>Category</th><th>Songs</th><th></th></tr></thead><tbody>${DB.playlists.map(p=>`<tr><td><img src="${plCover(p)}" alt=""></td><td><b><a href="#playlist-${p.id}">${esc(p.name)}</a></b><div class="t2">${esc(p.desc||'')}</div></td><td>${esc(p.category||'Editorial picks')}</td><td class="mono">${p.trackIds.length}</td>
+ <td style="white-space:nowrap"><button class="btn sm" data-act="aPl" data-id="${p.id}">Edit</button> <button class="btn sm danger" data-act="aDel" data-k="playlists" data-id="${p.id}">Delete</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No official playlists yet.</div>'}`;
+/* Vidéos */
+admin.videos=()=>{const vs=(DB.videos||[]).slice().sort((a,b)=>(b.updatedAt||b.createdAt)-(a.updatedAt||a.createdAt));
+  return `<div class="actions" style="margin:0 0 16px"><button class="btn pri" data-act="aVideo">${I.plus} Add a video</button></div>
+   <p class="note" style="margin-bottom:14px">Use a YouTube link (recommended: no size limit, YouTube hosts the video) or upload a video file (${supa()?'50':'20'} MB maximum). View counts shown here are WMA MUSIC views (10 seconds watched), not YouTube's own counter.</p>
+   ${vs.length?`<div class="tbl-wrap"><table><thead><tr><th></th><th>Title</th><th>Type</th><th>Song</th><th>Status</th><th>Views</th></tr></thead><tbody>${vs.map(v=>`<tr><td><img src="${esc(videoThumb(v))}" alt="" style="width:64px;height:36px"></td>
+    <td style="min-width:220px"><b><a href="#video-${v.id}">${esc(v.title)}</a></b><div class="t2">${esc(api.artist(v.artistId)?.name||'—')} · ${v.source==='youtube'?'YouTube':'Uploaded file'}</div>
+     <div class="row-acts"><button class="btn sm" data-act="aVideo" data-id="${v.id}">Edit</button>${v.status==='published'?`<button class="btn sm" data-act="aVidPub" data-id="${v.id}" data-s="draft">Unpublish</button>`:`<button class="btn sm" data-act="aVidPub" data-id="${v.id}" data-s="published">Publish</button>`}<button class="btn sm danger" data-act="aVidDel" data-id="${v.id}">Delete</button></div></td>
+    <td>${v.type==='live'?'Live session':'Music video'}</td><td>${v.trackId?esc(api.track(v.trackId)?.title||'—'):'<span class="muted">—</span>'}</td><td>${v.status==='published'?'<span class="badge ok">PUBLISHED</span>':'<span class="badge">DRAFT</span>'}</td><td class="mono">${nf(stat.views(v.id))}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No videos yet. Add an official music video or a live session.</div>'}`};
+function videoForm(id){const v=id?api.video(id):null;
+  openModal(`<h3>${v?'Edit video':'Add a video'}</h3><form class="form sform" id="vForm" novalidate>
+   <fieldset><legend>Video</legend>
+    <div class="seg" role="radiogroup" style="grid-template-columns:repeat(2,1fr)">${[['clip','Music video'],['live','Live session']].map(([k,l])=>`<label><input type="radio" name="vType" value="${k}" ${(v?.type||'clip')===k?'checked':''}><span>${l}</span></label>`).join('')}</div>
+    <div class="fld"><label for="vTitle">Title *</label><input id="vTitle" maxlength="120" value="${esc(v?.title||'')}" required></div>
+    <div class="row2"><div class="fld"><label for="vArtist">Artist *</label><select id="vArtist"><option value="">Choose an artist</option>${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value="${a.id}" ${v?.artistId===a.id?'selected':''}>${esc(a.name)}</option>`).join('')}</select></div>
+     <div class="fld"><label for="vTrack">Linked song</label><select id="vTrack"></select></div></div>
+    <div class="seg" role="radiogroup" style="grid-template-columns:repeat(2,1fr)">${[['youtube','YouTube link'],['file','Upload a file']].map(([k,l])=>`<label><input type="radio" name="vSrc" value="${k}" ${(v?.source||'youtube')===k?'checked':''}><span>${l}</span></label>`).join('')}</div>
+    <div class="fld" id="vYtWrap"><label for="vYt">YouTube link *</label><input id="vYt" type="url" placeholder="https://www.youtube.com/watch?v=…" value="${v?.youtubeId?'https://www.youtube.com/watch?v='+esc(v.youtubeId):''}"></div>
+    <div class="drop" id="vFileWrap"><label for="vFile">${I.upload}<span><b>${v?.fileId?'Replace the video file':'Video file *'}</b><small>MP4 or WebM · ${supa()?'50':'20'} MB maximum</small></span></label><input id="vFile" type="file" accept="video/mp4,video/webm,video/quicktime"></div>
+    <div class="drop"><label for="vThumb">${v?`<img src="${esc(videoThumb(v))}" alt="" style="width:96px;height:54px">`:I.upload}<span><b>Thumbnail</b><small>Optional for YouTube (its thumbnail is used) · 1280 × 720 px</small></span></label><input id="vThumb" type="file" accept="image/*"></div>
+    <div class="fld"><label for="vDesc">Description</label><textarea id="vDesc" maxlength="1000">${esc(v?.desc||'')}</textarea></div>
+    <label class="check"><input type="checkbox" id="vRights" ${v?'checked':''}> I confirm that WMA holds the rights to publish this video. *</label>
+    <div class="seg" role="radiogroup" style="grid-template-columns:repeat(2,1fr)">${[['published','Publish now'],['draft','Save as draft']].map(([k,l])=>`<label><input type="radio" name="vStatus" value="${k}" ${(v?.status||'published')===k?'checked':''}><span>${l}</span></label>`).join('')}</div></fieldset>
+   <div class="err" id="vErr"></div><div class="actions sticky-actions"><button class="btn pri" type="submit" id="vSubmit">Save</button><button class="btn" type="button" data-act="close">Cancel</button></div></form>`,true);
+  const fillTracks=()=>{const aid=$('#vArtist').value,cur=$('#vTrack').value||v?.trackId||'';$('#vTrack').innerHTML='<option value="">No linked song</option>'+DB.tracks.filter(t=>!aid||t.artistId===aid||t.featIds.includes(aid)).map(t=>`<option value="${t.id}" ${t.id===cur?'selected':''}>${esc(t.title)}</option>`).join('')};
+  const src=()=>document.querySelector('input[name=vSrc]:checked').value,sync=()=>{$('#vYtWrap').hidden=src()!=='youtube';$('#vFileWrap').hidden=src()!=='file'};
+  fillTracks();sync();$('#vArtist').onchange=fillTracks;document.querySelectorAll('input[name=vSrc]').forEach(r=>r.onchange=sync);
+  $('#vForm').onsubmit=async e=>{e.preventDefault();const err=$('#vErr'),btn=$('#vSubmit');err.textContent='';
+    const title=$('#vTitle').value.trim(),artistId=$('#vArtist').value,s=src(),yid=ytId($('#vYt').value),file=$('#vFile').files[0];
+    if(!title)return err.textContent='Enter the video title.';if(!artistId)return err.textContent='Choose the artist.';
+    if(s==='youtube'&&!yid)return err.textContent='Paste a valid YouTube link (watch, youtu.be, shorts or live).';
+    if(s==='file'&&!file&&!v?.fileId)return err.textContent='Choose the video file to upload.';
+    if(file&&file.size>(supa()?50:20)*1048576)return err.textContent=`This file is too large (${supa()?'50':'20'} MB maximum). Use a YouTube link instead.`;
+    if(!$('#vRights').checked)return err.textContent='Confirm that WMA holds the rights to publish this video.';
+    btn.disabled=true;$('#vForm').dataset.busy='1';
+    try{let fileId=v?.fileId||null,thumb={};
+      if(s==='file'&&file){btn.textContent='Uploading the video…';const r=await uploadFile(file,file.type||'video/mp4',{video:true});fileId=r.id||null;if(r.local)thumb.localUrl=r.local}
+      const ti=await readImg($('#vThumb').files[0],1600);if(ti){btn.textContent='Uploading the thumbnail…';const r=await storeImage(ti);thumb=r.coverId?{thumbId:r.coverId,thumb:null}:{thumb:r.cover,thumbId:null}}
+      btn.textContent='Saving…';const now=Date.now(),status=document.querySelector('input[name=vStatus]:checked').value;
+      const data={...(v||{id:uid('v'),createdAt:now}),title,artistId,trackId:$('#vTrack').value||null,type:document.querySelector('input[name=vType]:checked').value,source:s,youtubeId:s==='youtube'?yid:null,fileId:s==='file'?fileId:null,
+        desc:$('#vDesc').value.trim(),status,publishedAt:status==='published'?(v?.publishedAt||now):null,updatedAt:now,...thumb};
+      if(thumb.localUrl){data.fileUrl=thumb.localUrl;delete data.localUrl}
+      await putDoc('videos',data);if(v&&v.fileId&&v.fileId!==data.fileId)dropFile(v.fileId);if(v&&thumb.thumbId&&v.thumbId&&v.thumbId!==thumb.thumbId)dropFile(v.thumbId);
+      delete $('#vForm').dataset.busy;closeModal();toast(status==='published'?'Video published':'Video saved as draft');rerender()}
+    catch(x){err.textContent=x.message||'Saving failed.';btn.disabled=false;btn.textContent='Save';delete $('#vForm').dataset.busy}};
+}
+/* Accès des artistes et de leurs équipes au WMA Artist Dashboard */
+function artistAccessModal(uidv){const pr=PROFILES[uidv];if(!pr)return;const cur=new Set(pr.artist_ids||[]);
+  openModal(`<h3>Artist Dashboard access</h3><p class="muted" style="font-size:13.5px">Choose the artists whose statistics <b>${esc(pr.display_name||'this account')}</b> can see in the WMA Artist Dashboard. Several accounts can be linked to the same artist (manager, team).</p>
+   <div style="max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:6px 12px">${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<label class="check" style="padding:6px 0"><input type="checkbox" name="aax" value="${a.id}" ${cur.has(a.id)?'checked':''}> ${esc(a.name)}</label>`).join('')}</div>
+   <div class="err" id="aaErr"></div><div class="actions"><button class="btn pri" id="aaSave">Save</button><button class="btn" data-act="close">Cancel</button></div>`);
+  $('#aaSave').onclick=async()=>{const ids=[...document.querySelectorAll('input[name=aax]:checked')].map(i=>i.value);$('#aaSave').disabled=true;
+    try{await sbx(SB.from('music_profiles').update({artist_ids:ids}).eq('id',uidv));pr.artist_ids=ids;if(uidv===UID)MYARTISTS=ids;closeModal();toast('Access saved');chrome();rerender()}catch(x){$('#aaErr').textContent='Access could not be saved: '+(x.message||'');$('#aaSave').disabled=false}}}
+const _admUsers=admin.users;admin.users=()=>{let h=_admUsers();if(!supa())h=h.replace('</p>',' Artist Dashboard access for artists and teams is available once the app runs on Supabase (Vercel version).</p>');return h};
+Object.assign(adminActs,{
+  aVideo:(el,id)=>videoForm(id),
+  aVidPub:async(el,id)=>{const v=api.video(id);const s=el.dataset.s;try{await putDoc('videos',{...v,status:s,publishedAt:s==='published'?(v.publishedAt||Date.now()):v.publishedAt,updatedAt:Date.now()});toast(s==='published'?'Video published':'Video unpublished')}catch(x){toast('This action could not be completed.')}rerender()},
+  aVidDel:(el,id)=>{const v=api.video(id);confirmModal(`Permanently delete the video “${esc(v.title)}”?`,'Delete',async()=>{await delDoc('videos',id);dropFile(v.fileId);dropFile(v.thumbId);toast('Deleted');rerender()})},
+  uArtists:(el,id)=>artistAccessModal(id)
+});
 
 
 /* =========================================================
