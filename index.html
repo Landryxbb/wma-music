@@ -177,7 +177,23 @@
 .tmenu>button svg,.tmenu>a svg{width:20px;height:20px;color:var(--muted)}
 .tmenu .tm-cancel{justify-content:center;margin-top:6px;background:var(--surface2)}
 @media (max-width:860px){.dcard{padding:16px 14px 8px}.dcard-h h2{font-size:17px}.drow{grid-template-columns:64px minmax(0,1fr) 40px;gap:12px}.dr-cov{width:64px;height:64px}}
+/* Couverture des playlists (admin) */
+.cvbox{border:1px solid var(--line);border-radius:12px;padding:12px 14px 14px;min-width:0}
+.cvbox legend{padding:0 6px;font-weight:600;font-size:13px}
+.cvmodes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.cvm{position:relative}
+.cvm input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.cvm span{display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);font-weight:600;font-size:13.5px}
+.cvm input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.cvm input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.cvrow{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start}
+.cvprev img{width:132px;height:132px;border-radius:10px;object-fit:cover;display:block;background:var(--surface2)}
+.cvopts select,.cvopts input[type=file]{width:100%}
+.cvopts label{font-size:13px}
+@media (max-width:520px){.cvrow{grid-template-columns:1fr}.cvprev img{width:160px;height:160px}}
 
+#aForm .check{display:flex;gap:10px;align-items:center;justify-content:flex-start;text-align:left}
+#aForm .check input{flex:none;margin:0;width:18px;height:18px;min-width:0;padding:0}
 
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
@@ -246,6 +262,21 @@ body.auth-bg main{position:relative;z-index:1}
 body.auth-bg .auth{background:rgba(18,18,18,.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:28px 24px;margin-top:min(22vh,180px)}
 @media (min-width:861px){#authBg{left:var(--side)}}
 @media (max-width:860px){body.auth-bg .auth{margin-top:min(26vh,200px)}}
+
+/* Proposition d'installation */
+#installBar{position:fixed;z-index:60;left:50%;bottom:calc(var(--player) + 16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,24px);opacity:0;transition:transform .3s cubic-bezier(.2,.7,.2,1),opacity .3s;width:min(560px,calc(100% - 24px));display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 12px 12px 14px;border-radius:18px;background:rgba(28,28,30,.96);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);box-shadow:0 18px 50px rgba(0,0,0,.55);color:#fff}
+#installBar.on{transform:translate(-50%,0);opacity:1}
+.ib-logo{width:48px;height:48px;border-radius:12px;background:#0A0A0A;color:#FF7A1A;display:grid;place-items:center;border:1px solid rgba(255,255,255,.08)}
+.ib-txt{min-width:0;display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:1.4;color:rgba(255,255,255,.75)}
+.ib-txt b{color:#fff}
+.ib-txt>b{font-size:15px}
+.ib-ico{display:inline-flex;vertical-align:-3px;color:#0A84FF}
+.ib-act{display:flex;align-items:center;gap:6px}
+#installBar .ib-go{height:40px;padding:0 18px;border-radius:999px;background:#FF7A1A;color:#0A0A0A;border:0;font-weight:800}
+.ib-x{width:40px;height:40px;border-radius:50%;color:rgba(255,255,255,.7);font-size:16px;display:grid;place-items:center}
+.ib-x:hover{background:rgba(255,255,255,.08);color:#fff}
+@media (max-width:860px){#installBar{bottom:calc(var(--tabs) + var(--player) + 14px + env(safe-area-inset-bottom,0px))}}
+@media (prefers-reduced-motion:reduce){#installBar{transition:none}}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -2369,6 +2400,67 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
     artSub:()=>{ART_SUB=el.dataset.t==='countries'?'countries':'songs';rerender()}};
   if(acts[a]){e.preventDefault();e.stopImmediatePropagation();acts[a]()}},true);
 
+/* ---------- Playlists éditoriales : couverture avec la photo d'un artiste ---------- */
+const _plCoverV4=plCover;plCover=p=>(!p.smart&&!p.coverId&&p.cover)?p.cover:_plCoverV4(p);
+const loadImgCORS=src=>new Promise((res,rej)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>res(im);im.onerror=()=>rej(new Error('photo'));im.src=src});
+function drawSunCanvas(g,cx,cy,r,color){const k=r/48;g.save();g.translate(cx,cy);g.scale(k,k);g.fillStyle=color;g.beginPath();g.arc(0,0,12,0,Math.PI*2);g.fill();
+  [26,14,20,10,24,16,28,12,22,14,26,10,20,16,24,12].forEach((l,i)=>{g.save();g.rotate(i*Math.PI/8);const x=-2.8,y=-(20+l),w=5.6,h=l,rr=2.8;g.beginPath();g.moveTo(x+rr,y);g.arcTo(x+w,y,x+w,y+h,rr);g.arcTo(x+w,y+h,x,y+h,rr);g.arcTo(x,y+h,x,y,rr);g.arcTo(x,y,x+w,y,rr);g.fill();g.restore()});g.restore()}
+/* Couverture 1200×1200 : photo plein cadre, dégradé, logo WMA MUSIC, nom de la playlist */
+async function makeArtistCover(photo,title,showTitle){
+  const im=await loadImgCORS(photo),S=1200,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');
+  g.fillStyle='#0A0A0A';g.fillRect(0,0,S,S);
+  const sc=Math.max(S/im.naturalWidth,S/im.naturalHeight),w=im.naturalWidth*sc,h=im.naturalHeight*sc;g.drawImage(im,(S-w)/2,Math.min(0,(S-h)*.2),w,h);
+  let gr=g.createLinearGradient(0,0,0,S);gr.addColorStop(0,'rgba(0,0,0,.45)');gr.addColorStop(.22,'rgba(0,0,0,0)');gr.addColorStop(.5,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.88)');g.fillStyle=gr;g.fillRect(0,0,S,S);
+  try{await document.fonts.load('800 80px Manrope')}catch(e){}
+  drawSunCanvas(g,92,92,34,'#FF7A1A');g.fillStyle='#fff';g.font='800 40px Manrope,-apple-system,"Segoe UI",Roboto,sans-serif';g.textBaseline='middle';g.fillText('WMA',146,94);
+  const wW=g.measureText('WMA ').width;g.fillStyle='#FF7A1A';g.fillText('MUSIC',146+wW,94);
+  if(showTitle&&title){let fs=title.length>18?104:128;g.font=`800 ${fs}px Manrope,-apple-system,"Segoe UI",Roboto,sans-serif`;g.textBaseline='alphabetic';
+    const words=title.split(/\s+/),lines=[];let cur='';const maxW=S-150;
+    for(const wd of words){const t=cur?cur+' '+wd:wd;if(g.measureText(t).width>maxW&&cur){lines.push(cur);cur=wd}else cur=t}if(cur)lines.push(cur);
+    while(lines.length>3){fs-=12;g.font=`800 ${fs}px Manrope,sans-serif`;lines.splice(0,lines.length,...(()=>{const L=[];let c2='';for(const wd of words){const t=c2?c2+' '+wd:wd;if(g.measureText(t).width>maxW&&c2){L.push(c2);c2=wd}else c2=t}if(c2)L.push(c2);return L})())}
+    const lh=fs*1.02,y0=S-80-lh*(lines.length-1);g.fillStyle='#fff';g.shadowColor='rgba(0,0,0,.35)';g.shadowBlur=24;lines.forEach((l,i)=>g.fillText(l,72,y0+i*lh));g.shadowBlur=0;
+    g.fillStyle='#FF7A1A';g.fillRect(72,y0-lh+fs*.08-34,96,12)}
+  return await new Promise((res,rej)=>{try{c.toBlob(b=>b?res(b):rej(new Error('canvas')),'image/jpeg',.9)}catch(e){rej(e)}})}
+const artistsWithPhoto=()=>DB.artists.filter(a=>{try{return !!artistPhoto(a)}catch(e){return false}}).sort((a,b)=>a.name.localeCompare(b.name));
+const _plFormV4=plForm;plForm=function(id){_plFormV4(id);const p=id?DB.playlists.find(x=>x.id===id):null,arts=artistsWithPhoto();
+  const mode=p?.coverMode||(p?.coverId||p?.cover?'upload':'auto'),artSel=p?.coverArtist||'';
+  $('#fCat').closest('.fld').insertAdjacentHTML('afterend',`<fieldset class="fld cvbox"><legend>Cover</legend>
+   <div class="cvmodes">${[['auto','Automatic'],['artist','Artist photo'],['upload','My image']].map(([k,l])=>`<label class="cvm"><input type="radio" name="cvMode" value="${k}" ${mode===k?'checked':''}><span>${l}</span></label>`).join('')}</div>
+   <div class="cvrow"><div class="cvprev"><img id="cvPrev" src="${esc(p?plCover(p):genCover('plnew'))}" alt="Cover preview"></div>
+    <div class="cvopts">
+     <div id="cvArtistBox" ${mode==='artist'?'':'hidden'}><label for="cvArt">Artist</label><select id="cvArt">${arts.length?arts.map(a=>`<option value="${a.id}" ${a.id===artSel?'selected':''}>${esc(a.name)}</option>`).join(''):'<option value="">No artist has a photo yet</option>'}</select>
+      <label class="check" style="margin-top:8px"><input type="checkbox" id="cvTitle" ${p?.coverTitle===false?'':'checked'}> Write the playlist name on the cover</label></div>
+     <div id="cvUpBox" ${mode==='upload'?'':'hidden'}><label for="cvFile">Image (square, at least 1000 × 1000 recommended)</label><input id="cvFile" type="file" accept="image/jpeg,image/png,image/webp"></div>
+     <p class="muted" id="cvHint" style="font-size:12.5px;margin:6px 0 0">${mode==='auto'?'A cover is generated automatically.':''}</p></div></div></fieldset>`);
+  let cvBlob=null,cvTimer=0,cvKey='';
+  const curMode=()=>(document.querySelector('input[name=cvMode]:checked')||{}).value||'auto';
+  async function refresh(){const m=curMode(),hint=$('#cvHint'),prev=$('#cvPrev');$('#cvArtistBox').hidden=m!=='artist';$('#cvUpBox').hidden=m!=='upload';hint.textContent='';
+    if(m==='auto'){cvBlob=null;prev.src=p?_plCoverV4({...p,coverId:null,cover:null}):genCover('plnew');hint.textContent='A cover is generated automatically.';return}
+    if(m==='upload'){const f=$('#cvFile').files[0];if(f){try{const r=await readImg(f,1600);cvBlob=r.blob;prev.src=r.url}catch(e){hint.textContent=e.message}}else if(p&&p.coverMode==='upload')prev.src=plCover(p);return}
+    const a=api.artist($('#cvArt').value);if(!a){hint.textContent='Add a photo to an artist first (Artists tab).';return}
+    const key=a.id+'|'+$('#fName').value.trim()+'|'+$('#cvTitle').checked;if(key===cvKey&&cvBlob)return;cvKey=key;hint.textContent='Creating the cover…';
+    try{cvBlob=await makeArtistCover(artistPhoto(a),$('#fName').value.trim(),$('#cvTitle').checked);if(key===cvKey){prev.src=URL.createObjectURL(cvBlob);hint.textContent='Preview of the cover.'}}
+    catch(e){cvBlob=null;prev.src=artistPhoto(a);hint.textContent="The photo will be used as it is (the name can't be added to this image)."}}
+  document.querySelectorAll('input[name=cvMode]').forEach(r=>r.onchange=refresh);$('#cvArt').onchange=refresh;$('#cvTitle').onchange=refresh;$('#cvFile').onchange=refresh;
+  $('#fName').addEventListener('input',()=>{if(curMode()==='artist'&&$('#cvTitle').checked){clearTimeout(cvTimer);cvTimer=setTimeout(refresh,450)}});
+  if(mode==='artist'&&!p?.coverId&&!p?.cover)refresh();
+  const f=$('#aForm');f.onsubmit=async e=>{e.preventDefault();const name=$('#fName').value.trim();if(!name)return $('#fErr').textContent='Enter a name.';
+    const btn=f.querySelector('[type=submit]');btn.disabled=true;const m=curMode();
+    let cover={coverMode:m};
+    try{
+      if(m==='auto')cover={...cover,coverId:null,cover:null,coverArtist:null};
+      else if(m==='upload'){const fl=$('#cvFile').files[0];if(fl){btn.textContent='Uploading the cover…';const r=await storeImage(await readImg(fl,1600));cover={...cover,...(r.coverId?{coverId:r.coverId,cover:null}:{cover:r.cover,coverId:null}),coverArtist:null}}
+        else if(!(p&&(p.coverId||p.cover)&&p.coverMode!=='artist'))throw new Error('Choose an image for the cover.')}
+      else{const a=api.artist($('#cvArt').value);if(!a)throw new Error('Choose an artist with a photo.');const title=$('#cvTitle').checked;
+        const same=p&&p.coverMode==='artist'&&p.coverArtist===a.id&&p.coverTitle===title&&p.name===name&&(p.coverId||p.cover);
+        if(!same){btn.textContent='Creating the cover…';if(!cvBlob||cvKey!==a.id+'|'+name+'|'+title){cvKey='';await refresh()}
+          if(cvBlob){btn.textContent='Uploading the cover…';const r=await storeImage({blob:cvBlob});cover={...cover,...(r.coverId?{coverId:r.coverId,cover:null}:{cover:r.cover,coverId:null})}}
+          else cover={...cover,coverId:null,cover:artistPhoto(a)}}
+        cover={...cover,coverArtist:a.id,coverTitle:title}}
+      const data={...(p||{id:uid('pl'),createdAt:Date.now()}),name,desc:$('#fDesc').value.trim(),category:$('#fCat').value.trim(),trackIds:[...document.querySelectorAll('input[name=plt]:checked')].map(i=>i.value),...cover};
+      await putDoc('playlists',data);closeModal();toast('Playlist saved');rerender()}
+    catch(x){btn.disabled=false;btn.textContent='Save';$('#fErr').textContent=x.message&&!/^(canvas|photo)$/.test(x.message)?x.message:'This could not be saved.'}}};
+
 /* =========================================================
    PARCOURS D'OUVERTURE : logo animé → chargement → accueil connexion
    Réutilise l'authentification existante (pages #login / #signup,
@@ -2422,7 +2514,7 @@ function afterIntro(){
 /* Si la session arrive après coup (connexion Google, autre onglet…), l'accueil se ferme tout seul */
 const _chromeOb=chrome;chrome=function(){_chromeOb();if(signedIn()&&$('#welcome'))hideWelcome();authBg()};
 /* Même fond de photos derrière les pages Sign in / Create your account */
-function authBg(){const on=/^#(login|signup)$/.test(location.hash)&&!signedIn()&&!art();let el=$('#authBg');document.body.classList.toggle('auth-bg',on);
+function authBg(){const on=/^#(login|signup)$/.test(location.hash)&&!art();let el=$('#authBg');document.body.classList.toggle('auth-bg',on);
   if(!on){if(el)el.remove();return}
   const ph=bgPhotos(9),key=ph.join('|');if(el&&el.dataset.k===key)return;if(!el){el=document.createElement('div');el.id='authBg';el.setAttribute('aria-hidden','true');document.body.prepend(el)}
   el.dataset.k=key;el.innerHTML=bgGrid(ph)}
@@ -2479,6 +2571,48 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
     legalBack:()=>{if(history.length>1)history.back();else location.hash='#home'},
     forgot:()=>forgotModal((($('#lgEmail')||{}).value||'').trim())};
   if(acts[a]){e.preventDefault();e.stopImmediatePropagation();acts[a]()}},true);
+
+/* =========================================================
+   PROPOSITION D'INSTALLER L'APPLICATION (toutes les 20 s tant qu'elle n'est pas installée)
+   - Android / ordinateur (Chrome, Edge, Samsung Internet…) : vraie installation en 1 clic.
+   - iPhone / iPad (Safari) : Apple n'autorise pas le bouton d'installation → instructions.
+   - Navigateurs intégrés (Facebook, Instagram…) : invitation à ouvrir dans le navigateur.
+   ========================================================= */
+const INSTALL_EVERY_MS=20000;
+let installEvt=null,installTimer=0,installShown=false;
+const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const inAppBrowser=()=>/FBAN|FBAV|Instagram|Line\/|TikTok|Snapchat|; wv\)/i.test(navigator.userAgent);
+const installDone=()=>lsGet('wma_installed','')==='1'||isStandalone();
+const installOK=()=>!art()&&location.protocol==='https:'&&!installDone();
+
+if(installOK()&&'serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;if(installShown)renderInstall()});
+window.addEventListener('appinstalled',()=>{lsSet('wma_installed','1');hideInstall(false);toast('WMA MUSIC is installed on your device.')});
+
+function installBody(){
+  if(installEvt)return {txt:'Free · Opens full screen from your home screen.',btn:'<button class="btn pri ib-go" data-act="instGo">Install</button>'};
+  if(isIOS()&&!inAppBrowser())return {txt:`Tap <b>Share</b> <span class="ib-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></span> at the bottom of Safari, then <b>Add to Home Screen</b>.`,btn:''};
+  if(inAppBrowser())return {txt:`Open <b>wmamusic.net</b> in ${isIOS()?'Safari':'Chrome'} (menu <b>⋮</b> → <b>Open in browser</b>) to install the app.`,btn:''};
+  return {txt:'Open your browser menu <b>⋮</b> and choose <b>Install app</b> or <b>Add to Home screen</b>.',btn:''}}
+function renderInstall(){let el=$('#installBar');const b=installBody();
+  if(!el){el=document.createElement('div');el.id='installBar';el.setAttribute('role','dialog');el.setAttribute('aria-label','Install WMA MUSIC');document.body.appendChild(el)}
+  el.innerHTML=`<div class="ib-logo" aria-hidden="true">${DI.sun(30)}</div><div class="ib-txt"><b>Install the WMA MUSIC app</b><span>${b.txt}</span></div>
+   <div class="ib-act">${b.btn}<button class="ib-x" data-act="instLater" aria-label="Not now">✕</button></div>`;
+  requestAnimationFrame(()=>el.classList.add('on'))}
+function showInstall(){if(!installOK())return;
+  /* On attend que l'écran d'ouverture, l'accueil, une fenêtre ou une saisie soient terminés */
+  if($('#intro')||$('#welcome')||!$('#modal')?.hidden||/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||'')){scheduleInstall(5000);return}
+  installShown=true;renderInstall()}
+function hideInstall(again=true){const el=$('#installBar');installShown=false;if(el){el.classList.remove('on');setTimeout(()=>el.remove(),300)}if(again)scheduleInstall(INSTALL_EVERY_MS)}
+function scheduleInstall(ms){clearTimeout(installTimer);if(installOK())installTimer=setTimeout(showInstall,ms)}
+scheduleInstall(INSTALL_EVERY_MS);
+
+document.addEventListener('click',async e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='instLater'){e.preventDefault();e.stopImmediatePropagation();hideInstall(true)}
+  else if(a==='instGo'){e.preventDefault();e.stopImmediatePropagation();if(!installEvt){renderInstall();return}
+    const ev=installEvt;installEvt=null;try{await ev.prompt();const r=await ev.userChoice;if(r&&r.outcome==='accepted'){lsSet('wma_installed','1');hideInstall(false);return}}catch(x){}
+    hideInstall(true)}},true);
 
 
 /* =========================================================
