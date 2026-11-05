@@ -17,7 +17,205 @@
 <meta property="og:image" content="/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}/* ===== v3 : logo seul, accueil For You / Trending, profil artiste ===== */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.logo svg{flex:none}
+#tabs{grid-template-columns:repeat(5,1fr)}
+.htabs{display:flex;gap:10px;margin:0 0 20px}
+.htab{height:42px;padding:0 22px;border-radius:999px;font-weight:700;font-size:16px;background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.htab.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.hero-slider.bn{border-radius:14px;background:#0B0B0B}
+.bn .hs-slide{min-height:0;aspect-ratio:2.7/1}
+.bn-photo{position:absolute;top:0;right:0;bottom:0;width:64%;background:var(--bgimg) center 22%/cover no-repeat,#1C1C1E;clip-path:polygon(24% 0,100% 0,100% 100%,0 100%)}
+.bn-line{position:absolute;top:0;right:0;bottom:0;width:64%;background:rgba(255,255,255,.75);clip-path:polygon(calc(24% - 3px) 0,24% 0,0 100%,-3px 100%)}
+.bn-left{position:relative;z-index:1;width:42%;padding:clamp(14px,3vw,30px);display:flex;flex-direction:column;gap:4px;min-width:0}
+.bn-title{font-size:clamp(17px,3vw,32px);font-weight:800;letter-spacing:-.02em;line-height:1.1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.bn-artist{font-style:italic;font-size:clamp(13px,2vw,21px);color:rgba(255,255,255,.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bn-cov{margin-top:auto;width:clamp(56px,11vw,118px);aspect-ratio:1;object-fit:cover;border-radius:6px;border:2px solid rgba(255,255,255,.85)}
+.bn-link{position:absolute;inset:0;z-index:2}
+.bn-play{position:absolute;z-index:3;right:clamp(10px,2vw,20px);bottom:clamp(10px,2vw,20px);width:46px;height:46px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.bn .hs-nav{z-index:4}
+.bn .hs-dots{z-index:4;left:50%;transform:translateX(-50%);bottom:10px;gap:7px}
+.bn .hs-dots button{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.8)}
+.bn .hs-dots button.on{background:var(--accent)}
+.bn .hs-dots button i{display:none}
+.fans-h{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.fans-av{width:56px;height:56px;flex:none;border-radius:50%;overflow:hidden}
+.fans-av .av{width:100%;height:100%}
+.fans-n{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.more{margin-left:auto;flex:none;height:32px;padding:0 12px;border-radius:6px;background:var(--surface2);color:var(--muted);font-weight:800;font-size:13px;letter-spacing:.04em;display:inline-flex;align-items:center}
+.more:hover{color:var(--fg)}
+.relcard{position:relative;display:flex;background:var(--surface);border-radius:12px;overflow:hidden;max-width:760px}
+.relcov{width:clamp(110px,22vw,170px);aspect-ratio:1;flex:none}
+.relcov img{width:100%;height:100%;object-fit:cover;display:block}
+.reltxt{flex:1;min-width:0;padding:14px 70px 14px 18px;display:flex;flex-direction:column;justify-content:space-between;gap:8px}
+.reltxt .t1{font-size:19px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reltxt .kind{letter-spacing:.02em;margin-top:2px}
+.relplay{position:absolute;right:16px;bottom:16px;width:46px;height:46px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center}
+.sec-h2{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sec-h2 h2{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.tchips{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;margin-bottom:14px}
+.tchips::-webkit-scrollbar,.tgrid::-webkit-scrollbar,.rels::-webkit-scrollbar{display:none}
+.tchip{flex:none;height:42px;padding:0 22px;border-radius:999px;border:1px solid var(--line);font-weight:600;font-size:15px;color:var(--fg);background:transparent}
+.tchip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.tgrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(4,auto);grid-auto-columns:min(440px,84%);column-gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.trow2{display:grid;grid-template-columns:60px minmax(0,1fr) 44px;gap:14px;align-items:center;padding:6px 0;scroll-snap-align:start}
+.tr-cov{width:60px;height:60px;border-radius:6px;overflow:hidden;padding:0}
+.tr-cov img{width:100%;height:100%;object-fit:cover;display:block}
+.tr-txt{min-width:0}
+.tr-txt .t1{display:block;font-size:16.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr-txt .t2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow2.cur .t1,.ts-row.cur .t1{color:var(--accent)}
+.ap-hero{position:relative;border-radius:20px;overflow:hidden;min-height:460px;display:flex;align-items:flex-end;background:radial-gradient(circle at 30% 20%,hsl(var(--h) 55% 30%),hsl(var(--h) 40% 10%))}
+.ap-bg{position:absolute;inset:-40px;background:var(--bgimg) center 20%/cover no-repeat;filter:blur(34px) brightness(.6) saturate(1.2)}
+.ap-img{position:absolute;top:0;right:0;bottom:0;width:60%;background:var(--bgimg) center 18%/cover no-repeat;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 45%);mask-image:linear-gradient(90deg,transparent 0,#000 45%)}
+.ap-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 25%,rgba(0,0,0,.5) 55%,rgba(0,0,0,.92) 100%)}
+.ap-in{position:relative;z-index:1;width:100%;padding:28px;display:flex;flex-direction:column;gap:10px}
+.ap-name{font-size:clamp(36px,6vw,66px);font-weight:800;letter-spacing:-.035em;line-height:1}
+.ap-sub{font-size:14.5px;color:rgba(255,255,255,.86)}
+.ap-stats{display:flex;max-width:460px;margin-top:6px;padding:14px 0;border-radius:18px;background:rgba(60,60,60,.42);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.ap-stats div{flex:1;display:flex;flex-direction:column;gap:4px;padding:0 18px}
+.ap-stats span{font-size:12.5px;color:rgba(255,255,255,.72)}
+.ap-stats b{font-size:21px;font-weight:800;color:#fff}
+.ap-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+.ap-play{width:54px;height:54px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.ap-body{display:grid;grid-template-columns:46px minmax(0,1fr);gap:22px;margin-top:22px;align-items:start}
+.ap-rail{position:sticky;top:80px;display:flex;flex-direction:column-reverse;gap:4px;padding:10px 0;border-radius:16px;background:var(--surface)}
+.ap-rail button{writing-mode:vertical-rl;transform:rotate(180deg);width:100%;min-height:96px;padding:12px 0;font-size:13.5px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.ap-rail button.on{color:var(--fg);font-weight:800;box-shadow:inset -3px 0 0 var(--accent)}
+.ap-main{min-width:0}
+.ap-main>.sec:first-child,.ap-main>.socs+.sec{margin-top:0}
+.tsongs{display:flex;flex-direction:column}
+.ts-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px 0}
+.ts-play{width:42px;height:42px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.ts-play svg,.relplay svg,.bn-play svg{width:18px;height:18px}
+.ts-txt{min-width:0}
+.ts-txt .t1{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wave{display:flex;align-items:center;gap:2px;height:20px;margin-top:6px;overflow:hidden}
+.wave i{flex:none;width:2px;border-radius:1px;background:var(--muted);opacity:.55}
+.wave.on i{background:var(--accent);opacity:1}
+.rels{display:grid;grid-auto-flow:column;grid-auto-columns:156px;gap:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.rel{min-width:0}
+.rel img{width:156px;aspect-ratio:1;object-fit:cover;border-radius:24px;display:block}
+.rel .t1{display:block;margin-top:8px;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rel .t2{display:block;font-size:12.5px}
+.seg{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface2)}
+.seg button{height:36px;padding:0 18px;border-radius:999px;font-weight:600;font-size:13.5px;color:var(--muted)}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.st-panel{border-radius:22px}
+.st-kpis{display:flex;gap:28px;flex-wrap:wrap;margin:6px 0 10px}
+.st-kpis div{display:flex;flex-direction:column}
+.st-kpis b{font-size:22px;font-weight:800}
+.st-kpis span{font-size:12px;color:var(--muted)}
+.sch{margin-top:8px}
+.sch-plot{position:relative;height:200px;margin-right:36px}
+.sch-plot svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+.sch-dot{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--accent)}
+.sch-dot.last{width:11px;height:11px;margin:-5.5px 0 0 -5.5px;box-shadow:0 0 0 4px rgba(255,122,26,.25)}
+.sch-y{position:absolute;top:0;bottom:0;left:100%;width:36px}
+.sch-y span{position:absolute;left:8px;transform:translateY(-50%);font-size:12px;color:var(--muted)}
+.sch-x{position:relative;height:22px;margin:6px 36px 0 0}
+.sch-x span{position:absolute;transform:translateX(-50%);font-size:12px;color:var(--muted);white-space:nowrap}
+.sch-x span:first-child{transform:none}.sch-x span:last-child{transform:translateX(-100%)}
+.slist{display:flex;flex-direction:column;margin-top:10px}
+.srow{display:grid;grid-template-columns:46px minmax(0,1fr);gap:12px;align-items:center;padding:8px 0}
+.srow img,.srow .fl{width:46px;height:46px;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:var(--surface2);font-size:22px}
+.srow .t1{font-weight:700}
+@media (max-width:860px){
+  .top .logo svg{width:34px;height:34px}
+  .htabs{margin-bottom:16px}
+  .htab{height:38px;padding:0 18px;font-size:15px}
+  .bn .hs-slide{aspect-ratio:2.2/1}
+  .bn-left{width:46%}
+  .bn-play{width:40px;height:40px}
+  .bn .hs-nav{display:none}
+  .fans-n{font-size:19px}
+  .reltxt{padding:12px 62px 12px 14px}
+  .reltxt .t1{font-size:17px}
+  .relplay{width:42px;height:42px;right:12px;bottom:12px}
+  .sec-h2 h2{font-size:23px}
+  .tchip{height:38px;padding:0 18px;font-size:14px}
+  .trow2{grid-template-columns:54px minmax(0,1fr) 40px;gap:12px}
+  .tr-cov{width:54px;height:54px}
+  .ap-hero{margin:-26px calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));border-radius:0 0 22px 22px;min-height:min(560px,128vw)}
+  .ap-in{padding:20px 16px 18px}
+  .ap-bg{display:none}
+  .ap-img{width:100%;-webkit-mask-image:none;mask-image:none}
+  .sch-plot{height:170px}
+  .ap-stats div{padding:0 14px}
+  .ap-stats b{font-size:19px}
+  .ap-body{grid-template-columns:38px minmax(0,1fr);gap:12px}
+  .ap-rail{top:70px}
+  .ap-rail button{min-height:88px;font-size:12.5px}
+  .rels{grid-auto-columns:128px}.rel img{width:128px;border-radius:20px}
+  .st-panel{padding:16px}
+  .seg button{padding:0 14px}
+}
+
+
+
+
+/* ===== Parcours d'ouverture ===== */
+#intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
+#intro.out{opacity:0;visibility:hidden}
+#intro.out .in-stage{transform:scale(1.06);transition:transform .42s ease}
+.in-stage{display:flex;flex-direction:column;align-items:center;text-align:center}
+.in-sun{width:min(132px,34vw);height:auto;overflow:visible;filter:drop-shadow(0 0 28px rgba(255,122,26,.35))}
+.in-rot{transform-box:view-box;transform-origin:0 0;animation:inSpin 1.8s cubic-bezier(.2,.7,.2,1) both}
+.in-sun .core{transform-box:view-box;transform-origin:0 0;animation:inPop .5s cubic-bezier(.3,1.5,.5,1) both}
+.in-sun .ray{transform-box:view-box;transform-origin:0 0;animation:inRay .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(.12s + var(--k) * .03s)}
+.in-word{margin-top:26px;font-family:var(--display,inherit);font-size:clamp(28px,7vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1;animation:inUp .55s .62s cubic-bezier(.2,.7,.2,1) both}
+.in-word em{font-style:normal;color:#FF7A1A}
+.in-slogan{margin-top:12px;font-size:clamp(12px,3.4vw,14px);font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.72);animation:inUp .55s .78s cubic-bezier(.2,.7,.2,1) both}
+.in-bar{margin-top:30px;width:140px;height:3px;border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden;animation:inFade .3s .7s both}
+.in-bar i{display:block;height:100%;width:40%;border-radius:2px;background:#FF7A1A;animation:inLoad 1s .7s ease-in-out infinite}
+#intro.quick .in-rot,#intro.quick .core,#intro.quick .ray,#intro.quick .in-word,#intro.quick .in-slogan,#intro.quick .in-bar{animation-duration:.3s;animation-delay:0s}
+#intro.quick .in-bar i{animation-delay:0s}
+@keyframes inSpin{from{transform:rotate(-70deg)}to{transform:rotate(0)}}
+@keyframes inPop{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes inRay{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes inUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes inFade{from{opacity:0}to{opacity:1}}
+@keyframes inLoad{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+@media (prefers-reduced-motion:reduce){#intro *{animation:none!important}#intro .in-bar i{width:100%}}
+body.ob-lock{overflow:hidden}
+#welcome{position:fixed;inset:0;z-index:900;background:#000;color:#fff;display:grid;place-items:center;overflow-y:auto;opacity:0;transition:opacity .35s ease;padding:calc(24px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
+#welcome.in{opacity:1}
+#welcome.out{opacity:0;pointer-events:none}
+.wl-bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(0,1fr);gap:6px;opacity:.5;overflow:hidden}
+.wl-bg span{background:var(--bgimg) center 20%/cover no-repeat,#1C1C1E;filter:grayscale(.35);animation:wlKen 18s ease-in-out infinite alternate;animation-delay:calc(var(--k) * -2s)}
+@keyframes wlKen{from{transform:scale(1)}to{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.wl-bg span,#welcome.in .wl-in>*{animation:none!important}}
+.wl-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,rgba(0,0,0,.35),rgba(0,0,0,.9) 70%),linear-gradient(180deg,rgba(0,0,0,.2),#000 78%)}
+.wl-in{position:relative;width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+#welcome.in .wl-in>*{animation:inUp .5s cubic-bezier(.2,.7,.2,1) both}
+#welcome.in .wl-in>*:nth-child(2){animation-delay:.05s}
+#welcome.in .wl-in>*:nth-child(3){animation-delay:.1s}
+#welcome.in .wl-in>*:nth-child(4){animation-delay:.15s}
+#welcome.in .wl-in>*:nth-child(n+5){animation-delay:.2s}
+.wl-logo{color:#FF7A1A;margin-bottom:6px}
+.wl-in h1{font-family:var(--display,inherit);font-size:clamp(28px,7.5vw,38px);font-weight:800;letter-spacing:-.025em;line-height:1.1;text-wrap:balance}
+.wl-in>p{color:rgba(255,255,255,.8);font-size:16px;line-height:1.5;max-width:32ch;margin:0 0 10px}
+.wl-btns{width:100%;display:flex;flex-direction:column;gap:10px}
+#welcome .wl-b{width:100%;height:52px;border-radius:999px;font-size:16px;font-weight:700;justify-content:center}
+#welcome .wl-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.85)}
+#welcome .wl-ghost:hover{background:rgba(255,255,255,.08)}
+#welcome .wl-google{background:#fff;color:#111;display:flex;align-items:center;gap:10px}
+.wl-links{display:flex;gap:10px;align-items:center;margin-top:6px;color:rgba(255,255,255,.55)}
+#welcome .wl-links button{color:#fff;font-weight:600;font-size:14px;min-height:44px;padding:0 6px;text-decoration:underline;text-underline-offset:3px}
+.wl-legal{font-size:12.5px;color:rgba(255,255,255,.6);margin:4px 0 0;max-width:34ch}
+.wl-legal a{color:#fff;text-decoration:underline;text-underline-offset:2px}
+.legal{max-width:720px}
+.legal h2{font-size:19px;margin:26px 0 8px}
+.legal p,.legal li{color:var(--fg);opacity:.88;line-height:1.65}
+.legal ul{padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.sel{user-select:all}
+.ob-lock .modal{z-index:950}.ob-lock .toast{z-index:1100;bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+
+#welcome .wl-b.pri{background:#FF7A1A;color:#0A0A0A;border:0}
+#welcome .wl-google:hover{background:#EDEDED}
+#welcome:focus{outline:none}
+</style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
 :root{
@@ -495,10 +693,18 @@ body.is-playing .logo svg .sun{animation:sunSpin 14s linear infinite}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" onerror="var s=document.createElement('script');s.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';document.head.appendChild(s)"></script>
 </head>
 <body>
+<div id="intro" role="status" aria-live="polite" aria-label="WMA MUSIC is loading">
+  <div class="in-stage">
+    <svg class="in-sun" width="132" height="132" viewBox="-50 -50 100 100" aria-hidden="true"><g class="in-rot" fill="#FF7A1A"><circle class="core" r="12"/><g transform="rotate(0)"><rect class="ray" style="--k:0" x="-2.8" y="-46" width="5.6" height="26" rx="2.8"/></g><g transform="rotate(22.5)"><rect class="ray" style="--k:1" x="-2.8" y="-34" width="5.6" height="14" rx="2.8"/></g><g transform="rotate(45)"><rect class="ray" style="--k:2" x="-2.8" y="-40" width="5.6" height="20" rx="2.8"/></g><g transform="rotate(67.5)"><rect class="ray" style="--k:3" x="-2.8" y="-30" width="5.6" height="10" rx="2.8"/></g><g transform="rotate(90)"><rect class="ray" style="--k:4" x="-2.8" y="-44" width="5.6" height="24" rx="2.8"/></g><g transform="rotate(112.5)"><rect class="ray" style="--k:5" x="-2.8" y="-36" width="5.6" height="16" rx="2.8"/></g><g transform="rotate(135)"><rect class="ray" style="--k:6" x="-2.8" y="-48" width="5.6" height="28" rx="2.8"/></g><g transform="rotate(157.5)"><rect class="ray" style="--k:7" x="-2.8" y="-32" width="5.6" height="12" rx="2.8"/></g><g transform="rotate(180)"><rect class="ray" style="--k:8" x="-2.8" y="-42" width="5.6" height="22" rx="2.8"/></g><g transform="rotate(202.5)"><rect class="ray" style="--k:9" x="-2.8" y="-34" width="5.6" height="14" rx="2.8"/></g><g transform="rotate(225)"><rect class="ray" style="--k:10" x="-2.8" y="-46" width="5.6" height="26" rx="2.8"/></g><g transform="rotate(247.5)"><rect class="ray" style="--k:11" x="-2.8" y="-30" width="5.6" height="10" rx="2.8"/></g><g transform="rotate(270)"><rect class="ray" style="--k:12" x="-2.8" y="-40" width="5.6" height="20" rx="2.8"/></g><g transform="rotate(292.5)"><rect class="ray" style="--k:13" x="-2.8" y="-36" width="5.6" height="16" rx="2.8"/></g><g transform="rotate(315)"><rect class="ray" style="--k:14" x="-2.8" y="-44" width="5.6" height="24" rx="2.8"/></g><g transform="rotate(337.5)"><rect class="ray" style="--k:15" x="-2.8" y="-32" width="5.6" height="12" rx="2.8"/></g></g></svg>
+    <div class="in-word" aria-hidden="true"><b>WMA</b> <em>MUSIC</em></div>
+    <div class="in-slogan">African Music, Global Experience</div>
+    <div class="in-bar" aria-hidden="true"><i></i></div>
+  </div>
+</div>
+<script>try{if(sessionStorage.getItem('wma_intro_seen')==='1')document.getElementById('intro').classList.add('quick')}catch(e){}document.body.classList.add('ob-lock');setTimeout(function(){var e=document.getElementById('intro');if(e){e.classList.add('out');document.body.classList.remove('ob-lock')}},8000)</script>
 <aside class="side">
   <a class="logo" href="#home" aria-label="WMA MUSIC, home">
-    <svg width="38" height="38" viewBox="-50 -50 100 100" aria-hidden="true"><g class="sun" fill="#FF7A1A"><circle r="12"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(0)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(22.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(45)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(67.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(90)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(112.5)"/><rect x="-2.8" y="-48" width="5.6" height="28" rx="2.8" transform="rotate(135)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(157.5)"/><rect x="-2.8" y="-42" width="5.6" height="22" rx="2.8" transform="rotate(180)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(202.5)"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(225)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(247.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(270)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(292.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(315)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(337.5)"/></g></svg>
-    <span><b>WMA <em>MUSIC</em></b><small>WMA UNITED AFRICA</small></span>
+    <svg width="48" height="48" viewBox="-50 -50 100 100" aria-hidden="true"><g class="sun" fill="#FF7A1A"><circle r="12"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(0)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(22.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(45)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(67.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(90)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(112.5)"/><rect x="-2.8" y="-48" width="5.6" height="28" rx="2.8" transform="rotate(135)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(157.5)"/><rect x="-2.8" y="-42" width="5.6" height="22" rx="2.8" transform="rotate(180)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(202.5)"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(225)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(247.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(270)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(292.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(315)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(337.5)"/></g></svg>
   </a>
   <nav class="nav" id="sideNav"></nav>
   <div class="side-foot">YOUR MUSIC. YOUR AFRICA. YOUR SOUND.<br>A WMA HUB platform.</div>
@@ -507,7 +713,6 @@ body.is-playing .logo svg .sun{animation:sunSpin 14s linear infinite}
 <header class="top">
   <a class="logo" href="#home" aria-label="WMA MUSIC, home">
     <svg width="32" height="32" viewBox="-50 -50 100 100" aria-hidden="true"><g class="sun" fill="#FF7A1A"><circle r="12"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(0)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(22.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(45)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(67.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(90)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(112.5)"/><rect x="-2.8" y="-48" width="5.6" height="28" rx="2.8" transform="rotate(135)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(157.5)"/><rect x="-2.8" y="-42" width="5.6" height="22" rx="2.8" transform="rotate(180)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(202.5)"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(225)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(247.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(270)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(292.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(315)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(337.5)"/></g></svg>
-    <span><b>WMA <em>MUSIC</em></b><small>WMA UNITED AFRICA</small></span>
   </a>
   <label class="searchbox" for="topSearch">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -1944,6 +2149,263 @@ Object.assign(adminActs,{
   uArtists:(el,id)=>artistAccessModal(id)
 });
 
+/* =========================================================
+   DESIGN v3 — accueil « For You / Trending », profil artiste,
+   barre d'onglets mobile. Données réelles uniquement.
+   ========================================================= */
+const DI={
+ explore:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>',
+ sun:(s=22)=>`<svg width="${s}" height="${s}" viewBox="-50 -50 100 100" aria-hidden="true"><g fill="currentColor"><circle r="13"/>${[26,14,20,10,24,16,28,12,22,14,26,10,20,16,24,12].map((l,i)=>`<rect x="-3.6" y="${-(21+l)}" width="7.2" height="${l}" rx="3.6" transform="rotate(${i*22.5})"/>`).join('')}</g></svg>`
+};
+const lsGet=(k,d)=>{try{return localStorage.getItem(k)||d}catch(e){return d}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+let HOME_TAB=lsGet('wma_homeTab','trending');if(!['trending','foryou'].includes(HOME_TAB))HOME_TAB='trending';
+let TREND_F='hot';
+const kindLabel=t=>{const al=t.albumId&&api.album(t.albumId);return al?String(al.type||'Album').toUpperCase():'SINGLE'};
+const countryCode=c=>({'DR Congo':'CD','RDC':'CD','Republic of the Congo':'CG','Congo':'CG'})[c]||'';
+
+/* ---------- Trending ---------- */
+function trendList(f){const pub=api.pub();
+  if(f==='hot')return pub.slice().sort((a,b)=>stat.recent(b.id)-stat.recent(a.id)||byPlays(a,b)).slice(0,24);
+  if(f==='new')return sortNew(pub).slice(0,24);
+  return pub.filter(t=>t.genre===f).sort(byPlays).slice(0,24)}
+function trendGenres(){const c={};api.pub().forEach(t=>{if(t.genre)c[t.genre]=(c[t.genre]||0)+1});return Object.keys(c).sort((a,b)=>c[b]-c[a]||a.localeCompare(b)).slice(0,8)}
+function trendRows(f){const l=trendList(f),q=l.map(t=>t.id).join(','),cur=curTrack();if(!l.length)return '<div class="empty">No songs here yet.</div>';
+  return `<div class="tgrid">${l.map(t=>`<div class="trow2 ${cur&&cur.id===t.id?'cur':''}" data-id="${t.id}"><button class="tr-cov" data-act="play" data-id="${t.id}" data-q="${q}" aria-label="Play ${esc(t.title)}"><img src="${trackCover(t)}" alt="" loading="lazy"></button>
+   <div class="tr-txt"><a class="t1" href="#track-${t.id}">${esc(t.title)}</a><div class="t2">${artistLinks(t)}</div></div>
+   <button class="ic" data-act="addpl" data-id="${t.id}" aria-label="Add ${esc(t.title)} to a playlist" title="Add to a playlist">${I.plus}</button></div>`).join('')}</div>`}
+function fanArtist(){const m=api.me(),ok=a=>a&&api.tracksOf(a.id).some(isLive);
+  if(m){for(const id of (m.follows||[]).slice().reverse()){const a=api.artist(id);if(ok(a))return a}
+    const c={};Object.entries(m.listens||{}).forEach(([tid,v])=>{const t=api.track(tid);if(t)c[t.artistId]=(c[t.artistId]||0)+(+(v&&v.n)||0)});
+    const top=Object.keys(c).sort((a,b)=>c[b]-c[a])[0];if(top&&ok(api.artist(top)))return api.artist(top)}
+  const n=sortNew(api.pub())[0];return n?api.artist(n.artistId):null}
+function bannerSlides(){const seen=new Set(),out=[];for(const t of sortNew(api.pub())){const a=api.artist(t.artistId);if(!a||seen.has(a.id))continue;seen.add(a.id);out.push(t);if(out.length>=8)break}return out}
+function trendingView(){
+  const slides=bannerSlides();HERO_N=Math.max(1,slides.length);if(HERO_I>=HERO_N)HERO_I=0;const qs=slides.map(t=>t.id).join(',');
+  const banner=slides.length?`<section class="hero-slider bn" aria-roledescription="carousel" aria-label="New releases" style="--i:${HERO_I}"><div class="hs-track">${slides.map((t,n)=>{const a=api.artist(t.artistId),img=(a&&(artistPhoto(a)||artistCoverSrc(a)))||trackCover(t);
+      return `<div class="hs-slide bn-slide" data-i="${n}"><div class="bn-photo" style="--bgimg:url('${esc(img)}')"></div><div class="bn-line"></div>
+       <div class="bn-left"><div class="bn-title">${esc(t.title)}</div><div class="bn-artist">${esc(artistText(t))}</div><img class="bn-cov" src="${trackCover(t)}" alt=""></div>
+       <a class="bn-link" href="#track-${t.id}" aria-label="${esc(t.title)} by ${esc(artistText(t))}"></a>
+       <button class="bn-play" data-act="play" data-id="${t.id}" data-q="${qs}" aria-label="Play ${esc(t.title)}">${I.play}</button></div>`}).join('')}</div>
+     ${slides.length>1?`<button class="hs-nav hs-prev" data-act="heroGo" data-d="-1" aria-label="Previous slide">‹</button><button class="hs-nav hs-next" data-act="heroGo" data-d="1" aria-label="Next slide">›</button>
+     <div class="hs-dots">${slides.map((_,n)=>`<button data-act="heroTo" data-n="${n}" aria-label="Slide ${n+1}" class="${n===HERO_I?'on':''}"><i></i></button>`).join('')}</div>`:''}</section>`:'';
+  const fa=fanArtist(),rel=fa&&sortNew(api.tracksOf(fa.id).filter(isLive))[0],fq=fa?sortNew(api.tracksOf(fa.id).filter(isLive)).map(t=>t.id).join(','):'';
+  const fans=rel?`<section class="sec fans"><div class="fans-h"><a href="#artist-${fa.id}" class="fans-av" aria-label="${esc(fa.name)}">${avatar(fa,16)}</a><div style="min-width:0"><div class="t2">The latest releases for fans of</div><div class="fans-n">${vName(fa)}</div></div><a class="more" href="#artist-${fa.id}">MORE</a></div>
+    <div class="relcard"><a href="#track-${rel.id}" class="relcov"><img src="${trackCover(rel)}" alt=""></a><div class="reltxt"><a class="t1" href="#track-${rel.id}">${esc(rel.title)}</a><div><div class="t2">${artistLinks(rel)}</div><div class="t2 kind">${esc(kindLabel(rel))}</div></div></div>
+    <button class="relplay" data-act="play" data-id="${rel.id}" data-q="${fq}" aria-label="Play ${esc(rel.title)}">${I.play}</button></div></section>`:'';
+  const chips=[['hot','Hot'],['new','New'],...trendGenres().map(g=>[g,g])];if(!chips.some(c=>c[0]===TREND_F))TREND_F='hot';
+  const trend=`<section class="sec"><div class="sec-h2"><h2>Trending Songs</h2><a class="more" href="#playlists">MORE</a></div>
+    <div class="tchips" role="tablist" aria-label="Trending filter">${chips.map(([k,l])=>`<button class="tchip ${TREND_F===k?'on':''}" role="tab" aria-selected="${TREND_F===k}" data-act="trendF" data-f="${esc(k)}">${esc(l)}</button>`).join('')}</div>
+    <div id="trendRows">${trendRows(TREND_F)}</div></section>`;
+  const pop=DB.artists.filter(a=>api.tracksOf(a.id).length).sort((a,b)=>stat.artistPlays(b.id)-stat.artistPlays(a.id)||stat.followers(b.id)-stat.followers(a.id)||a.name.localeCompare(b.name)).slice(0,12);
+  const up=api.upcoming(),vids=api.videos();
+  return banner+fans+trend
+   +(up.length?sec('Coming soon',`<div class="up-grid">${up.slice(0,4).map(upcomingCard).join('')}</div>`,['#upcoming','See all']):'')
+   +sec('Charts &amp; picks',rail(api.smartPlaylists().filter(p=>!p.personal).map(plCard)),['#playlists','All playlists'])
+   +(vids.length?sec('Music videos',rail(vids.slice(0,10).map(videoCard)),['#videos','All videos']):'')
+   +(pop.length?sec('Popular artists',rail(pop.map(artistCard)),['#artists','All artists']):'')}
+
+/* ---------- For You : le contenu d'accueil existant, sans le grand diaporama ---------- */
+const _homeV2=pages.home;
+function forYouView(){let h=_homeV2();h=h.replace('<h1 class="ltitle">Home</h1>','').replace(/<section class="hero-slider"[\s\S]*?<\/section>/,'');return h}
+const homeTabs=()=>`<div class="htabs" role="tablist" aria-label="Home"><button class="htab ${HOME_TAB==='foryou'?'on':''}" role="tab" aria-selected="${HOME_TAB==='foryou'}" data-act="homeTab" data-t="foryou">For You</button><button class="htab ${HOME_TAB==='trending'?'on':''}" role="tab" aria-selected="${HOME_TAB==='trending'}" data-act="homeTab" data-t="trending">Trending</button></div>`;
+pages.home=()=>{if(!api.pub().length&&!DB.artists.length)return _homeV2();return `<h1 class="sr-only">Home</h1>`+homeTabs()+(HOME_TAB==='foryou'?forYouView():trendingView())};
+
+/* ---------- Profil artiste ---------- */
+let ART_TAB={id:null,t:'profile'},ART_SUB='songs';
+const canArtStats=a=>!!a&&(api.isAdmin()||(!!api.me()&&MYARTISTS.includes(a.id)));
+function waveBars(id,on){let h=2166136261;for(const c of String(id))h=Math.imul(h^c.charCodeAt(0),16777619)>>>0;let out='';
+  for(let i=0;i<40;i++){h=(Math.imul(h,1103515245)+12345)>>>0;out+=`<i style="height:${4+(h>>>20)%15}px"></i>`}return `<span class="wave${on?' on':''}" aria-hidden="true">${out}</span>`}
+const monthPlays=a=>api.tracksOf(a.id).reduce((s,t)=>s+stat.recent(t.id),0);
+function artProfileTab(a,tr,newest,top,q){
+  const cur=curTrack(),up=api.upcoming().filter(t=>t.artistId===a.id||t.featIds.includes(a.id));
+  const soc=SOCIALS.map(([k,l])=>{const u=(a.socials||{})[k]||(k==='youtube'?a.youtube:'');return u&&/^https:\/\//.test(u)?`<a class="soc" href="${esc(u)}" target="_blank" rel="noopener">${esc(l)} ↗</a>`:''}).join('');
+  const als=DB.albums.filter(x=>x.artistId===a.id&&api.albumTracks(x.id).length).sort((x,y)=>new Date(y.date)-new Date(x.date)),sg=newest.filter(t=>!t.albumId);
+  const rels=[...als.map(al=>({d:new Date(al.date).getTime()||0,h:`<a class="rel" href="#album-${al.id}"><img src="${albumCover(al)}" alt="" loading="lazy"><span class="t1">${esc(al.title)}</span><span class="t2">${esc(al.type||'Album')}${al.date?' · '+String(al.date).slice(0,4):''}</span></a>`})),
+    ...sg.map(t=>({d:pubDate(t)||t.createdAt||0,h:`<a class="rel" href="#track-${t.id}"><img src="${trackCover(t)}" alt="" loading="lazy"><span class="t1">${esc(t.title)}</span><span class="t2">Single</span></a>`}))].sort((x,y)=>y.d-x.d).map(x=>x.h);
+  const pls=[...api.smartPlaylists(),...api.playlists()].filter(p=>p.trackIds.some(tid=>{const t=api.track(tid);return t&&isLive(t)&&(t.artistId===a.id||t.featIds.includes(a.id))})).filter((p,i,arr)=>arr.findIndex(x=>x.id===p.id)===i);
+  const info=[['From',[a.city,a.country].filter(Boolean).join(', ')],['Genres',a.genres],['Label',a.label],['Active since',a.since],['Booking',a.booking]].filter(x=>x[1]);
+  return (soc?`<div class="socs" style="margin-top:0">${soc}</div>`:'')
+   +(up.length?sec('Coming soon',`<div class="up-grid">${up.map(upcomingCard).join('')}</div>`):'')
+   +sec('Top Songs',top.length?`<div class="tsongs">${top.map(t=>`<div class="ts-row ${cur&&cur.id===t.id?'cur':''}" data-id="${t.id}"><button class="ts-play" data-act="play" data-id="${t.id}" data-q="${q}" aria-label="Play ${esc(t.title)}">${I.play}</button>
+      <div class="ts-txt"><a class="t1" href="#track-${t.id}">${esc(t.title)}</a>${waveBars(t.id,cur&&cur.id===t.id)}</div><span class="d mono">${fmt(t.duration)}</span></div>`).join('')}</div>`:'<div class="empty">No songs released by this artist yet.</div>',tr.length>5?['#artist-'+a.id+'-songs','See all']:null)
+   +(rels.length?sec('Releases',`<div class="rels">${rels.join('')}</div>`):'')
+   +(pls.length?sec('Featured on',rail(pls.slice(0,10).map(plCard))):'')
+   +sec('About',`<div class="about"><div><p class="bio" style="margin:0">${esc(a.bio||'')}</p></div>${info.length?`<dl class="ainfo">${info.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`:''}</div>`)}
+function artReleasesTab(a,newest){const als=DB.albums.filter(x=>x.artistId===a.id&&api.albumTracks(x.id).length),sg=newest.filter(t=>!t.albumId);
+  return (als.length?sec('Albums',`<div class="grid">${als.map(albumCard).join('')}</div>`):'')
+   +(sg.length?sec('Singles',`<div class="grid">${sg.map(t=>trackCard(t,sg.map(x=>x.id).join(','))).join('')}</div>`):'')
+   +sec('All songs',trackRows(newest,{empty:'No songs released by this artist yet.'}))}
+function artVideosTab(a){const vids=api.videos().filter(v=>v.artistId===a.id),clips=vids.filter(v=>v.type!=='live'),lives=vids.filter(v=>v.type==='live');
+  if(!vids.length)return a.youtube?sec('Videos',`<a class="card" style="max-width:320px" href="${esc(a.youtube)}" target="_blank" rel="noopener"><div class="cov" style="aspect-ratio:16/9;display:grid;place-items:center;background:hsl(${a.hue??24} 40% 14%)"><span class="pbtn" style="width:54px;height:54px">${I.yt}</span></div><div class="t1">Watch videos on YouTube ↗</div></a>`):'<div class="empty">No videos yet.</div>';
+  return (clips.length?sec('Music videos',`<div class="vgrid">${clips.map(videoCard).join('')}</div>`):'')+(lives.length?sec('Live sessions',`<div class="vgrid">${lives.map(videoCard).join('')}</div>`):'')}
+function artStreamsTab(a){
+  if(STUDIO.aid!==a.id||(!STUDIO.data&&!STUDIO.loading&&!STUDIO.err)){STUDIO={aid:a.id,data:null,loading:true,err:null,at:0};setTimeout(()=>{STUDIO.loading=false;loadStudio(a.id,true)},0)}
+  const r=STUDIO.data;if(STUDIO.err)return `<div class="empty">${esc(STUDIO.err)}</div>`;if(!r)return '<div class="empty">Loading the statistics…</div>';
+  const seg=`<div class="seg" role="tablist" aria-label="Period">${[[7,'Week'],[30,'Month'],[90,'Quarter']].map(([n,l])=>`<button role="tab" aria-selected="${STUDIO_DAYS===n}" class="${STUDIO_DAYS===n?'on':''}" data-act="stDays" data-n="${n}">${l}</button>`).join('')}</div>`;
+  const songs=(r.trackIds||[]).map(api.track).filter(Boolean).map(t=>({t,s:(r.tracks[t.id]||{}).streams||0,l:(r.tracks[t.id]||{}).listeners||0})).sort((x,y)=>y.s-x.s);
+  const ctry=Object.entries(r.countries||{}).map(([c,v])=>({c,s:v.streams||0,l:v.listeners||0})).filter(x=>x.s||x.l).sort((x,y)=>y.s-x.s);
+  const list=ART_SUB==='countries'?(ctry.length?ctry.map(x=>`<div class="srow"><span class="fl" aria-hidden="true">${flag(x.c)||'🌍'}</span><div style="min-width:0"><div class="t1">${esc(regionName(x.c))}</div><div class="t2">${nf(x.s)} stream${x.s===1?'':'s'} · ${nf(x.l)} listener${x.l===1?'':'s'}</div></div></div>`).join(''):'<div class="empty">No listeners yet.</div>')
+    :(songs.length?songs.map(x=>`<div class="srow"><img src="${trackCover(x.t)}" alt=""><div style="min-width:0"><div class="t1">${esc(x.t.title)}</div><div class="t2">${nf(x.s)} stream${x.s===1?'':'s'} · ${nf(x.l)} listener${x.l===1?'':'s'}</div></div></div>`).join(''):'<div class="empty">No songs yet.</div>');
+  return `<div class="panel st-panel"><div class="studio-head"><h2 style="font-size:24px">Streams</h2>${seg}</div>
+    <div class="st-kpis"><div><b>${nf(r.streams)}</b><span>Streams</span></div><div><b>${nf(r.listeners)}</b><span>Listeners</span></div><div><b>${nf(r.followers)}</b><span>Followers</span></div></div>
+    ${daysChart(r.days,STUDIO_DAYS)}</div>
+   <div class="seg" style="margin-top:18px" role="tablist" aria-label="Breakdown"><button role="tab" aria-selected="${ART_SUB==='songs'}" class="${ART_SUB==='songs'?'on':''}" data-act="artSub" data-t="songs">Songs</button><button role="tab" aria-selected="${ART_SUB==='countries'}" class="${ART_SUB==='countries'?'on':''}" data-act="artSub" data-t="countries">Countries</button></div>
+   <div class="slist">${list}</div>
+   <div class="actions"><a class="btn" href="#studio">${FI.chart} Full dashboard &amp; reports</a></div>
+   <p class="muted" style="font-size:12px">Only you and the WMA team can see this tab. Real data from WMA MUSIC listeners · updated ${frDT(r.at||Date.now())}</p>`}
+const _artistV2=pages.artist;
+pages.artist=arg=>{
+  if(/-songs$/.test(String(arg||''))&&api.artist(String(arg).replace(/-songs$/,'')))return _artistV2(arg);
+  const a=api.artist(arg);if(!a)return notFound();
+  if(ART_TAB.id!==a.id)ART_TAB={id:a.id,t:'profile'};const can=canArtStats(a);if(ART_TAB.t==='streams'&&!can)ART_TAB.t='profile';
+  const tr=api.tracksOf(a.id),newest=sortNew(tr),pop=tr.slice().sort(byPlays).slice(0,5),top=pop.length?pop:newest.slice(0,5),q=[...top,...newest.filter(t=>!top.includes(t))].map(t=>t.id).join(',');
+  const img=artistPhoto(a)||artistCoverSrc(a),fol=(api.me()?.follows||[]).includes(a.id),mp=monthPlays(a),fc=stat.followers(a.id),cc=countryCode(a.country);
+  const tabs=[['profile','Profile'],['releases','Releases'],['videos','Videos'],...(can?[['streams','Streams']]:[])];
+  const body=ART_TAB.t==='releases'?artReleasesTab(a,newest):ART_TAB.t==='videos'?artVideosTab(a):ART_TAB.t==='streams'?artStreamsTab(a):artProfileTab(a,tr,newest,top,q);
+  return `<section class="ap-hero" style="--h:${a.hue??24}">${img?`<div class="ap-bg" style="--bgimg:url('${esc(img)}')"></div><div class="ap-img" style="--bgimg:url('${esc(img)}')"></div>`:''}<div class="ap-shade"></div>
+    <div class="ap-in"><div class="eyebrow">${a.verified?'Verified artist':'Artist'}</div><h1 class="ap-name">${vName(a)}</h1>
+     <div class="ap-sub">${nf(mp)} play${mp===1?'':'s'} in the last 30 days${a.country?` · ${cc?flag(cc)+' ':''}${esc(a.country)}`:''}</div>
+     <div class="ap-stats"><div><span>Followers</span><b class="mono">${nf(fc)}</b></div><div><span>Plays</span><b class="mono">${nf(stat.artistPlays(a.id))}</b></div><div><span>Tracks</span><b class="mono">${tr.length}</b></div></div>
+     <div class="ap-actions">${tr.length?`<button class="ap-play" data-act="play" data-id="${top[0].id}" data-q="${q}" aria-label="Play ${esc(a.name)}">${I.play}</button>`:''}<button class="btn ${fol?'':'pri-o'}" data-act="follow" data-id="${a.id}">${fol?'Following ✓':'Follow'}</button><button class="btn" data-act="share" data-k="artist" data-id="${a.id}">${I.share} Share</button></div></div></section>
+   <div class="ap-body"><nav class="ap-rail" role="tablist" aria-label="Artist sections">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${ART_TAB.t===k}" class="${ART_TAB.t===k?'on':''}" data-act="artTab" data-t="${k}">${l}</button>`).join('')}</nav>
+    <div class="ap-main">${body}</div></div>`};
+/* Le rapport se recharge aussi sur la page artiste */
+const _loadStudio3=loadStudio;loadStudio=async function(aid,force){await _loadStudio3(aid,force);if(location.hash.startsWith('#artist-'))rerender()};
+
+/* ---------- Graphique lissé (Streams), utilisé aussi par le dashboard ---------- */
+daysChart=function(days,n=30){const out=[],d0=new Date();d0.setUTCHours(0,0,0,0);
+  for(let i=n-1;i>=0;i--){const d=new Date(d0.getTime()-i*864e5),k=d.toISOString().slice(0,10);out.push({d:k,w:d.getUTCDay(),n:+(days||{})[k]||0})}
+  const max=Math.max(...out.map(x=>x.n));if(!max)return '<div class="empty" style="margin-top:12px">The chart will appear after the first counted streams.</div>';
+  /* Courbe en SVG étiré (proportions libres), étiquettes et points en HTML pour rester lisibles à toutes les largeurs */
+  const top=Math.max(4,Math.ceil(max/4)*4),W=1000,H=200,pad=8,X=i=>i*W/(n-1),Y=v=>pad+(H-2*pad)*(1-v/top),pc=i=>(i/(n-1)*100).toFixed(3),pv=v=>(Y(v)/H*100).toFixed(3);
+  const p=out.map((o,i)=>({x:X(i),y:Y(o.n)}));let d=`M${p[0].x},${p[0].y}`;const y0=Y(0),cl=v=>Math.min(y0,Math.max(pad,v));
+  for(let i=0;i<p.length-1;i++){const a=p[i-1]||p[i],b=p[i],c=p[i+1],e=p[i+2]||c;d+=` C${b.x+(c.x-a.x)/6},${cl(b.y+(c.y-a.y)/6)} ${c.x-(e.x-b.x)/6},${cl(c.y-(e.y-b.y)/6)} ${c.x},${c.y}`}
+  const step=n<=7?1:Math.ceil(n/6),WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],gid='gS'+n,lab=out.map((o,i)=>(n-1-i)%step===0?i:-1).filter(i=>i>=0);
+  return `<div class="sch" role="img" aria-label="Streams per day over the last ${n} days. Highest: ${max}.">
+   <div class="sch-plot"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FF7A1A" stop-opacity=".45"/><stop offset="1" stop-color="#FF7A1A" stop-opacity="0"/></linearGradient></defs>
+     ${lab.map(i=>`<line x1="${X(i)}" x2="${X(i)}" y1="0" y2="${H}" stroke="#3A3A3C" stroke-dasharray="3 5" vector-effect="non-scaling-stroke"/>`).join('')}
+     <path d="${d} L${W},${y0} L0,${y0} Z" fill="url(#${gid})"/><path d="${d}" fill="none" stroke="#FF7A1A" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+    ${out.map((o,i)=>o.n?`<span class="sch-dot${i===n-1?' last':''}" style="left:${pc(i)}%;top:${pv(o.n)}%" title="${o.d}: ${o.n} stream${o.n===1?'':'s'}"></span>`:'').join('')}
+    <div class="sch-y">${[1,.5,0].map(f=>`<span style="top:${pv(top*f)}%">${nf(top*f)}</span>`).join('')}</div></div>
+   <div class="sch-x">${lab.map(i=>`<span style="left:${pc(i)}%">${n<=7?WD[out[i].w]:out[i].d.slice(8,10)+'/'+out[i].d.slice(5,7)}</span>`).join('')}</div></div>`};
+
+/* ---------- Barre d'onglets mobile ---------- */
+const _chromeV3=chrome;chrome=function(){_chromeV3();const h=location.hash.slice(1)||'home',is=k=>h===k||h.startsWith(k+'-');
+  $('#tabs').innerHTML=`<a href="#home" class="${is('home')?'on':''}">${DI.sun(22)}Home</a><a href="#search" class="${is('search')?'on':''}">${I.search}Search</a><a href="#videos" class="${is('videos')||is('video')?'on':''}">${FI.video}Videos</a><a href="#playlists" class="${['playlists','playlist','genre','artists','upcoming'].some(is)?'on':''}">${DI.explore}Explore</a><a href="#library" class="${is('library')||is('favorites')?'on':''}">${I.lib}Library</a>`};
+
+/* ---------- Lecture en cours : surbrillance des nouvelles listes ---------- */
+const _rpV3=refreshPlaying;refreshPlaying=function(){_rpV3();const t=curTrack();document.querySelectorAll('.trow2[data-id],.ts-row[data-id]').forEach(r=>{const on=!!t&&r.dataset.id===t.id;r.classList.toggle('cur',on);const w=r.querySelector('.wave');w&&w.classList.toggle('on',on)})};
+
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  const acts={
+    homeTab:()=>{HOME_TAB=el.dataset.t==='foryou'?'foryou':'trending';lsSet('wma_homeTab',HOME_TAB);rerender();window.scrollTo(0,0)},
+    trendF:()=>{TREND_F=el.dataset.f;document.querySelectorAll('.tchip').forEach(c=>{const on=c.dataset.f===TREND_F;c.classList.toggle('on',on);c.setAttribute('aria-selected',on)});const r=$('#trendRows');if(r)r.innerHTML=trendRows(TREND_F)},
+    artTab:()=>{ART_TAB.t=el.dataset.t;rerender();const b=$('.ap-body');if(b&&b.getBoundingClientRect().top<0)b.scrollIntoView({block:'start'})},
+    artSub:()=>{ART_SUB=el.dataset.t==='countries'?'countries':'songs';rerender()}};
+  if(acts[a]){e.preventDefault();e.stopImmediatePropagation();acts[a]()}},true);
+
+/* =========================================================
+   PARCOURS D'OUVERTURE : logo animé → chargement → accueil connexion
+   Réutilise l'authentification existante (pages #login / #signup,
+   Google et mot de passe oublié via Supabase). Aucune nouvelle base.
+   ========================================================= */
+const RECOVERY_LINK=/type=recovery/.test(location.hash);
+const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},ssSet=(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}};
+/* Une session Supabase enregistrée sur cet appareil (sert seulement si le réseau est lent) */
+const storedSession=()=>{try{return Object.keys(localStorage).some(k=>/^sb-.+-auth-token$/.test(k)&&localStorage.getItem(k))}catch(e){return false}};
+const signedIn=()=>!!api.me()||art();
+
+function welcomeHTML(){const ph=(typeof PHOTO0==='object'&&PHOTO0?Object.values(PHOTO0):[]).filter(Boolean).slice(0,9);
+  return `<div class="wl-bg" aria-hidden="true">${ph.map((p,i)=>`<span style="--bgimg:url('${esc(p)}');--k:${i}"></span>`).join('')}</div><div class="wl-shade" aria-hidden="true"></div>
+  <div class="wl-in">
+   <div class="wl-logo" aria-hidden="true">${DI.sun(64)}</div>
+   <h1 id="wlTitle">Welcome to WMA MUSIC</h1>
+   <p>Listen to your favourite music and discover new artists.</p>
+   <div class="wl-btns">
+    <button class="btn pri wl-b" data-act="wlGo" data-to="login">Sign in</button>
+    <button class="btn wl-b wl-ghost" data-act="wlGo" data-to="signup">Create an account</button>
+    ${supa()?`<button class="btn wl-b wl-google" data-act="wlGoogle"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg> Continue with Google</button>`:''}
+   </div>
+   <div class="wl-links">${supa()?'<button type="button" data-act="wlForgot">Forgot password?</button><span aria-hidden="true">·</span>':''}<button type="button" data-act="wlBrowse">Browse first</button></div>
+   <p class="wl-legal">By continuing, you agree to our <a href="#terms" data-act="wlLegal">Terms of Use</a> and <a href="#privacy" data-act="wlLegal">Privacy Policy</a>.</p>
+  </div>`}
+function showWelcome(){if($('#welcome'))return;const w=document.createElement('div');w.id='welcome';w.setAttribute('role','dialog');w.setAttribute('aria-modal','true');w.setAttribute('aria-labelledby','wlTitle');
+  w.innerHTML=welcomeHTML();document.body.appendChild(w);document.body.classList.add('ob-lock');requestAnimationFrame(()=>w.classList.add('in'));w.tabIndex=-1;setTimeout(()=>w.focus({preventScroll:true}),400)}
+function hideWelcome(){const w=$('#welcome');ssSet('wma_welcome_done','1');if(!w)return;w.classList.add('out');document.body.classList.remove('ob-lock');setTimeout(()=>w.remove(),320)}
+
+/* Écran d'ouverture déjà affiché par le HTML (visible avant même le chargement du script) */
+function startIntro(boot){
+  const el=$('#intro'),t0=performance.now(),quick=ssGet('wma_intro_seen')==='1'||RM.matches;
+  if(!el){afterIntro();return}
+  if(quick)el.classList.add('quick');ssSet('wma_intro_seen','1');
+  const minMs=quick?550:1700,maxMs=4500;let done=false;
+  const finish=()=>{if(done)return;done=true;el.classList.add('out');document.body.classList.remove('ob-lock');afterIntro();setTimeout(()=>el.remove(),450)};
+  const wait=Promise.race([Promise.resolve(boot).catch(()=>{}),new Promise(r=>setTimeout(r,maxMs))]);
+  wait.then(()=>{const left=minMs-(performance.now()-t0);setTimeout(finish,Math.max(0,left))});
+  el.addEventListener('click',()=>{if(performance.now()-t0>500)finish()})}
+function afterIntro(){
+  if(RECOVERY_LINK&&supa()&&api.me()){newPasswordModal();return}
+  if(signedIn())return;                                     /* déjà connecté : directement l'application */
+  if(storedSession()&&MODE!=='supa')return;                  /* réseau lent : on ne redemande pas la connexion */
+  if(ssGet('wma_welcome_done')==='1')return;                 /* déjà passé par l'accueil pendant cette visite */
+  if(/^#(login|signup|terms|privacy)$/.test(location.hash))return;
+  showWelcome()}
+/* Si la session arrive après coup (connexion Google, autre onglet…), l'accueil se ferme tout seul */
+const _chromeOb=chrome;chrome=function(){_chromeOb();if(signedIn()&&$('#welcome'))hideWelcome()};
+
+/* ---------- Mot de passe oublié (Supabase existant) ---------- */
+function forgotModal(prefill){openModal(`<h3>Reset your password</h3><p class="muted" style="margin:6px 0 14px">Enter the email of your WMA MUSIC account. We'll send you a link to choose a new password.</p>
+  <form class="form" id="fgForm" novalidate><div class="fld"><label for="fgEmail">Email</label><input id="fgEmail" type="email" autocomplete="email" required value="${esc(prefill||'')}"></div><div class="err" id="fgErr"></div>
+  <div class="actions" style="margin-top:0"><button class="btn pri" type="submit">Send the link</button><button class="btn" type="button" data-act="close">Cancel</button></div></form>`);
+  $('#fgForm').onsubmit=async ev=>{ev.preventDefault();const em=$('#fgEmail').value.trim().toLowerCase(),err=$('#fgErr'),btn=ev.target.querySelector('[type=submit]');err.textContent='';
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){err.textContent='Enter a valid email address.';return}
+    btn.disabled=true;btn.textContent='Sending…';
+    try{const r=await SB.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});if(r&&r.error)throw r.error;
+      $('#modal .modal-box').innerHTML=`<h3>Check your inbox</h3><p class="muted" style="margin:8px 0 16px">If an account exists for <b>${esc(em)}</b>, you'll receive an email with a link to choose a new password. It may take a few minutes — check your spam folder too.</p><div class="actions" style="margin-top:0"><button class="btn pri" data-act="close">OK</button></div>`}
+    catch(e){btn.disabled=false;btn.textContent='Send the link';err.textContent=/rate|security purposes/i.test(e.message||'')?'Too many requests. Please wait a minute and try again.':(e.message||'The email could not be sent. Try again.')}}}
+function newPasswordModal(){history.replaceState(null,'',location.pathname+location.search+'#home');
+  openModal(`<h3>Choose a new password</h3><form class="form" id="npForm" style="margin-top:12px" novalidate><div class="fld"><label for="npPass">New password (at least 8 characters)</label><input id="npPass" type="password" autocomplete="new-password" minlength="8" required></div><div class="err" id="npErr"></div>
+   <div class="actions" style="margin-top:0"><button class="btn pri" type="submit">Save my new password</button></div></form>`);
+  $('#npForm').onsubmit=async ev=>{ev.preventDefault();const pw=$('#npPass').value,err=$('#npErr');if(pw.length<8){err.textContent='Use at least 8 characters.';return}
+    const r=await SB.auth.updateUser({password:pw});if(r&&r.error){err.textContent=r.error.message;return}closeModal();toast('Your password has been changed.')}}
+
+/* ---------- Conditions d'utilisation & confidentialité ---------- */
+const LEGAL_DATE='5 November 2026',LEGAL_MAIL='worldmusicactus@gmail.com';
+const legalPage=(title,body)=>`<article class="legal"><a class="btn ghost sm" href="#home" data-act="legalBack">‹ Back</a><div class="eyebrow" style="margin-top:14px">WMA MUSIC</div><h1 class="ltitle" style="margin-top:6px">${title}</h1><p class="muted">Last updated: ${LEGAL_DATE}</p>${body}</article>`;
+pages.terms=()=>legalPage('Terms of Use',`
+ <h2>1. The service</h2><p>WMA MUSIC is a free music streaming service of WMA UNITED AFRICA (WMA HUB) dedicated to African artists. A free account is required to listen to music.</p>
+ <h2>2. Your account</h2><p>You must give accurate information and keep your password secret. You are responsible for what happens with your account. You can stop using WMA MUSIC at any time.</p>
+ <h2>3. Music and videos</h2><p>Songs, covers, photos and videos remain the property of the artists and rights holders. WMA MUSIC only publishes content it is authorised to distribute. Streaming is for personal, non-commercial use: copying, downloading, recording or redistributing the content is not allowed.</p>
+ <h2>4. Fair use</h2><p>Do not try to manipulate plays, statistics or charts (bots, scripts, repeated fake listens), and do not try to access accounts or data that are not yours. Plays that do not meet our listening rules are not counted.</p>
+ <h2>5. Availability</h2><p>We work to keep the service available, but it may be interrupted for maintenance or for reasons outside our control. Catalogue content can change at any time.</p>
+ <h2>6. Suspension</h2><p>We may suspend an account that breaks these terms.</p>
+ <h2>7. Changes</h2><p>These terms may be updated. The date above shows the latest version.</p>
+ <h2>8. Contact</h2><p>Questions or a rights request: <b class="sel">${LEGAL_MAIL}</b></p>`);
+pages.privacy=()=>legalPage('Privacy Policy',`
+ <h2>What we collect</h2><ul><li><b>Account:</b> your name, email address and password (the password is stored encrypted by our authentication provider). If you sign in with Google, we receive your name and email from Google.</li>
+ <li><b>Activity on WMA MUSIC:</b> songs you play, favourites, playlists, artists you follow, pre-saves and videos you watch.</li>
+ <li><b>Country:</b> the country of your connection (for example “CD”), detected when you use the app. Your IP address is not stored.</li></ul>
+ <h2>Why we use it</h2><ul><li>To run your account, your library and your recommendations (“Made for You”).</li><li>To count plays and produce statistics. Public figures (plays, followers) are totals only; artists and their teams see aggregated statistics by song and by country, never your name or email.</li><li>To send you a notification when a song you pre-saved is released.</li></ul>
+ <h2>Who processes it</h2><p>Your data is hosted by our technical providers: Supabase (database and authentication) and Vercel (hosting of the app). Videos linked from YouTube are played through YouTube's player, which has its own privacy policy. We do not sell your data.</p>
+ <h2>On your device</h2><p>The app stores your session and a few preferences (for example the selected home tab) in your browser so you stay signed in.</p>
+ <h2>Your rights</h2><p>You can view and edit your profile in the app. To get a copy of your data or delete your account, write to <b class="sel">${LEGAL_MAIL}</b>.</p>
+ <h2>Changes</h2><p>This policy may be updated. The date above shows the latest version.</p>`);
+/* Liens légaux sous les formulaires existants */
+const legalNote=`<p class="muted" style="font-size:12.5px;margin:0">By continuing, you agree to our <a href="#terms" style="color:var(--fg);text-decoration:underline">Terms of Use</a> and <a href="#privacy" style="color:var(--fg);text-decoration:underline">Privacy Policy</a>.</p>`;
+const _signupOb=pages.signup;pages.signup=()=>{const h=_signupOb();return h.includes('id="signupForm"')?h.replace('</form></div>',legalNote+'</form></div>'):h};
+const _loginOb=pages.login;pages.login=()=>{const h=_loginOb();return h.includes('id="loginForm"')?h.replace('</form></div>',legalNote+'</form></div>'):h};
+
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  const acts={
+    wlGo:()=>{hideWelcome();location.hash='#'+(el.dataset.to==='signup'?'signup':'login')},
+    wlGoogle:()=>{ssSet('wma_welcome_done','1');SB&&SB.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}})},
+    wlForgot:()=>forgotModal(''),
+    wlBrowse:()=>{hideWelcome();if(!location.hash||location.hash==='#')location.hash='#home'},
+    wlLegal:()=>{hideWelcome();location.hash=el.getAttribute('href')},
+    legalBack:()=>{if(history.length>1)history.back();else location.hash='#home'},
+    forgot:()=>forgotModal((($('#lgEmail')||{}).value||'').trim())};
+  if(acts[a]){e.preventDefault();e.stopImmediatePropagation();acts[a]()}},true);
+
 
 /* =========================================================
    AUTHENTIFICATION (mode local uniquement)
@@ -2018,7 +2480,8 @@ function rerender(){
 function route(){if(!$('#modal').querySelector('[data-busy]'))closeModal();chrome();rerender();window.scrollTo(0,0)}
 window.addEventListener('hashchange',route);
 bootLocal();route();renderPlayer();
-bootSupa().then(ok=>{if(!ok)return bootCloud()}).catch(e=>console.warn('backend',e));
+const BOOT=bootSupa().then(ok=>{if(!ok)return bootCloud()}).catch(e=>console.warn('backend',e));
+startIntro(BOOT);
 
 </script>
 </body>
