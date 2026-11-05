@@ -152,8 +152,31 @@
   .seg button{padding:0 14px}
 }
 
-
-
+/* Cartes « Find something new » */
+.sec.disc{margin-top:0;padding-top:0;border-top:0}
+.dchips .tchip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.dcards{display:grid;grid-auto-flow:column;grid-auto-columns:min(460px,88%);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+.dcards::-webkit-scrollbar{display:none}
+.dcard{scroll-snap-align:start;background:var(--surface);border-radius:16px;padding:18px 18px 10px;min-width:0}
+.dcard-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;min-height:36px}
+.dcard-h h2{font-size:19px;font-weight:800;text-transform:uppercase;letter-spacing:-.01em}
+.dcard-h span{font-size:28px;line-height:1;color:var(--muted)}
+.drow{display:grid;grid-template-columns:72px minmax(0,1fr) 44px;gap:14px;align-items:center;padding:8px 0}
+.dr-cov{width:72px;height:72px;border-radius:6px;overflow:hidden;padding:0}
+.dr-cov img{width:100%;height:100%;object-fit:cover;display:block}
+.dr-txt{min-width:0}
+.dr-txt .t1{font-size:16.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dr-txt .t2{display:block;font-size:15px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drow.cur .t1{color:var(--accent)}
+.dr-more{width:44px;height:44px}
+.tmenu{display:flex;flex-direction:column}
+.tm-h{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center;padding-bottom:12px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.tm-h img{width:56px;height:56px;border-radius:6px;object-fit:cover}
+.tmenu>button,.tmenu>a{display:flex;align-items:center;gap:14px;min-height:48px;padding:0 4px;font-weight:600;font-size:15px;text-align:left;color:var(--fg);border-radius:8px}
+.tmenu>button:hover,.tmenu>a:hover{background:var(--surface2)}
+.tmenu>button svg,.tmenu>a svg{width:20px;height:20px;color:var(--muted)}
+.tmenu .tm-cancel{justify-content:center;margin-top:6px;background:var(--surface2)}
+@media (max-width:860px){.dcard{padding:16px 14px 8px}.dcard-h h2{font-size:17px}.drow{grid-template-columns:64px minmax(0,1fr) 40px;gap:12px}.dr-cov{width:64px;height:64px}}
 
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
@@ -2180,7 +2203,7 @@ function fanArtist(){const m=api.me(),ok=a=>a&&api.tracksOf(a.id).some(isLive);
   const n=sortNew(api.pub())[0];return n?api.artist(n.artistId):null}
 function bannerSlides(){const seen=new Set(),out=[];for(const t of sortNew(api.pub())){const a=api.artist(t.artistId);if(!a||seen.has(a.id))continue;seen.add(a.id);out.push(t);if(out.length>=8)break}return out}
 function trendingView(){
-  const slides=bannerSlides();HERO_N=Math.max(1,slides.length);if(HERO_I>=HERO_N)HERO_I=0;const qs=slides.map(t=>t.id).join(',');
+  const slides=[];HERO_N=1;if(HERO_I>=HERO_N)HERO_I=0;const qs=slides.map(t=>t.id).join(',');
   const banner=slides.length?`<section class="hero-slider bn" aria-roledescription="carousel" aria-label="New releases" style="--i:${HERO_I}"><div class="hs-track">${slides.map((t,n)=>{const a=api.artist(t.artistId),img=(a&&(artistPhoto(a)||artistCoverSrc(a)))||trackCover(t);
       return `<div class="hs-slide bn-slide" data-i="${n}"><div class="bn-photo" style="--bgimg:url('${esc(img)}')"></div><div class="bn-line"></div>
        <div class="bn-left"><div class="bn-title">${esc(t.title)}</div><div class="bn-artist">${esc(artistText(t))}</div><img class="bn-cov" src="${trackCover(t)}" alt=""></div>
@@ -2198,11 +2221,45 @@ function trendingView(){
     <div id="trendRows">${trendRows(TREND_F)}</div></section>`;
   const pop=DB.artists.filter(a=>api.tracksOf(a.id).length).sort((a,b)=>stat.artistPlays(b.id)-stat.artistPlays(a.id)||stat.followers(b.id)-stat.followers(a.id)||a.name.localeCompare(b.name)).slice(0,12);
   const up=api.upcoming(),vids=api.videos();
-  return banner+fans+trend
+  return discoverView()+fans+trend
    +(up.length?sec('Coming soon',`<div class="up-grid">${up.slice(0,4).map(upcomingCard).join('')}</div>`,['#upcoming','See all']):'')
    +sec('Charts &amp; picks',rail(api.smartPlaylists().filter(p=>!p.personal).map(plCard)),['#playlists','All playlists'])
    +(vids.length?sec('Music videos',rail(vids.slice(0,10).map(videoCard)),['#videos','All videos']):'')
    +(pop.length?sec('Popular artists',rail(pop.map(artistCard)),['#artists','All artists']):'')}
+
+
+/* ---------- Accueil : cartes « Find something new » (remplace le diaporama) ---------- */
+let DISC_F='all';
+function discoverCards(){const pub=api.pub().filter(t=>DISC_F==='all'||t.genre===DISC_F),m=api.me(),fol=m?(m.follows||[]):[];
+  const cards=[
+    {k:'new',title:'Find something new',link:'#playlist-smart-new',list:sortNew(pub)},
+    {k:'hot',title:'Hot right now',link:'#playlist-smart-top',list:pub.slice().sort((a,b)=>stat.recent(b.id)-stat.recent(a.id)||byPlays(a,b))},
+    {k:'fol',title:'From artists you follow',link:'#library-artists',list:fol.length?sortNew(pub.filter(t=>fol.includes(t.artistId)||t.featIds.some(f=>fol.includes(f)))):[]},
+    {k:'gem',title:'Hidden gems',link:'#search',list:pub.slice().sort((a,b)=>stat.plays(a.id)-stat.plays(b.id)||(pubDate(b)||b.createdAt)-(pubDate(a)||a.createdAt))}];
+  const used=new Set();
+  return cards.map(c=>{const l=c.list.filter(t=>c.k==='new'||c.k==='fol'||!used.has(t.id)).slice(0,4);l.forEach(t=>used.add(t.id));return {...c,l}}).filter(c=>c.l.length)}
+function discoverCardsHTML(){const cards=discoverCards();if(!cards.length)return '<div class="empty">No songs in this genre yet.</div>';
+  return `<div class="dcards">${cards.map(c=>{const q=c.l.map(t=>t.id).join(',');return `<section class="dcard" aria-label="${esc(c.title)}"><a class="dcard-h" href="${c.link}"><h2>${esc(c.title)}</h2><span aria-hidden="true">›</span></a>
+    ${c.l.map(t=>`<div class="drow" data-id="${t.id}"><button class="dr-cov" data-act="play" data-id="${t.id}" data-q="${q}" aria-label="Play ${esc(t.title)}"><img src="${trackCover(t)}" alt="" loading="lazy"></button>
+     <div class="dr-txt"><div class="t1">${esc(artistText(t))}</div><a class="t2" href="#track-${t.id}">${esc(t.title)}</a></div>
+     <button class="ic dr-more" data-act="trMenu" data-id="${t.id}" data-q="${q}" aria-label="More options for ${esc(t.title)}">${DI.dots}</button></div>`).join('')}</section>`}).join('')}</div>`}
+function discoverView(){const gs=trendGenres();if(DISC_F!=='all'&&!gs.includes(DISC_F))DISC_F='all';
+  return `<section class="sec disc"><div class="tchips dchips" role="tablist" aria-label="Genres">${[['all','All'],...gs.map(g=>[g,g])].map(([k,l])=>`<button class="tchip ${DISC_F===k?'on':''}" role="tab" aria-selected="${DISC_F===k}" data-act="discF" data-f="${esc(k)}">${esc(l)}</button>`).join('')}</div>
+   <div id="discCards">${discoverCardsHTML()}</div></section>`}
+DI.dots='<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+/* Menu « ⋮ » d'une chanson : réutilise les actions existantes */
+function trackMenu(id,q){const t=api.track(id);if(!t)return;const a=api.artist(t.artistId);
+  openModal(`<div class="tmenu"><div class="tm-h"><img src="${trackCover(t)}" alt=""><div style="min-width:0"><div class="t1">${esc(t.title)}</div><div class="t2">${esc(artistText(t))}</div></div></div>
+   <button data-act="play" data-id="${t.id}" data-q="${esc(q||t.id)}">${I.play} Play</button>
+   <button data-act="fav" data-id="${t.id}">${isFav(t.id)?I.heartF+' Remove from favourites':I.heart+' Add to favourites'}</button>
+   <button data-act="addpl" data-id="${t.id}">${I.plus} Add to a playlist</button>
+   <button data-act="share" data-k="track" data-id="${t.id}">${I.share} Share</button>
+   ${a?`<a href="#artist-${a.id}" data-act="close">${I.user} Go to ${esc(a.name)}</a>`:''}<a href="#track-${t.id}" data-act="close">${I.lib} Song details</a>
+   <button class="tm-cancel" data-act="close">Cancel</button></div>`)}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='discF'){e.preventDefault();e.stopImmediatePropagation();DISC_F=el.dataset.f;document.querySelectorAll('.dchips .tchip').forEach(c=>{const on=c.dataset.f===DISC_F;c.classList.toggle('on',on);c.setAttribute('aria-selected',on)});const d=$('#discCards');if(d)d.innerHTML=discoverCardsHTML()}
+  else if(a==='trMenu'){e.preventDefault();e.stopImmediatePropagation();trackMenu(el.dataset.id,el.dataset.q)}
+  else if(el.closest('.tmenu')&&['play','fav','addpl','share'].includes(a)){setTimeout(()=>{const m=$('#modal');if(m&&m.querySelector('.tmenu'))closeModal()},0)}},true);
 
 /* ---------- For You : le contenu d'accueil existant, sans le grand diaporama ---------- */
 const _homeV2=pages.home;
@@ -2294,7 +2351,7 @@ const _chromeV3=chrome;chrome=function(){_chromeV3();const h=location.hash.slice
   $('#tabs').innerHTML=`<a href="#home" class="${is('home')?'on':''}">${DI.sun(22)}Home</a><a href="#search" class="${is('search')?'on':''}">${I.search}Search</a><a href="#videos" class="${is('videos')||is('video')?'on':''}">${FI.video}Videos</a><a href="#playlists" class="${['playlists','playlist','genre','artists','upcoming'].some(is)?'on':''}">${DI.explore}Explore</a><a href="#library" class="${is('library')||is('favorites')?'on':''}">${I.lib}Library</a>`};
 
 /* ---------- Lecture en cours : surbrillance des nouvelles listes ---------- */
-const _rpV3=refreshPlaying;refreshPlaying=function(){_rpV3();const t=curTrack();document.querySelectorAll('.trow2[data-id],.ts-row[data-id]').forEach(r=>{const on=!!t&&r.dataset.id===t.id;r.classList.toggle('cur',on);const w=r.querySelector('.wave');w&&w.classList.toggle('on',on)})};
+const _rpV3=refreshPlaying;refreshPlaying=function(){_rpV3();const t=curTrack();document.querySelectorAll(".trow2[data-id],.ts-row[data-id],.drow[data-id]").forEach(r=>{const on=!!t&&r.dataset.id===t.id;r.classList.toggle('cur',on);const w=r.querySelector('.wave');w&&w.classList.toggle('on',on)})};
 
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
   const acts={
