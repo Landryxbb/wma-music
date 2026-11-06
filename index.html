@@ -211,6 +211,7 @@
 
 
 
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -3182,6 +3183,10 @@ const _checkSubNotifsP=checkSubNotifs;checkSubNotifs=function(list){const m=api.
   list.forEach(s=>{const t=subTrack(s);if(s.status==='accepted'&&t&&!(before[s.id]||'').startsWith('accepted')){const k='sub-'+s.id+'-live';if(!(m.notifs||[]).some(n=>n.key===k)){m.notifs=(m.notifs||[]).filter(n=>!n.key.startsWith('sub-'+s.id+'-accepted'));notify({key:k,text:`Great news! “${s.title}” is now live on WMA MUSIC. Tap to listen and share it.`,href:'#track-'+t.id,tid:t.id});saveMe()}}})};
 const _mySubCardP=mySubCard;mySubCard=function(s){const h=_mySubCardP(s),t=s.status==='accepted'&&subTrack(s);return t?h.replace('<div class="actions" style="margin-top:6px">',`<div class="actions" style="margin-top:6px"><a class="btn pri" href="#track-${t.id}">${I.play} Listen on WMA MUSIC</a><button class="btn" data-act="share" data-k="track" data-id="${t.id}">${I.share} Share</button>`):h};
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act="admSubPublish"]');if(!el)return;e.preventDefault();e.stopImmediatePropagation();acceptAndPublish(el.dataset.id,el)},true);
+
+/* Liens de partage avec aperçu (pochette / photo de l'artiste) sur WhatsApp, Facebook, X… */
+const _shareInfoOG=shareInfo;shareInfo=function(k,id){const s=_shareInfoOG(k,id);if(!s)return s;
+  if(supa()&&!art()&&/^https:$/.test(location.protocol)&&/^(track|artist|album|playlist|video)$/.test(k))s.url=`${location.origin}/s/${k}/${encodeURIComponent(id)}`;return s};
 
 
 /* =========================================================
