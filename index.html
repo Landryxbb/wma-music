@@ -207,6 +207,10 @@
 
 
 
+
+
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -306,6 +310,8 @@ body.auth-bg .auth{background:rgba(18,18,18,.78);-webkit-backdrop-filter:blur(14
 .ig-steps li>b{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800}
 .ig-steps svg{vertical-align:-3px;color:#0A84FF}
 .ig-steps span svg{display:inline-block;vertical-align:-3px;margin:0 2px}
+body.ib-on main{padding-bottom:calc(var(--player) + 150px)}
+@media (max-width:860px){body.ib-on main{padding-bottom:calc(var(--player) + var(--tabs) + 150px)}}
 
 /* ===== Lecteur plein écran (style YouTube Music) ===== */
 .ytnp{--tone:#2a2622;position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:0;background:linear-gradient(180deg,var(--tone) 0%,rgba(0,0,0,0) 72%),#0B0B0B;border-radius:20px;padding:14px 22px 26px;min-height:calc(100vh - 140px);transition:background-color .4s}
@@ -440,6 +446,10 @@ body.no-track .player{display:none}
 .subhist li{padding-left:14px;border-left:2px solid var(--line)}
 @media (max-width:980px){.subgrid{grid-template-columns:minmax(0,1fr)}.subside.has{order:-1}}
 @media (max-width:640px){.grid2{grid-template-columns:minmax(0,1fr)}.subhow{grid-template-columns:minmax(0,1fr)}.subdcov{width:72px;height:72px}.subsend{width:100%}}
+.subform .bad{outline:2px solid #FF453A;outline-offset:2px;border-radius:8px}
+.subbar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+.subbar i{display:block;height:100%;background:var(--accent);transition:width .2s}
+.subprog b{margin-left:auto;color:var(--fg)}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -2780,9 +2790,9 @@ function renderInstall(){let el=$('#installBar');const b=installBody();
   requestAnimationFrame(()=>el.classList.add('on'))}
 function showInstall(){if(!installOK())return;
   /* On attend que l'écran d'ouverture, l'accueil, une fenêtre ou une saisie soient terminés */
-  if($('#intro')||$('#welcome')||!$('#modal')?.hidden||/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||'')){scheduleInstall(5000);return}
-  installShown=true;renderInstall()}
-function hideInstall(again=true){const el=$('#installBar');installShown=false;if(el){el.classList.remove('on');setTimeout(()=>el.remove(),300)}if(again)scheduleInstall(INSTALL_EVERY_MS)}
+  if(/^#(submit|login|signup|now|admin)/.test(location.hash)||$('#intro')||$('#welcome')||!$('#modal')?.hidden||/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||'')){scheduleInstall(5000);return}
+  installShown=true;renderInstall();document.body.classList.add('ib-on')}
+function hideInstall(again=true){const el=$('#installBar');installShown=false;document.body.classList.remove('ib-on');if(el){el.classList.remove('on');setTimeout(()=>el.remove(),300)}if(again)scheduleInstall(INSTALL_EVERY_MS)}
 function scheduleInstall(ms){clearTimeout(installTimer);if(installOK())installTimer=setTimeout(showInstall,ms)}
 scheduleInstall(INSTALL_EVERY_MS);
 
@@ -2818,6 +2828,9 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-act
 const _profileInst=pages.profile;pages.profile=()=>{const h=_profileInst();if(!installOK())return h;
   return h.replace('<div class="actions">',`<div class="actions"><button class="btn" data-act="${isIOS()?'instHelp':installEvt?'instGo':'instShow'}">${DI.sun(16)} Install the app</button>`)};
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act="instShow"]');if(el){e.preventDefault();showInstall()}},true);
+
+/* Jamais par-dessus un formulaire : on la retire en arrivant sur ces pages */
+window.addEventListener('hashchange',()=>{if(installShown&&/^#(submit|login|signup|now|admin)/.test(location.hash))hideInstall(true)});
 
 /* =========================================================
    LECTEUR PLEIN ÉCRAN — présentation inspirée de YouTube Music
@@ -2971,9 +2984,10 @@ function subForm(s){const m=api.me(),g=[...new Set([...(DB.genres||[]),'Other'])
     <div class="fld"><label for="sbPhone">Phone number *</label><input id="sbPhone" type="tel" autocomplete="tel" maxlength="40" required placeholder="+243 …" value="${esc(s?.phone||'')}"></div></div></fieldset>
    <input class="hp" id="sbWebsite" tabindex="-1" autocomplete="off" aria-hidden="true">
    <label class="check subrights"><input type="checkbox" id="sbRights" ${s?'checked':''}> <span>I confirm that I own the rights to this song, or that I am authorised by the rights holders to submit it to WMA. I understand that submitting does not mean it will be published.</span></label>
-   <div class="err" id="sbErr" role="alert"></div>
-   <div class="actions"><button class="btn pri subsend" type="submit">${s?'SEND MY UPDATE':'SEND MY SUBMISSION'}</button>${s?'<button class="btn" type="button" data-act="subCancelEdit">Cancel</button>':''}</div>
-   <div class="subprog" id="sbProg" hidden><i></i><span>Uploading…</span></div></form>`}
+   <div class="err" id="sbErr" role="alert">${esc(SUBSTATE.err)}</div>
+   <div class="actions"><button class="btn pri subsend" type="button" data-act="subSend" ${SUBSTATE.busy?'disabled':''}>${SUBSTATE.busy?'SENDING…':s?'SEND MY UPDATE':'SEND MY SUBMISSION'}</button>${s&&!SUBSTATE.busy?'<button class="btn" type="button" data-act="subCancelEdit">Cancel</button>':''}</div>
+   <div class="subprog" id="sbProg" ${SUBSTATE.busy?'':'hidden'}><i></i><span>${esc(SUBSTATE.msg||'Uploading…')}</span><b class="mono" id="sbPct">${SUBSTATE.pct>=0?SUBSTATE.pct+'%':''}</b></div>
+   <div class="subbar" ${SUBSTATE.busy&&SUBSTATE.pct>=0?'':'hidden'}><i id="sbBar" style="width:${Math.max(0,SUBSTATE.pct)}%"></i></div></form>`}
 
 pages.submit=()=>{
   const intro=`<section class="subhero"><div class="eyebrow">For artists, producers &amp; creators</div><h1>Submit your music</h1><p>Send us your song. The WMA team listens to every submission and gets back to you here.</p>
@@ -2989,38 +3003,54 @@ pages.submit=()=>{
 
 
 /* Brouillon : si la page est redessinée pendant la saisie, rien n'est perdu (textes et fichiers) */
-let SUBDRAFT={},SUBFILES={};
-document.addEventListener('input',e=>{const el=e.target;if(!el.closest||!el.closest('#subForm')||!el.id||el.type==='file')return;SUBDRAFT[el.id]=el.type==='checkbox'?el.checked:el.value},true);
+let SUBDRAFT={},SUBFILES={},SUBSTATE={busy:false,msg:'',err:'',pct:-1};
+document.addEventListener('input',e=>{const el=e.target;if(!el.closest||!el.closest('#subForm')||!el.id||el.type==='file')return;if(SUBSTATE.err){SUBSTATE.err='';const er=$('#sbErr');if(er)er.textContent=''}SUBDRAFT[el.id]=el.type==='checkbox'?el.checked:el.value},true);
 document.addEventListener('change',e=>{const el=e.target;if(!el.closest||!el.closest('#subForm')||!el.id)return;if(el.type==='file'){if(el.files[0])SUBFILES[el.id]=el.files[0]}else SUBDRAFT[el.id]=el.type==='checkbox'?el.checked:el.value},true);
 function restoreSubDraft(){const f=$('#subForm');if(!f||f.dataset.restored)return;f.dataset.restored=1;
   Object.entries(SUBDRAFT).forEach(([id,v])=>{const el=document.getElementById(id);if(!el)return;if(el.type==='checkbox')el.checked=!!v;else el.value=v});
   const a=SUBFILES.sbAudio,c=SUBFILES.sbCover;if(a){$('#sbAudioInfo').textContent=a.name+' · '+fmtSize(a.size)+' · ✓';$('#sbAudio').required=false}
   if(c){const im=$('#sbCoverPrev');if(im){im.hidden=false;im.src=URL.createObjectURL(c)}$('#sbCover').required=false}}
 const subFile=id=>($(id).files&&$(id).files[0])||SUBFILES[id.slice(1)];
-async function sendSubmission(form){const err=$('#sbErr'),btn=form.querySelector('[type=submit]'),prog=$('#sbProg');err.textContent='';
+
+/* Envoi d'un fichier avec pourcentage (utile sur les connexions lentes) */
+async function subUpload(path,file,type){const base=SB&&SB.supabaseUrl,key=SB&&SB.supabaseKey;
+  if(!base||!key||typeof XMLHttpRequest==='undefined'){const r=await SB.storage.from(SUB_BUCKET).upload(path,file,{contentType:type,upsert:false});if(r.error)throw r.error;return}
+  const {data}=await SB.auth.getSession();const tok=data&&data.session&&data.session.access_token;if(!tok)throw new Error('Your session has expired. Please sign in again.');
+  await new Promise((ok,ko)=>{const x=new XMLHttpRequest();x.open('POST',`${base}/storage/v1/object/${SUB_BUCKET}/${path.split('/').map(encodeURIComponent).join('/')}`);
+    x.setRequestHeader('Authorization','Bearer '+tok);x.setRequestHeader('apikey',key);x.setRequestHeader('Content-Type',type);x.setRequestHeader('x-upsert','false');x.setRequestHeader('cache-control','max-age=3600');
+    x.upload.onprogress=e=>{if(e.lengthComputable)subProgress(null,Math.round(e.loaded/e.total*100))};
+    x.onload=()=>{if(x.status>=200&&x.status<300)return ok();let m='Upload failed ('+x.status+')';try{const j=JSON.parse(x.responseText);m=j.message||j.error||m}catch(e){}ko(new Error(m))};
+    x.onerror=()=>ko(new Error('The connection was lost during the upload. Check your internet connection and try again.'));x.ontimeout=x.onerror;x.send(file)})}
+function subProgress(msg,pct){if(msg!==null)SUBSTATE.msg=msg;if(pct!==undefined)SUBSTATE.pct=pct;const p=$('#sbProg');if(p){p.hidden=false;p.querySelector('span').textContent=SUBSTATE.msg;$('#sbPct').textContent=SUBSTATE.pct>=0?SUBSTATE.pct+'%':''}
+  const bar=$('#sbBar');if(bar){bar.parentElement.hidden=SUBSTATE.pct<0;bar.style.width=Math.max(0,SUBSTATE.pct)+'%'}}
+function subFail(msg,field){SUBSTATE.err=msg;const e=$('#sbErr');if(e){e.textContent=msg;e.scrollIntoView({behavior:'smooth',block:'center'})}toast(msg);
+  if(field){const f=$(field);if(f){f.classList.add('bad');setTimeout(()=>f.focus({preventScroll:true}),350);f.addEventListener('input',()=>f.classList.remove('bad'),{once:true});f.addEventListener('change',()=>f.classList.remove('bad'),{once:true})}}}
+async function sendSubmission(form){if(SUBSTATE.busy)return;SUBSTATE.err='';const e0=$('#sbErr');if(e0)e0.textContent='';
+  try{await sendSubmissionInner(form)}catch(x){console.error(x);SUBSTATE.busy=false;SUBSTATE.pct=-1;subFail('Something went wrong: '+((x&&x.message)||x)+'. Please try again.');rerender()}}
+async function sendSubmissionInner(form){const err={set textContent(m){subFail(m,null)}};
   if($('#sbWebsite').value)return;                                   /* robot */
   const edit=SUBEDIT&&(MYSUBS.list||[]).find(x=>x.id===SUBEDIT);
   const v=id=>$(id).value.trim(),title=v('#sbTitle'),artists=v('#sbArtists'),genre=v('#sbGenre'),country=v('#sbCountry'),email=v('#sbEmail').toLowerCase(),phone=v('#sbPhone');
   const af=subFile('#sbAudio'),cf=subFile('#sbCover');
-  const links={};for(const [k,l] of SUB_LINKS){const u=v('#sbL_'+k);if(u){if(!/^https:\/\/[^\s]+\.[^\s]+$/i.test(u))return err.textContent=`${l}: enter a full link starting with https://`;links[k]=u.slice(0,300)}}
-  if(!edit&&!af)return err.textContent='Choose the audio file of your song (MP3 or WAV).';
-  if(!title||!artists)return err.textContent='Enter the song title and the artist name(s).';
-  if(!genre||!country)return err.textContent='Choose a genre and enter the country of origin.';
-  if(!edit&&!cf)return err.textContent='Add the cover artwork of the song.';
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return err.textContent='Enter a valid email address.';
-  if(!/^\+?[0-9 ().-]{6,40}$/.test(phone))return err.textContent='Enter a valid phone number (with the country code, e.g. +243…).';
+  const links={};for(const [k,l] of SUB_LINKS){const u=v('#sbL_'+k);if(u){if(!/^https:\/\/[^\s]+\.[^\s]+$/i.test(u))return subFail(`${l}: enter a full link starting with https://`,'#sbL_'+k);links[k]=u.slice(0,300)}}
+  if(!edit&&!af)return subFail('Choose the audio file of your song (MP3 or WAV).','#sbAudio');
+  if(!title)return subFail('Enter the song title.','#sbTitle');if(!artists)return subFail('Enter the artist name(s).','#sbArtists');
+  if(!genre)return subFail('Choose a genre.','#sbGenre');if(!country)return subFail('Enter the country of origin.','#sbCountry');
+  if(!edit&&!cf)return subFail('Add the cover artwork of the song.','#sbCover');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return subFail('Enter a valid email address.','#sbEmail');
+  if(!/^\+?[0-9 ().\/-]{6,40}$/.test(phone))return subFail('Enter a valid phone number (with the country code, e.g. +243…).','#sbPhone');
   let aType='',cType='';
-  if(af){if(af.size>SUB_AUDIO_MAX)return err.textContent=`The audio file is ${fmtSize(af.size)}. The maximum is 50 MB — export it as MP3 (320 kbps) to reduce the size.`;aType=await sniffFile(af);if(!/^audio\//.test(aType))return err.textContent='This file is not a real MP3 or WAV audio file.'}
-  if(cf){if(cf.size>SUB_COVER_MAX)return err.textContent='The cover is too large (8 MB maximum).';cType=await sniffFile(cf);if(!/^image\//.test(cType))return err.textContent='The cover must be a JPG, PNG or WebP image.'}
-  if(!$('#sbRights').checked)return err.textContent='Please confirm that you have the rights to submit this song.';
+  if(af){if(af.size>SUB_AUDIO_MAX)return subFail(`The audio file is ${fmtSize(af.size)}. The maximum is 50 MB — export it as MP3 (320 kbps) to reduce the size.`,'#sbAudio');aType=await sniffFile(af);if(!/^audio\//.test(aType))return subFail('This file is not a real MP3 or WAV audio file. Export your song again as MP3 or WAV.','#sbAudio')}
+  if(cf){if(cf.size>SUB_COVER_MAX)return subFail('The cover is too large (8 MB maximum).','#sbCover');cType=await sniffFile(cf);if(!/^image\//.test(cType))return subFail('The cover must be a JPG, PNG or WebP image.','#sbCover')}
+  if(!$('#sbRights').checked)return subFail('Please tick the box to confirm that you have the rights to submit this song.','#sbRights');
   const id=edit?edit.id:(crypto.randomUUID?crypto.randomUUID():'10000000-1000-4000-8000-100000000000'.replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16)));
   const stamp=Date.now().toString(36),uploaded=[];
-  btn.disabled=true;prog.hidden=false;const say=t=>{prog.querySelector('span').textContent=t};
+  SUBSTATE.busy=true;SUBSTATE.pct=-1;const btn0=$('.subsend');if(btn0){btn0.disabled=true;btn0.textContent='SENDING…'}const say=(t,p)=>subProgress(t,p===undefined?-1:p);
   try{let audio_path=edit?.audio_path,cover_path=edit?.cover_path||'';
-    if(af){say(`Uploading your song (${fmtSize(af.size)})…`);audio_path=`${UID}/${id}/audio-${stamp}.${subExt[aType]}`;
-      const r=await SB.storage.from(SUB_BUCKET).upload(audio_path,af,{contentType:aType,upsert:false});if(r.error)throw r.error;uploaded.push(audio_path)}
-    if(cf){say('Uploading the cover…');cover_path=`${UID}/${id}/cover-${stamp}.${subExt[cType]}`;
-      const r=await SB.storage.from(SUB_BUCKET).upload(cover_path,cf,{contentType:cType,upsert:false});if(r.error)throw r.error;uploaded.push(cover_path)}
+    if(af){say(`Uploading your song (${fmtSize(af.size)})…`,0);audio_path=`${UID}/${id}/audio-${stamp}.${subExt[aType]}`;
+      await subUpload(audio_path,af,aType);uploaded.push(audio_path)}
+    if(cf){say('Uploading the cover…',0);cover_path=`${UID}/${id}/cover-${stamp}.${subExt[cType]}`;
+      await subUpload(cover_path,cf,cType);uploaded.push(cover_path)}
     say('Saving your submission…');
     const row={title,artists,genre,country,description:v('#sbDesc').slice(0,1500),links,email,phone,audio_path,cover_path,rights_ok:true,
       ...(af?{audio_name:af.name.slice(0,200),audio_size:af.size,audio_type:aType}:{})};
@@ -3030,9 +3060,9 @@ async function sendSubmission(form){const err=$('#sbErr'),btn=form.querySelector
     if(edit){const old=[af&&edit.audio_path,cf&&edit.cover_path].filter(Boolean);if(old.length)SB.storage.from(SUB_BUCKET).remove(old).catch(()=>{})}
     const saved=r.data[0];const m=api.me();m.subSeen=m.subSeen||{};m.subSeen[id]=saved.status+'|'+saved.updated_at;
     notify({key:'sub-'+id+'-sent-'+saved.updated_at,text:edit?`Your update of “${title}” was received. The WMA team will review it again.`:`We received “${title}”. The WMA team will listen to it and get back to you here.`,href:'#submit'});saveMe();
-    SUBDRAFT={};SUBFILES={};SUBEDIT=null;MYSUBS.list=[saved,...(MYSUBS.list||[]).filter(x=>x.id!==id)];rerender();toast(edit?'Update sent':'Submission sent — thank you!');
+    SUBSTATE={busy:false,msg:'',err:'',pct:-1};SUBDRAFT={};SUBFILES={};SUBEDIT=null;MYSUBS.list=[saved,...(MYSUBS.list||[]).filter(x=>x.id!==id)];rerender();toast(edit?'Update sent':'Submission sent — thank you!');
     setTimeout(()=>{const s=$('#msTitle');s&&s.scrollIntoView({behavior:'smooth',block:'start'})},100)}
-  catch(e){if(uploaded.length)SB.storage.from(SUB_BUCKET).remove(uploaded).catch(()=>{});btn.disabled=false;prog.hidden=true;err.textContent=subErr(e)}}
+  catch(e){if(uploaded.length)SB.storage.from(SUB_BUCKET).remove(uploaded).catch(()=>{});SUBSTATE.busy=false;SUBSTATE.pct=-1;rerender();subFail(/bucket|not found/i.test((e&&e.message)||'')?'Submissions are not set up yet on the server. (WMA team: run 05-soumissions.sql in Supabase.)':subSetupErr(e))}}
 
 /* ---------- WMA ADMIN : soumissions ---------- */
 async function loadAdmSubs(){if(!supa()||ADMSUBS.loading)return;ADMSUBS.loading=true;ADMSUBS.tried=true;
@@ -3088,6 +3118,7 @@ document.addEventListener('change',async e=>{const el=e.target;
 document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.subf==='q'){ADMSUBS.f.q=el.value;clearTimeout(el._t);el._t=setTimeout(()=>{rerender();const i=document.querySelector('[data-subf="q"]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},300)}},true);
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,id=el.dataset.id;
   const acts={
+    subSend:()=>{const f=$('#subForm');if(f)sendSubmission(f)},
     subEdit:()=>{SUBDRAFT={};SUBFILES={};SUBEDIT=id;rerender();setTimeout(()=>{const f=$('#sfTitle');f&&f.scrollIntoView({behavior:'smooth'})},50)},
     subCancelEdit:()=>{SUBDRAFT={};SUBFILES={};SUBEDIT=null;rerender()},
     subWithdraw:()=>{const s=(MYSUBS.list||[]).find(x=>x.id===id);if(!s)return;openModal(`<h3>Withdraw “${esc(s.title)}”?</h3><p class="muted" style="margin:8px 0 16px">The submission and its files will be deleted. This cannot be undone.</p><div class="actions" style="margin-top:0"><button class="btn danger" data-act="subWithdrawOk" data-id="${s.id}">Withdraw</button><button class="btn" data-act="close">Cancel</button></div>`)},
@@ -3097,6 +3128,60 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-act
     admSubRefresh:()=>{ADMSUBS.list=null;ADMSUBS.tried=false;ADMSUBS.err=null;rerender()},
     admSubF:()=>{ADMSUBS.f[el.dataset.k]=el.dataset.v;rerender()}};
   if(acts[a]){e.preventDefault();e.stopImmediatePropagation();acts[a]()}},true);
+
+/* =========================================================
+   ACCEPTER = PUBLIER : la soumission devient une chanson du catalogue
+   (fichiers copiés dans le stockage du catalogue, artiste relié ou créé),
+   puis e-mail à l'artiste avec le lien d'écoute.
+   ========================================================= */
+const subTrack=s=>DB.tracks.find(t=>t.submissionId===s.id);
+const subTrackLink=t=>`${location.origin}/#track-${t.id}`;
+function splitArtists(txt){const parts=String(txt||'').split(/\s+(?:ft\.?|feat\.?|featuring|x|&|avec|et)\s+|\s*[,;\/+]\s*/i).map(x=>x.trim()).filter(x=>x.length>=2);return parts.length?parts:[String(txt||'').trim()]}
+async function subArtist(name,s,main){const k=key(name);let a=DB.artists.find(x=>key(x.name)===k);if(a)return a;
+  const L=s.links||{},socials={};['instagram','facebook','tiktok','spotify'].forEach(n=>{if(L[n])socials[n]=L[n]});
+  a={id:uid('a'),name:name.slice(0,80),country:main?s.country||'':'',bio:'',youtube:main?L.youtube||'':'',socials:main?socials:{},wma:true,home:true,hue:Math.floor(Math.random()*40)+10,createdAt:Date.now(),fromSubmission:s.id};
+  await putDoc('artists',a);return a}
+async function subFetchFile(path,name,type){const u=await subUrl(path);if(!u)throw new Error('The submitted file could not be opened.');const r=await fetch(u);if(!r.ok)throw new Error('The submitted file could not be downloaded ('+r.status+').');const b=await r.blob();return new File([b],name,{type:type||b.type})}
+async function publishSubmission(s,say){const ex=subTrack(s);if(ex)return ex;
+  say('Downloading the song…',0);const af=await subFetchFile(s.audio_path,s.audio_name||('song.'+(s.audio_type==='audio/wav'?'wav':'mp3')),s.audio_type||'audio/mpeg');
+  const au=await prepareAudio(af,(msg,p)=>say('Preparing the audio · '+msg,Math.round((p||0)*100)));
+  say('Uploading the song to the catalogue…',-1);const up=await uploadFile(au.blob,au.type);
+  let coverPatch={};if(s.cover_path){say('Copying the cover…',-1);try{const cf=await subFetchFile(s.cover_path,'cover.jpg','');const img=await readImg(cf,1600);const r=await storeImage(img);if(r)coverPatch=r.coverId?{coverId:r.coverId}:{cover:r.cover}}catch(e){console.warn('cover',e)}}
+  say('Linking the artist…',-1);const names=splitArtists(s.artists),main=await subArtist(names[0],s,true),feats=[];for(const n of names.slice(1)){const f=await subArtist(n,s,false);if(f.id!==main.id&&!feats.includes(f.id))feats.push(f.id)}
+  const now=Date.now(),today=new Date().toISOString().slice(0,10);
+  const tr={id:uid('t'),title:s.title.slice(0,120),artistId:main.id,featIds:feats,albumId:null,genre:s.genre||'',releaseDate:today,producer:'',writers:'',description:s.description||'',lyrics:'',
+    rightsNote:`Submitted through “Submit your music” on ${subDate(s.created_at)} — the submitter confirmed owning or being authorised to submit the rights. Contact: ${s.email}.`,
+    rights:'confirmed',status:'published',publishAt:null,publishedAt:now,trackNo:null,createdAt:now,updatedAt:now,demo:false,
+    ...(up.id?{audioId:up.id}:{audioUrl:up.local}),duration:au.duration,audioType:au.type,...coverPatch,submissionId:s.id};
+  say('Publishing…',-1);await putDoc('tracks',tr);return tr}
+async function mailArtist(s,t){try{const {data}=await SB.auth.getSession();const tok=data&&data.session&&data.session.access_token;
+    const r=await fetch('/api/notify',{method:'POST',headers:{'Content-Type':'application/json',...(tok?{Authorization:'Bearer '+tok}:{})},body:JSON.stringify({submissionId:s.id,trackId:t.id,origin:location.origin})});
+    const j=await r.json().catch(()=>({}));if(r.ok&&j.sent)return {ok:true};return {ok:false,why:j.error||('HTTP '+r.status)}}catch(e){return {ok:false,why:'network'}}}
+function mailtoArtist(s,t){const sub=`Your song “${s.title}” is now live on WMA MUSIC`,body=`Hello ${s.artists},\n\nGreat news! The WMA team selected your song “${s.title}”. It is now online on WMA MUSIC.\n\nListen and share it here:\n${subTrackLink(t)}\n\nThank you for trusting WMA.\nThe WMA MUSIC team`;
+  return `mailto:${encodeURIComponent(s.email)}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`}
+async function acceptAndPublish(id,btn){const s=(ADMSUBS.list||[]).find(x=>x.id===id);if(!s)return;const err=$('#admSubErr');err.textContent='';
+  let note=$('#admSubNote').value.trim();btn.disabled=true;document.querySelectorAll('.subacts .btn').forEach(b=>b.disabled=true);
+  const box=$('#admPub');box.hidden=false;const say=(m,p)=>{box.querySelector('span').textContent=m;const sb=box.nextElementSibling,bi=sb&&sb.querySelector('i');if(sb)sb.hidden=!(p>=0);if(bi)bi.style.width=(p>=0?p:0)+'%'};
+  try{const t=await publishSubmission(s,say);
+    if(!note)note=`Your song is now live on WMA MUSIC: ${subTrackLink(t)}`;else if(!note.includes('#track-'))note+=`\n\nListen on WMA MUSIC: ${subTrackLink(t)}`;
+    say('Updating the submission…',-1);const r=await SB.from('music_submissions').update({status:'accepted',team_note:note.slice(0,2000)}).eq('id',id).select();if(r.error)throw r.error;if(!r.data||!r.data.length)throw new Error('row-level');
+    ADMSUBS.list=ADMSUBS.list.map(x=>x.id===id?r.data[0]:x);
+    say('Sending the email to the artist…',-1);const m=await mailArtist(r.data[0],t);
+    admSubModal(id);const done=$('#admPubDone');
+    if(done)done.innerHTML=`<div class="subnote" style="border-left-color:var(--good,#34C759)"><b>✓ “${esc(t.title)}” is live on WMA MUSIC</b><p><a href="#track-${t.id}" data-act="close">Open the song page</a></p>
+      <p>${m.ok?`✓ Email sent to <b>${esc(s.email)}</b> with the listening link.`:`The automatic email is not active yet${m.why==='not_configured'?' (email service not set up)':''}. Send it in one click with your mail app:`}</p>${m.ok?'':`<a class="btn pri" href="${mailtoArtist(s,t)}">Email the artist</a>`}</div>`;
+    toast(m.ok?'Published and email sent':'Published — the artist is notified in the app');if(location.hash==='#admin-submissions'){const keep=$('#admPubDone')?.innerHTML;rerender();admSubModal(id);const d=$('#admPubDone');if(d&&keep)d.innerHTML=keep}}
+  catch(e){console.error(e);box.hidden=true;document.querySelectorAll('.subacts .btn').forEach(b=>b.disabled=false);err.textContent='Publishing failed: '+((e&&e.message)||e)+'. Nothing was changed in the submission; you can try again.'}}
+/* Fiche admin : « Accept & publish », lien vers la chanson publiée */
+const _admSubModalP=admSubModal;admSubModal=function(id){_admSubModalP(id);const s=(ADMSUBS.list||[]).find(x=>x.id===id);if(!s)return;const t=subTrack(s);
+  const acc=document.querySelector('.subacts [data-s="accepted"]');if(acc){acc.dataset.act='admSubPublish';acc.textContent=t?'Accepted ✓':'Accept & publish';if(t)acc.disabled=true}
+  const acts=document.querySelector('.subacts');if(acts)acts.insertAdjacentHTML('afterend',`<div class="subprog" id="admPub" hidden><i></i><span>Publishing…</span></div><div class="subbar" hidden><i style="width:0"></i></div><div id="admPubDone">${t?`<div class="subnote"><b>Live on WMA MUSIC</b><p><a href="#track-${t.id}" data-act="close">Open “${esc(t.title)}”</a> · <a href="${mailtoArtist(s,t)}">Email the artist</a></p></div>`:''}</div>`);
+  const note=[...document.querySelectorAll('.subdetail p.muted')].find(p=>/Accepting does not publish/.test(p.textContent));if(note)note.textContent='“Accept & publish” adds the song to the public catalogue right away (audio, cover and artist profile), then emails the artist the listening link.'};
+/* Côté artiste : la notification « accepté » pointe vers la chanson en ligne */
+const _checkSubNotifsP=checkSubNotifs;checkSubNotifs=function(list){const m=api.me();const before=m&&m.subSeen?{...m.subSeen}:{};_checkSubNotifsP(list);if(!m)return;
+  list.forEach(s=>{const t=subTrack(s);if(s.status==='accepted'&&t&&!(before[s.id]||'').startsWith('accepted')){const k='sub-'+s.id+'-live';if(!(m.notifs||[]).some(n=>n.key===k)){m.notifs=(m.notifs||[]).filter(n=>!n.key.startsWith('sub-'+s.id+'-accepted'));notify({key:k,text:`Great news! “${s.title}” is now live on WMA MUSIC. Tap to listen and share it.`,href:'#track-'+t.id,tid:t.id});saveMe()}}})};
+const _mySubCardP=mySubCard;mySubCard=function(s){const h=_mySubCardP(s),t=s.status==='accepted'&&subTrack(s);return t?h.replace('<div class="actions" style="margin-top:6px">',`<div class="actions" style="margin-top:6px"><a class="btn pri" href="#track-${t.id}">${I.play} Listen on WMA MUSIC</a><button class="btn" data-act="share" data-k="track" data-id="${t.id}">${I.share} Share</button>`):h};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act="admSubPublish"]');if(!el)return;e.preventDefault();e.stopImmediatePropagation();acceptAndPublish(el.dataset.id,el)},true);
 
 
 /* =========================================================
