@@ -201,6 +201,12 @@
 
 
 
+
+
+
+
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -284,6 +290,23 @@ body.auth-bg .auth{background:rgba(18,18,18,.78);-webkit-backdrop-filter:blur(14
 @media (max-width:860px){#installBar{bottom:calc(var(--tabs) + var(--player) + 14px + env(safe-area-inset-bottom,0px))}}
 @media (prefers-reduced-motion:reduce){#installBar{transition:none}}
 
+.iguide .ig-head{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.ig-steps{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:10px}
+.ig-steps li{display:grid;grid-template-columns:28px 44px minmax(0,1fr);gap:10px;align-items:center;padding:12px;border-radius:14px;background:var(--surface2);font-size:15px;line-height:1.45}
+.ig-n{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:14px}
+.ig-ic{width:44px;height:44px;border-radius:12px;background:var(--bg);display:grid;place-items:center;color:#0A84FF;font-size:14px}
+.ig-copy{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:12px;border:1px solid var(--line);font-size:13px;min-width:0}
+.ig-copy span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ig-tip{margin:4px 0 12px;font-size:13px;line-height:1.5;color:var(--muted);white-space:normal}
+.ig-tip svg{display:inline;vertical-align:-3px}
+.ig-steps li{font-size:14.5px}
+.ig-head{display:flex;gap:14px;align-items:center}
+.ig-steps{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:10px}
+.ig-steps li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start;padding:12px;border-radius:12px;background:var(--surface2);font-size:15px;line-height:1.5}
+.ig-steps li>b{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800}
+.ig-steps svg{vertical-align:-3px;color:#0A84FF}
+.ig-steps span svg{display:inline-block;vertical-align:-3px;margin:0 2px}
+
 /* ===== Lecteur plein écran (style YouTube Music) ===== */
 .ytnp{--tone:#2a2622;position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:0;background:linear-gradient(180deg,var(--tone) 0%,rgba(0,0,0,0) 72%),#0B0B0B;border-radius:20px;padding:14px 22px 26px;min-height:calc(100vh - 140px);transition:background-color .4s}
 .yt-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
@@ -348,6 +371,8 @@ body.np-open main{padding-bottom:40px}
   .yt-play{width:78px;height:78px}
 }
 body.np-open .side{bottom:0}
+body.no-track{--player:0px}
+body.no-track .player{display:none}
 
 /* ===== Soumission de morceaux ===== */
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}
@@ -2729,11 +2754,25 @@ if(installOK()&&'serviceWorker' in navigator)navigator.serviceWorker.register('/
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;if(installShown)renderInstall()});
 window.addEventListener('appinstalled',()=>{lsSet('wma_installed','1');hideInstall(false);toast('WMA MUSIC is installed on your device.')});
 
+const isIOSChrome=()=>/CriOS|FxiOS|EdgiOS/i.test(navigator.userAgent);
+const shareIco='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
+const plusIco='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
 function installBody(){
   if(installEvt)return {txt:'Free · Opens full screen from your home screen.',btn:'<button class="btn pri ib-go" data-act="instGo">Install</button>'};
-  if(isIOS()&&!inAppBrowser())return {txt:`Tap <b>Share</b> <span class="ib-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></span> at the bottom of Safari, then <b>Add to Home Screen</b>.`,btn:''};
-  if(inAppBrowser())return {txt:`Open <b>wmamusic.net</b> in ${isIOS()?'Safari':'Chrome'} (menu <b>⋮</b> → <b>Open in browser</b>) to install the app.`,btn:''};
-  return {txt:'Open your browser menu <b>⋮</b> and choose <b>Install app</b> or <b>Add to Home screen</b>.',btn:''}}
+  return {txt:isIOS()?'Add it to your iPhone home screen in 3 taps.':'Add it to your home screen in a few taps.',btn:'<button class="btn pri ib-go" data-act="instHow">How to install</button>'}}
+/* Guide pas à pas (iPhone : Apple n'autorise aucun bouton d'installation automatique) */
+function installGuide(){const ios=isIOS(),inapp=inAppBrowser(),step=(n,h)=>`<li><b>${n}</b><span>${h}</span></li>`;let steps='',intro='';
+  if(inapp){intro=`You are inside another app (Instagram, Facebook, TikTok…). The app can only be installed from ${ios?'Safari':'Chrome'}.`;
+    steps=step(1,`Tap the menu <b>⋯</b> or <b>⋮</b> at the top or bottom of the screen.`)+step(2,`Choose <b>Open in ${ios?'Safari':'browser'}</b> (« Ouvrir dans ${ios?'Safari':'le navigateur'} »).`)+step(3,'Then come back to this banner and tap <b>How to install</b> again.')}
+  else if(ios&&isIOSChrome()){intro='On iPhone with Chrome (iOS 16.4 or newer):';
+    steps=step(1,`Tap the <b>Share</b> button ${shareIco} in the address bar, at the top right.`)+step(2,`Scroll down and tap <b>Add to Home Screen</b> ${plusIco} (« Sur l'écran d'accueil »).`)+step(3,'Tap <b>Add</b> (« Ajouter ») at the top right. The WMA MUSIC icon appears on your home screen.')}
+  else if(ios){intro='On iPhone or iPad with Safari:';
+    steps=step(1,`Tap the <b>Share</b> button ${shareIco} at the bottom of the screen (at the top on iPad). If you don't see it, tap the bottom of the screen to show the toolbar.`)+step(2,`Scroll down the list and tap <b>Add to Home Screen</b> ${plusIco} (« Sur l'écran d'accueil »).`)+step(3,'Tap <b>Add</b> (« Ajouter ») at the top right. The WMA MUSIC icon appears on your home screen.')}
+  else{intro='On Android or computer:';steps=step(1,'Open the browser menu <b>⋮</b> (top right).')+step(2,'Tap <b>Install app</b> or <b>Add to Home screen</b> (« Installer l\'application » / « Ajouter à l\'écran d\'accueil »).')+step(3,'Confirm with <b>Install</b>.')}
+  openModal(`<div class="ig"><div class="ig-head"><div class="ib-logo" aria-hidden="true">${DI.sun(30)}</div><div><h3 style="margin:0">Install WMA MUSIC</h3><div class="t2">${esc(location.host)}</div></div></div>
+    <p class="muted" style="margin:12px 0 4px">${intro}</p><ol class="ig-steps">${steps}</ol>
+    ${inapp?`<button class="btn" data-act="instCopy" style="width:100%;justify-content:center">Copy the link to open it in ${ios?'Safari':'Chrome'}</button>`:''}
+    <div class="actions" style="margin-top:12px"><button class="btn pri" data-act="close" style="width:100%;justify-content:center">Got it</button></div></div>`)}
 function renderInstall(){let el=$('#installBar');const b=installBody();
   if(!el){el=document.createElement('div');el.id='installBar';el.setAttribute('role','dialog');el.setAttribute('aria-label','Install WMA MUSIC');document.body.appendChild(el)}
   el.innerHTML=`<div class="ib-logo" aria-hidden="true">${DI.sun(30)}</div><div class="ib-txt"><b>Install the WMA MUSIC app</b><span>${b.txt}</span></div>
@@ -2747,11 +2786,38 @@ function hideInstall(again=true){const el=$('#installBar');installShown=false;if
 function scheduleInstall(ms){clearTimeout(installTimer);if(installOK())installTimer=setTimeout(showInstall,ms)}
 scheduleInstall(INSTALL_EVERY_MS);
 
+/* ---------- Guide d'installation iPhone / iPad (Apple n'autorise pas de bouton d'installation direct) ---------- */
+const IGI={share:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>',
+ add:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg>',
+ dots:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+ compass:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>'};
+function iosBrowser(){const u=navigator.userAgent;if(inAppBrowser())return 'inapp';if(/CriOS/.test(u))return 'chrome';if(/FxiOS/.test(u))return 'firefox';if(/EdgiOS/.test(u))return 'edge';return 'safari'}
+function iosGuide(){const br=iosBrowser(),step=(n,ic,html)=>`<li><span class="ig-n">${n}</span><span class="ig-ic">${ic}</span><span>${html}</span></li>`;
+  let steps;
+  if(br==='inapp')steps=step(1,IGI.dots,'Tap the <b>⋯</b> menu (top or bottom of the screen).')+step(2,IGI.compass,'Choose <b>Open in Safari</b> (or “Open in browser”).')+step(3,IGI.share,'In Safari, follow the steps again: <b>Share</b> → <b>Add to Home Screen</b>.');
+  else if(br==='chrome')steps=step(1,IGI.share,'Tap the <b>Share</b> icon in the address bar, at the top right.')+step(2,IGI.add,'Scroll down and tap <b>Add to Home Screen</b>.')+step(3,'<b>Add</b>','Tap <b>Add</b> at the top right.');
+  else if(br==='firefox'||br==='edge')steps=step(1,IGI.dots,'Tap the menu <b>≡</b> or <b>⋯</b> at the bottom.')+step(2,IGI.share,'Tap <b>Share</b>.')+step(3,IGI.add,'Tap <b>Add to Home Screen</b>, then <b>Add</b>.');
+  else steps=step(1,IGI.share,'Tap the <b>Share</b> button. It is in the bar at the bottom of Safari — on recent iPhones, tap <b>⋯</b> first, then <b>Share</b>.')+step(2,IGI.add,'Scroll down the list and tap <b>Add to Home Screen</b>.')+step(3,'<b>Add</b>','Tap <b>Add</b> at the top right. The WMA MUSIC icon appears on your home screen.');
+  openModal(`<div class="iguide"><div class="ig-head"><div class="ib-logo" aria-hidden="true">${DI.sun(30)}</div><div><h3 style="margin:0">Install WMA MUSIC on your ${/ipad/i.test(navigator.userAgent)||navigator.maxTouchPoints>1&&!/iphone/i.test(navigator.userAgent)?'iPad':'iPhone'}</h3><div class="t2">Free · no App Store needed</div></div></div>
+   <ol class="ig-steps">${steps}</ol>
+   ${br!=='safari'&&br!=='inapp'?'':`<p class="ig-tip">Opened the link from WhatsApp or Messages? First tap the Safari icon ${IGI.compass.replace('width="22" height="22"','width="15" height="15" style="vertical-align:-2px"')} to open it in Safari.</p>`}
+   <div class="ig-copy"><span class="sel mono">${esc(location.origin)}</span><button class="btn sm" data-act="instCopy">Copy link</button></div>
+   <p class="ig-tip" style="margin:12px 0 0">Requires iOS 16.4 or later for Chrome, Edge and Firefox. In Safari it works on all recent iPhones.</p>
+   <div class="actions"><button class="btn pri" data-act="close">OK</button></div></div>`)}
+
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='instHelp'){e.preventDefault();e.stopImmediatePropagation();hideInstall(true);iosGuide();return}
+  if(a==='instCopy'){e.preventDefault();e.stopImmediatePropagation();try{await navigator.clipboard.writeText(location.origin);toast('Link copied — paste it in Safari')}catch(x){toast('Select the link and copy it')}return}
+  if(a==='instHow'){e.preventDefault();e.stopImmediatePropagation();hideInstall(false);installGuide();scheduleInstall(INSTALL_EVERY_MS*3);return}
+  if(a==='instCopy'){e.preventDefault();e.stopImmediatePropagation();const u='https://'+location.host+'/';try{await navigator.clipboard.writeText(u);toast('Link copied — paste it in '+(isIOS()?'Safari':'Chrome'))}catch(x){toast(u)}return}
   if(a==='instLater'){e.preventDefault();e.stopImmediatePropagation();hideInstall(true)}
   else if(a==='instGo'){e.preventDefault();e.stopImmediatePropagation();if(!installEvt){renderInstall();return}
     const ev=installEvt;installEvt=null;try{await ev.prompt();const r=await ev.userChoice;if(r&&r.outcome==='accepted'){lsSet('wma_installed','1');hideInstall(false);return}}catch(x){}
     hideInstall(true)}},true);
+/* Accès permanent depuis le profil (si la bannière a été fermée) */
+const _profileInst=pages.profile;pages.profile=()=>{const h=_profileInst();if(!installOK())return h;
+  return h.replace('<div class="actions">',`<div class="actions"><button class="btn" data-act="${isIOS()?'instHelp':installEvt?'instGo':'instShow'}">${DI.sun(16)} Install the app</button>`)};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act="instShow"]');if(el){e.preventDefault();showInstall()}},true);
 
 /* =========================================================
    LECTEUR PLEIN ÉCRAN — présentation inspirée de YouTube Music
@@ -2826,6 +2892,11 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
   else if(a==='npTab'){e.preventDefault();e.stopImmediatePropagation();NP_TAB=el.dataset.t;const t=curTrack();if(!t)return;const tb=$('.yt-tabs');if(tb)tb.innerHTML=npTabs(t);const p=$('#npPanel');if(p){p.innerHTML=npPanel(t);refreshPlaying()}}
   else if(a==='fav'&&location.hash==='#now'&&el.classList.contains('yt-pill')){setTimeout(()=>{if(location.hash==='#now')rerender()},350)}},true);
 
+/* Le mini-lecteur n'apparaît qu'une fois qu'une chanson a été choisie */
+const _rplNT=renderPlayer;renderPlayer=function(){const r=_rplNT.apply(this,arguments);document.body.classList.toggle('no-track',!curTrack());return r};
+const _chromeNT=chrome;chrome=function(){_chromeNT();document.body.classList.toggle('no-track',!curTrack())};
+document.body.classList.toggle('no-track',!curTrack());
+
 /* =========================================================
    SOUMISSION DE MORCEAUX — « Submit your music »
    Comptes et connexion existants (Supabase), table music_submissions,
@@ -2837,8 +2908,9 @@ const SUB_LINKS=[['instagram','Instagram'],['facebook','Facebook'],['tiktok','Ti
 const SUB_COUNTRIES=['DR Congo','Republic of the Congo','Cameroon',"Côte d'Ivoire",'Nigeria','Ghana','Senegal','Mali','Burkina Faso','Guinea','Benin','Togo','Gabon','Angola','Rwanda','Burundi','Uganda','Kenya','Tanzania','South Africa','Zambia','Zimbabwe','Ethiopia','Morocco','Algeria','Tunisia','Egypt','France','Belgium','United Kingdom','United States','Canada'];
 const SI={up:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>',
  mic:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>'};
-let MYSUBS={list:null,loading:false,err:null},SUBEDIT=null,ADMSUBS={list:null,loading:false,err:null,f:{status:'all',genre:'',country:'',from:'',to:'',q:''}};
+let MYSUBS={list:null,loading:false,err:null,tried:false},SUBEDIT=null,ADMSUBS={list:null,loading:false,err:null,tried:false,f:{status:'all',genre:'',country:'',from:'',to:'',q:''}};
 const subErr=e=>{const m=(e&&e.message)||String(e||'');return /54000|Limite|limit/i.test((e&&e.code)+m)?'You can send up to 5 submissions every 24 hours. Please try again later.':/row-level|permission|42501/i.test(m)?"You don't have permission to do this.":/payload|too large|size/i.test(m)?'The file is too large (50 MB maximum).':/mime|type/i.test(m)?'This file type is not accepted.':m||'Something went wrong. Please try again.'};
+const subSetupErr=e=>/music_submissions|relation|does not exist|schema cache|PGRST20|42P01/i.test(((e&&e.message)||'')+((e&&e.code)||''))?'Submissions are not set up yet on the server. (WMA team: run the update 05-soumissions.sql in Supabase.)':subErr(e);
 const fmtSize=n=>n>=1048576?(n/1048576).toFixed(1)+' MB':Math.round(n/1024)+' KB';
 const subDate=ts=>new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 /* Vérification du vrai contenu du fichier (et pas seulement de son nom) */
@@ -2856,10 +2928,11 @@ async function subUrl(path,dl){if(!path)return '';const k=path+(dl||'');const c=
 function hydrateSubMedia(){document.querySelectorAll('[data-subsrc]').forEach(async el=>{const p=el.dataset.subsrc;el.removeAttribute('data-subsrc');const u=await subUrl(p,el.dataset.dl||'');if(!u)return;if(el.tagName==='A')el.href=u;else el.src=u})}
 
 /* ---------- Mes soumissions ---------- */
-async function loadMySubs(force){if(!supa()||!api.me()||!UID)return;if(MYSUBS.loading||(!force&&MYSUBS.list))return;MYSUBS.loading=true;
-  try{const r=await SB.from('music_submissions').select('*').eq('user_id',UID).order('created_at',{ascending:false});if(r.error)throw r.error;MYSUBS={list:(r.data||[]).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)),loading:false,err:null};checkSubNotifs(MYSUBS.list)}
-  catch(e){MYSUBS={list:MYSUBS.list,loading:false,err:subErr(e)}}
-  if(location.hash==='#submit')rerender()}
+async function loadMySubs(force){if(!supa()||!api.me()||!UID)return;if(MYSUBS.loading||(!force&&(MYSUBS.list||MYSUBS.tried)))return;MYSUBS.loading=true;MYSUBS.tried=true;const before=JSON.stringify([MYSUBS.list,MYSUBS.err]);
+  try{const r=await SB.from('music_submissions').select('*').eq('user_id',UID).order('created_at',{ascending:false});if(r.error)throw r.error;MYSUBS={list:(r.data||[]).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)),loading:false,err:null,tried:true};checkSubNotifs(MYSUBS.list)}
+  catch(e){MYSUBS={list:MYSUBS.list,loading:false,err:subSetupErr(e),tried:true}}
+  /* on ne redessine que si quelque chose a changé (évite le clignotement) */
+  if(location.hash==='#submit'&&JSON.stringify([MYSUBS.list,MYSUBS.err])!==before&&!document.activeElement?.closest?.('#subForm'))rerender()}
 /* Notifications : comparées au dernier statut vu par l'artiste */
 function checkSubNotifs(list){const m=api.me();if(!m)return;m.subSeen=m.subSeen||{};let ch=false;
   list.forEach(s=>{const seen=m.subSeen[s.id];if(seen===s.status+'|'+s.updated_at)return;
@@ -2907,18 +2980,28 @@ pages.submit=()=>{
    <ol class="subhow"><li><b>1</b><span>Upload your song and its details</span></li><li><b>2</b><span>The WMA team listens to it</span></li><li><b>3</b><span>Follow the decision here and in your notifications</span></li></ol></section>`;
   if(!supa())return intro+'<div class="empty">Submissions are available on the online version of WMA MUSIC (wmamusic.net).</div>';
   if(!api.me())return intro+`<div class="panel" style="text-align:center"><p style="margin:0 0 14px">Sign in or create a free account to submit your music and follow its review.</p><div class="actions" style="justify-content:center"><a class="btn pri" href="#login">Sign in</a><a class="btn" href="#signup">Create an account</a></div></div>`;
-  if(MYSUBS.list===null&&!MYSUBS.loading)setTimeout(()=>loadMySubs(),0);
+  if(MYSUBS.list===null&&!MYSUBS.loading&&!MYSUBS.tried)setTimeout(()=>loadMySubs(),0);
   const edit=SUBEDIT&&(MYSUBS.list||[]).find(x=>x.id===SUBEDIT&&x.status==='changes');if(SUBEDIT&&!edit)SUBEDIT=null;
-  const list=MYSUBS.list;
+  const list=MYSUBS.list;setTimeout(()=>{restoreSubDraft();hydrateSubMedia()},0);
   return intro+`<div class="subgrid"><section class="panel subpanel" aria-labelledby="sfTitle"><h2 id="sfTitle">${edit?'Update your submission':'New submission'}</h2>${subForm(edit)}</section>
    <section class="subside${list&&list.length?' has':''}" aria-labelledby="msTitle"><h2 id="msTitle">My submissions</h2>${MYSUBS.err?`<div class="err">${esc(MYSUBS.err)}</div>`:''}
-    ${list===null?'<div class="empty">Loading…</div>':list.length?list.map(mySubCard).join(''):'<div class="empty">You haven\'t submitted any music yet.</div>'}</section></div>`};
+    ${list===null?(MYSUBS.err?'':'<div class="empty">Loading…</div>'):list.length?list.map(mySubCard).join(''):'<div class="empty">You haven\'t submitted any music yet.</div>'}</section></div>`};
 
+
+/* Brouillon : si la page est redessinée pendant la saisie, rien n'est perdu (textes et fichiers) */
+let SUBDRAFT={},SUBFILES={};
+document.addEventListener('input',e=>{const el=e.target;if(!el.closest||!el.closest('#subForm')||!el.id||el.type==='file')return;SUBDRAFT[el.id]=el.type==='checkbox'?el.checked:el.value},true);
+document.addEventListener('change',e=>{const el=e.target;if(!el.closest||!el.closest('#subForm')||!el.id)return;if(el.type==='file'){if(el.files[0])SUBFILES[el.id]=el.files[0]}else SUBDRAFT[el.id]=el.type==='checkbox'?el.checked:el.value},true);
+function restoreSubDraft(){const f=$('#subForm');if(!f||f.dataset.restored)return;f.dataset.restored=1;
+  Object.entries(SUBDRAFT).forEach(([id,v])=>{const el=document.getElementById(id);if(!el)return;if(el.type==='checkbox')el.checked=!!v;else el.value=v});
+  const a=SUBFILES.sbAudio,c=SUBFILES.sbCover;if(a){$('#sbAudioInfo').textContent=a.name+' · '+fmtSize(a.size)+' · ✓';$('#sbAudio').required=false}
+  if(c){const im=$('#sbCoverPrev');if(im){im.hidden=false;im.src=URL.createObjectURL(c)}$('#sbCover').required=false}}
+const subFile=id=>($(id).files&&$(id).files[0])||SUBFILES[id.slice(1)];
 async function sendSubmission(form){const err=$('#sbErr'),btn=form.querySelector('[type=submit]'),prog=$('#sbProg');err.textContent='';
   if($('#sbWebsite').value)return;                                   /* robot */
   const edit=SUBEDIT&&(MYSUBS.list||[]).find(x=>x.id===SUBEDIT);
   const v=id=>$(id).value.trim(),title=v('#sbTitle'),artists=v('#sbArtists'),genre=v('#sbGenre'),country=v('#sbCountry'),email=v('#sbEmail').toLowerCase(),phone=v('#sbPhone');
-  const af=$('#sbAudio').files[0],cf=$('#sbCover').files[0];
+  const af=subFile('#sbAudio'),cf=subFile('#sbCover');
   const links={};for(const [k,l] of SUB_LINKS){const u=v('#sbL_'+k);if(u){if(!/^https:\/\/[^\s]+\.[^\s]+$/i.test(u))return err.textContent=`${l}: enter a full link starting with https://`;links[k]=u.slice(0,300)}}
   if(!edit&&!af)return err.textContent='Choose the audio file of your song (MP3 or WAV).';
   if(!title||!artists)return err.textContent='Enter the song title and the artist name(s).';
@@ -2947,19 +3030,19 @@ async function sendSubmission(form){const err=$('#sbErr'),btn=form.querySelector
     if(edit){const old=[af&&edit.audio_path,cf&&edit.cover_path].filter(Boolean);if(old.length)SB.storage.from(SUB_BUCKET).remove(old).catch(()=>{})}
     const saved=r.data[0];const m=api.me();m.subSeen=m.subSeen||{};m.subSeen[id]=saved.status+'|'+saved.updated_at;
     notify({key:'sub-'+id+'-sent-'+saved.updated_at,text:edit?`Your update of “${title}” was received. The WMA team will review it again.`:`We received “${title}”. The WMA team will listen to it and get back to you here.`,href:'#submit'});saveMe();
-    SUBEDIT=null;MYSUBS.list=[saved,...(MYSUBS.list||[]).filter(x=>x.id!==id)];rerender();toast(edit?'Update sent':'Submission sent — thank you!');
+    SUBDRAFT={};SUBFILES={};SUBEDIT=null;MYSUBS.list=[saved,...(MYSUBS.list||[]).filter(x=>x.id!==id)];rerender();toast(edit?'Update sent':'Submission sent — thank you!');
     setTimeout(()=>{const s=$('#msTitle');s&&s.scrollIntoView({behavior:'smooth',block:'start'})},100)}
   catch(e){if(uploaded.length)SB.storage.from(SUB_BUCKET).remove(uploaded).catch(()=>{});btn.disabled=false;prog.hidden=true;err.textContent=subErr(e)}}
 
 /* ---------- WMA ADMIN : soumissions ---------- */
-async function loadAdmSubs(){if(!supa()||ADMSUBS.loading)return;ADMSUBS.loading=true;
+async function loadAdmSubs(){if(!supa()||ADMSUBS.loading)return;ADMSUBS.loading=true;ADMSUBS.tried=true;
   try{const r=await SB.from('music_submissions').select('*').order('created_at',{ascending:false});if(r.error)throw r.error;ADMSUBS.list=(r.data||[]).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));ADMSUBS.err=null}
-  catch(e){ADMSUBS.err=subErr(e)}ADMSUBS.loading=false;if(location.hash==='#admin-submissions')rerender()}
+  catch(e){ADMSUBS.err=subSetupErr(e)}ADMSUBS.loading=false;if(location.hash==='#admin-submissions')rerender()}
 function admSubFiltered(){const f=ADMSUBS.f,q=f.q.toLowerCase();return (ADMSUBS.list||[]).filter(s=>(f.status==='all'||s.status===f.status)&&(!f.genre||s.genre===f.genre)&&(!f.country||s.country===f.country)
   &&(!f.from||new Date(s.created_at)>=new Date(f.from))&&(!f.to||new Date(s.created_at)<=new Date(f.to+'T23:59:59'))&&(!q||[s.title,s.artists,s.email].join(' ').toLowerCase().includes(q)))}
 admin.submissions=()=>{
   if(!supa())return '<div class="empty">Submissions are stored on Supabase: they are available on the online version (wmamusic.net).</div>';
-  if(ADMSUBS.list===null&&!ADMSUBS.loading)setTimeout(loadAdmSubs,0);
+  if(ADMSUBS.list===null&&!ADMSUBS.loading&&!ADMSUBS.tried)setTimeout(loadAdmSubs,0);
   const all=ADMSUBS.list||[],f=ADMSUBS.f,cnt=k=>all.filter(s=>k==='all'||s.status===k).length,uniq=k=>[...new Set(all.map(s=>s[k]).filter(Boolean))].sort();
   const rows=admSubFiltered();
   return `<div class="studio-head"><h2>Music submissions</h2><button class="btn" data-act="admSubRefresh">↻ Refresh</button></div>
@@ -2970,7 +3053,7 @@ admin.submissions=()=>{
     <select data-subf="country" aria-label="Country"><option value="">All countries</option>${uniq('country').map(g=>`<option ${f.country===g?'selected':''}>${esc(g)}</option>`).join('')}</select>
     <label class="t2">From <input type="date" value="${esc(f.from)}" data-subf="from"></label><label class="t2">To <input type="date" value="${esc(f.to)}" data-subf="to"></label></div>
    ${ADMSUBS.err?`<div class="err">${esc(ADMSUBS.err)}</div>`:''}
-   ${ADMSUBS.list===null?'<div class="empty">Loading…</div>':rows.length?`<div class="tbl-wrap"><table class="tbl subtbl"><thead><tr><th>Song</th><th>Genre</th><th>Country</th><th>Received</th><th>Status</th><th></th></tr></thead><tbody>
+   ${ADMSUBS.list===null?(ADMSUBS.err?'':'<div class="empty">Loading…</div>'):rows.length?`<div class="tbl-wrap"><table class="tbl subtbl"><thead><tr><th>Song</th><th>Genre</th><th>Country</th><th>Received</th><th>Status</th><th></th></tr></thead><tbody>
     ${rows.map(s=>`<tr><td><div class="subtd">${s.cover_path?`<img alt="" data-subsrc="${esc(s.cover_path)}">`:'<span></span>'}<div style="min-width:0"><b>${esc(s.title)}</b><div class="t2">${esc(s.artists)}</div></div></div></td><td>${esc(s.genre)}</td><td>${esc(s.country)}</td><td class="mono">${subDate(s.created_at)}</td><td>${subStatus(s.status)}</td><td><button class="btn sm" data-act="admSubOpen" data-id="${s.id}">Open</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No submission matches these filters.</div>'}`};
 function admSubModal(id){const s=(ADMSUBS.list||[]).find(x=>x.id===id);if(!s)return;const pr=PROFILES[s.user_id]||{};
   const links=Object.entries(s.links||{}).filter(([,u])=>/^https:\/\//.test(u));
@@ -2994,7 +3077,7 @@ async function admSubSet(id,status,btn){const note=$('#admSubNote').value.trim()
 
 /* ---------- Intégration : menu, profil, accueil, notifications ---------- */
 const _chromeSub=chrome;chrome=function(){_chromeSub();const side=$('.side nav')||$('.side');if(side&&!side.querySelector('[href="#submit"]')){const after=side.querySelector('a[href="#upcoming"]');const a=document.createElement('a');a.href='#submit';a.innerHTML=SI.mic+' Submit your music';(after?after.after(a):side.appendChild(a))}
-  const l=side&&side.querySelector('[href="#submit"]');if(l)l.classList.toggle('on',location.hash==='#submit');setTimeout(hydrateSubMedia,0)};
+  const l=side&&side.querySelector('[href="#submit"]');if(l)l.classList.toggle('on',location.hash==='#submit');if(document.querySelector('[data-subsrc]'))setTimeout(hydrateSubMedia,0);if(location.hash==='#submit')setTimeout(restoreSubDraft,0)};
 const _profileSub=pages.profile;pages.profile=()=>{const h=_profileSub();return api.me()?h.replace('<div class="actions">',`<div class="actions"><a class="btn" href="#submit">${SI.mic} Submit your music</a>`):h};
 const _qlSub=quickLinks;quickLinks=function(){return _qlSub().replace('</nav>',`<a href="#submit">${SI.mic} Submit your music</a></nav>`)};
 document.addEventListener('submit',e=>{if(e.target.id==='subForm'){e.preventDefault();e.stopImmediatePropagation();sendSubmission(e.target)}},true);
@@ -3005,13 +3088,13 @@ document.addEventListener('change',async e=>{const el=e.target;
 document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.subf==='q'){ADMSUBS.f.q=el.value;clearTimeout(el._t);el._t=setTimeout(()=>{rerender();const i=document.querySelector('[data-subf="q"]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},300)}},true);
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,id=el.dataset.id;
   const acts={
-    subEdit:()=>{SUBEDIT=id;rerender();setTimeout(()=>{const f=$('#sfTitle');f&&f.scrollIntoView({behavior:'smooth'})},50)},
-    subCancelEdit:()=>{SUBEDIT=null;rerender()},
+    subEdit:()=>{SUBDRAFT={};SUBFILES={};SUBEDIT=id;rerender();setTimeout(()=>{const f=$('#sfTitle');f&&f.scrollIntoView({behavior:'smooth'})},50)},
+    subCancelEdit:()=>{SUBDRAFT={};SUBFILES={};SUBEDIT=null;rerender()},
     subWithdraw:()=>{const s=(MYSUBS.list||[]).find(x=>x.id===id);if(!s)return;openModal(`<h3>Withdraw “${esc(s.title)}”?</h3><p class="muted" style="margin:8px 0 16px">The submission and its files will be deleted. This cannot be undone.</p><div class="actions" style="margin-top:0"><button class="btn danger" data-act="subWithdrawOk" data-id="${s.id}">Withdraw</button><button class="btn" data-act="close">Cancel</button></div>`)},
     subWithdrawOk:async()=>{const s=(MYSUBS.list||[]).find(x=>x.id===id);el.disabled=true;try{const r=await SB.from('music_submissions').delete().eq('id',id);if(r&&r.error)throw r.error;
       SB.storage.from(SUB_BUCKET).remove([s.audio_path,s.cover_path].filter(Boolean)).catch(()=>{});MYSUBS.list=MYSUBS.list.filter(x=>x.id!==id);closeModal();rerender();toast('Submission withdrawn')}catch(x){el.disabled=false;toast(subErr(x))}},
     admSubOpen:()=>admSubModal(id),admSubSet:()=>admSubSet(id,el.dataset.s,el),
-    admSubRefresh:()=>{ADMSUBS.list=null;rerender()},
+    admSubRefresh:()=>{ADMSUBS.list=null;ADMSUBS.tried=false;ADMSUBS.err=null;rerender()},
     admSubF:()=>{ADMSUBS.f[el.dataset.k]=el.dataset.v;rerender()}};
   if(acts[a]){e.preventDefault();e.stopImmediatePropagation();acts[a]()}},true);
 
