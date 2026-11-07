@@ -212,6 +212,8 @@
 
 
 
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -451,6 +453,43 @@ body.no-track .player{display:none}
 .subbar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
 .subbar i{display:block;height:100%;background:var(--accent);transition:width .2s}
 .subprog b{margin-left:auto;color:var(--fg)}
+
+/* Page playlist (grande couverture + chansons en dessous) */
+.plv{--bleed:28px;margin:-26px calc(-1 * var(--bleed)) 0;padding:26px var(--bleed) 0;background:linear-gradient(180deg,var(--tone) 0,color-mix(in srgb,var(--tone) 55%,var(--bg)) 300px,var(--bg) 560px);transition:background .4s}
+.pl-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:end;padding:20px 0 26px;color:#fff}
+.pl-back{display:none}
+.pl-cov{width:232px;aspect-ratio:1;box-shadow:0 18px 50px rgba(0,0,0,.5);border-radius:6px;overflow:hidden;background:#222}
+.pl-cov img{width:100%;height:100%;object-fit:cover;display:block}
+.pl-info{min-width:0}
+.pl-info .eyebrow{color:rgba(255,255,255,.85)}
+.pl-info h1{margin:6px 0 0;font-size:clamp(30px,5vw,64px);font-weight:900;letter-spacing:-.03em;line-height:1.02;text-wrap:balance;color:#fff}
+.pl-desc{margin:12px 0 0;color:rgba(255,255,255,.78);font-size:15px;line-height:1.5;max-width:60ch}
+.pl-by{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:15px;color:#fff}
+.pl-by-av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.2);font-weight:800;font-size:12px;color:#fff;flex:none}
+.pl-by-av.wma{background:#0A0A0A;color:#FF7A1A}
+.pl-meta{margin-top:6px;color:rgba(255,255,255,.72);font-size:14px}
+.pl-acts{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}
+.pl-l,.pl-r{display:flex;align-items:center;gap:6px}
+.pl-ic{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:rgba(255,255,255,.85)}
+.pl-ic:hover{color:#fff;background:rgba(255,255,255,.1)}
+.pl-ic.on{color:#FF7A1A}
+.pl-play{width:60px;height:60px;border-radius:50%;background:#FF7A1A;color:#0A0A0A;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.35);transition:transform .15s}
+.pl-play:hover{transform:scale(1.05)}.pl-play:active{transform:scale(.96)}
+.pl-list{display:flex;flex-direction:column;padding-bottom:10px}
+.pl-row{grid-template-columns:56px minmax(0,1fr) auto;padding:7px 0}
+.pl-row .tr-cov{width:56px;height:56px}
+.pl-ra{display:flex;align-items:center;gap:2px}
+.pl-ra .d{color:var(--muted);font-size:12.5px;margin-right:6px}
+@media (max-width:860px){
+  .plv{--bleed:16px}
+  .pl-top{grid-template-columns:1fr;gap:0;padding-top:8px;position:relative}
+  .pl-back{display:grid;place-items:center;position:absolute;left:0;top:4px;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.28);color:#fff;z-index:1}
+  .pl-cov{width:min(300px,68vw);justify-self:center;margin-top:8px}
+  .pl-info{margin-top:22px}
+  .pl-info h1{font-size:clamp(26px,7.5vw,34px)}
+  .pl-acts{margin-top:12px}
+  .pl-ra .d{display:none}
+}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -3187,6 +3226,58 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act="admS
 /* Liens de partage avec aperçu (pochette / photo de l'artiste) sur WhatsApp, Facebook, X… */
 const _shareInfoOG=shareInfo;shareInfo=function(k,id){const s=_shareInfoOG(k,id);if(!s)return s;
   if(supa()&&!art()&&/^https:$/.test(location.protocol)&&/^(track|artist|album|playlist|video)$/.test(k))s.url=`${location.origin}/s/${k}/${encodeURIComponent(id)}`;return s};
+
+/* ---------- Page playlist : grande couverture en haut, chansons en dessous ---------- */
+const PLI={
+  back:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>',
+  play:'<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.8v14.4a1 1 0 0 0 1.52.85l11.3-7.2a1 1 0 0 0 0-1.7L8.52 3.95A1 1 0 0 0 7 4.8z"/></svg>',
+  pause:'<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5.5" y="4" width="4.6" height="16" rx="1.3"/><rect x="13.9" y="4" width="4.6" height="16" rx="1.3"/></svg>',
+  shuffle:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
+  share:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>',
+  edit:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  trash:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
+  sun:'<svg width="16" height="16" viewBox="-50 -50 100 100" fill="currentColor" aria-hidden="true"><circle r="13"/>'+[0,45,90,135,180,225,270,315].map(a=>`<rect x="-4" y="-46" width="8" height="22" rx="4" transform="rotate(${a})"/>`).join('')+'</svg>'
+};
+const plTones={};
+function plTone(src){if(plTones[src])return plTones[src];plTones[src]='#3a2a1e';
+  const im=new Image();if(!/^(data|blob):/.test(src))im.crossOrigin='anonymous';
+  im.onload=()=>{try{const c=document.createElement('canvas');c.width=c.height=12;const g=c.getContext('2d');g.drawImage(im,0,0,12,12);const d=g.getImageData(0,0,12,12).data;let r=0,gg=0,b=0;
+    for(let i=0;i<d.length;i+=4){r+=d[i];gg+=d[i+1];b+=d[i+2]}const n=d.length/4,k=.8;plTones[src]=`rgb(${Math.round(r/n*k)},${Math.round(gg/n*k)},${Math.round(b/n*k)})`;
+    document.querySelectorAll('.plv').forEach(el=>{if(el.dataset.src===src)el.style.setProperty('--tone',plTones[src])})}catch(e){}};
+  im.src=src;return plTones[src]}
+const plIds=id=>{const p=api.playlist(id);return p?p.trackIds.map(api.track).filter(t=>t&&isLive(t)).map(t=>t.id):[]};
+const plIsCurrent=id=>{const t=curTrack(),ids=plIds(id);return !!t&&ids.includes(t.id)&&P.queue.length===ids.length&&P.queue.every(x=>ids.includes(x))};
+const plDur=s=>{s=Math.round(s||0);const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?`${h} h ${m} min`:m?`${m} min`:`${s} s`};
+function plRows(tr,own,pid){const q=tr.map(t=>t.id).join(','),cur=curTrack();
+  return `<div class="pl-list">${tr.map(t=>`<div class="trow2 pl-row ${cur&&cur.id===t.id?'cur':''}" data-id="${t.id}"><button class="tr-cov" data-act="play" data-id="${t.id}" data-q="${q}" aria-label="Play ${esc(t.title)}"><img src="${trackCover(t)}" alt="" loading="lazy"></button>
+   <div class="tr-txt"><a class="t1" href="#track-${t.id}">${esc(t.title)}</a><div class="t2">${artistLinks(t)}${t.demo?' <span class="badge">DEMO</span>':''}</div></div>
+   <div class="pl-ra"><span class="d mono">${fmt(t.duration)}</span>${own?`<button class="ic" data-act="plrm" data-pl="${pid}" data-id="${t.id}" aria-label="Remove ${esc(t.title)} from this playlist" title="Remove">✕</button>`:''}<button class="ic" data-act="trMenu" data-id="${t.id}" data-q="${q}" aria-label="More options for ${esc(t.title)}">${DI.dots}</button></div></div>`).join('')}</div>`}
+pages.playlist=id=>{
+  const p=api.playlist(id);if(!p)return notFound();const tr=p.trackIds.map(api.track).filter(t=>t&&isLive(t)),own=!!p.mine,cov=plCover(p);
+  const tot=tr.reduce((s,t)=>s+(t.duration||0),0),playing=plIsCurrent(p.id)&&!audio.paused;
+  const by=own?`<span class="pl-by-av">${esc(((art()?MYNAME:api.me()?.name)||'?').slice(0,1).toUpperCase())}</span><b>${esc((art()?MYNAME:api.me()?.name)||'You')}</b>`:`<span class="pl-by-av wma">${PLI.sun}</span><b>WMA MUSIC</b>`;
+  const empty=p.smart?(p.emptyMsg||'No songs yet.'):own?'This playlist is empty. Add songs with the + button on any song.':'No songs in this playlist yet.';
+  return `<div class="plv" data-src="${esc(cov)}" style="--tone:${plTone(cov)}"><div class="pl-top">
+    <button class="pl-back" data-act="plBack" aria-label="Back">${PLI.back}</button>
+    <div class="pl-cov"><img src="${cov}" alt="Cover of ${esc(p.name)}"></div>
+    <div class="pl-info"><div class="eyebrow">${p.official||p.smart?'Playlist':'Your playlist'}</div><h1>${esc(p.name)}</h1>
+     ${p.desc?`<p class="pl-desc">${esc(p.desc)}</p>`:''}
+     <div class="pl-by">${by}</div>
+     <div class="pl-meta">${tr.length} song${tr.length===1?'':'s'}${tr.length?` · ${plDur(tot)}`:''}</div>
+     <div class="pl-acts"><div class="pl-l">${p.official||p.smart?`<button class="pl-ic" data-act="share" data-k="playlist" data-id="${p.id}" aria-label="Share this playlist" title="Share">${PLI.share}</button>`:''}${own?`<button class="pl-ic" data-act="plrename" data-pl="${p.id}" aria-label="Rename this playlist" title="Rename">${PLI.edit}</button><button class="pl-ic" data-act="pldel" data-pl="${p.id}" aria-label="Delete this playlist" title="Delete">${PLI.trash}</button>`:''}</div>
+      ${tr.length?`<div class="pl-r"><button class="pl-ic pl-shuf ${P.shuffle?'on':''}" data-act="plShuf" data-pl="${p.id}" aria-pressed="${P.shuffle}" aria-label="Shuffle play" title="Shuffle">${PLI.shuffle}</button><button class="pl-play" data-act="plPlay" data-pl="${p.id}" aria-label="${playing?'Pause':'Play'} ${esc(p.name)}">${playing?PLI.pause:PLI.play}</button></div>`:''}</div></div></div>
+   ${tr.length?plRows(tr,own,p.id):`<div class="empty">${esc(empty)}</div>`}</div>`;
+};
+function plSync(){const pv=$('.plv .pl-play');if(!pv)return;const id=pv.dataset.pl,on=plIsCurrent(id)&&!audio.paused;pv.innerHTML=on?PLI.pause:PLI.play;pv.setAttribute('aria-label',(on?'Pause ':'Play ')+(api.playlist(id)?.name||''));
+  const s=$('.plv .pl-shuf');if(s){s.classList.toggle('on',P.shuffle);s.setAttribute('aria-pressed',P.shuffle)}}
+const _rpPL=renderPlayer;renderPlayer=function(){const r=_rpPL.apply(this,arguments);plSync();return r};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='plBack'){e.preventDefault();e.stopImmediatePropagation();if(history.length>1)history.back();else location.hash='#playlists'}
+  else if(a==='plPlay'){e.preventDefault();e.stopImmediatePropagation();const id=el.dataset.pl,ids=plIds(id);if(!ids.length)return;
+    if(plIsCurrent(id)){toggle();return}const first=P.shuffle?ids[Math.floor(Math.random()*ids.length)]:ids[0];playTrack(first,ids)}
+  else if(a==='plShuf'){e.preventDefault();e.stopImmediatePropagation();const id=el.dataset.pl,ids=plIds(id);if(!ids.length)return;
+    P.shuffle=!P.shuffle;store.set('shuffle',P.shuffle);if(P.shuffle){toast('Shuffle on');playTrack(ids[Math.floor(Math.random()*ids.length)],ids)}else{toast('Shuffle off');const c=curTrack();if(c&&plIsCurrent(id))buildOrder(c.id);renderPlayer()}}
+},true);
 
 
 /* =========================================================
