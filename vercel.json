@@ -1,5 +1,8 @@
 {
   "cleanUrls": true,
+  "crons": [
+    { "path": "/api/premium?action=reconcile", "schedule": "15 3 * * *" }
+  ],
   "rewrites": [
     { "source": "/s/:k/:id", "destination": "/api/share?k=:k&id=:id" }
   ],
