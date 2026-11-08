@@ -219,8 +219,6 @@
 
 
 
-
-
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -497,8 +495,6 @@ body.no-track .player{display:none}
   .pl-acts{margin-top:12px}
   .pl-ra .d{display:none}
 }
-.trow[data-id],.trow2[data-id],.drow[data-id],.ts-row[data-id]{cursor:pointer}
-@media (hover:hover){.trow[data-id]:hover,.trow2[data-id]:hover,.drow[data-id]:hover,.ts-row[data-id]:hover{background:color-mix(in srgb,var(--fg) 5%,transparent);border-radius:10px}}
 
 /* ===== Premium ===== */
 .pm{display:flex;flex-direction:column;gap:26px;max-width:980px}
@@ -3342,18 +3338,6 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
     if(plIsCurrent(id)){toggle();return}const first=P.shuffle?ids[Math.floor(Math.random()*ids.length)]:ids[0];playTrack(first,ids)}
   else if(a==='plShuf'){e.preventDefault();e.stopImmediatePropagation();const id=el.dataset.pl,ids=plIds(id);if(!ids.length)return;
     P.shuffle=!P.shuffle;store.set('shuffle',P.shuffle);if(P.shuffle){toast('Shuffle on');playTrack(ids[Math.floor(Math.random()*ids.length)],ids)}else{toast('Shuffle off');const c=curTrack();if(c&&plIsCurrent(id))buildOrder(c.id);renderPlayer()}}
-},true);
-
-/* ---------- Toucher n'importe où sur la ligne d'une chanson la lance (pas seulement la pochette) ----------
-   Les boutons (favori, +, partager, ⋮…) et les liens vers l'artiste ou l'album gardent leur rôle.
-   Le titre lance aussi la chanson ; la fiche détaillée reste accessible par le menu ⋮ › Song details. */
-document.addEventListener('click',e=>{
-  const row=e.target.closest('.trow[data-id],.trow2[data-id],.drow[data-id],.ts-row[data-id]');if(!row||e.defaultPrevented)return;
-  if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey)return;
-  const a=e.target.closest('a,button,input,select,textarea,label,[data-act]');
-  if(a&&!(a.tagName==='A'&&/^#track-/.test(a.getAttribute('href')||'')))return;
-  const s=window.getSelection&&String(window.getSelection());if(s&&s.length>1)return;
-  e.preventDefault();const p=row.querySelector('[data-act="play"]');if(p)p.click();else playTrack(row.dataset.id,[row.dataset.id]);
 },true);
 
 /* =====================================================================
