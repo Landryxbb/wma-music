@@ -214,6 +214,13 @@
 
 
 
+
+
+
+
+
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -490,6 +497,63 @@ body.no-track .player{display:none}
   .pl-acts{margin-top:12px}
   .pl-ra .d{display:none}
 }
+.trow[data-id],.trow2[data-id],.drow[data-id],.ts-row[data-id]{cursor:pointer}
+@media (hover:hover){.trow[data-id]:hover,.trow2[data-id]:hover,.drow[data-id]:hover,.ts-row[data-id]:hover{background:color-mix(in srgb,var(--fg) 5%,transparent);border-radius:10px}}
+
+/* ===== Premium ===== */
+.pm{display:flex;flex-direction:column;gap:26px;max-width:980px}
+.pm-hero{position:relative;border-radius:22px;overflow:hidden;background:radial-gradient(120% 140% at 100% 0%,#FF7A1A 0%,#B54A00 34%,#2A1203 70%,#0A0A0A 100%);color:#fff}
+.pm-hero::after{content:"";position:absolute;right:-90px;top:-90px;width:320px;height:320px;border-radius:50%;border:38px solid rgba(255,255,255,.07)}
+.pm-hero-in{position:relative;z-index:1;padding:clamp(24px,5vw,44px)}
+.pm-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;letter-spacing:.16em}
+.pm-hero h1{margin:14px 0 0;font-size:clamp(32px,6vw,56px);font-weight:900;letter-spacing:-.035em;line-height:1.14;text-wrap:balance;color:#fff}
+.pm-hero h1 em{font-style:normal;color:#0A0A0A;background:#fff;padding:0 .18em;border-radius:.16em}
+.pm-price{display:flex;align-items:baseline;gap:8px;margin-top:22px}.pm-price b{font-size:44px;font-weight:900;letter-spacing:-.03em}.pm-price span{font-size:17px;opacity:.85}
+.pm-alt{font-size:14px;opacity:.8;margin-top:2px}
+.pm-status{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:22px;font-size:15px}
+.pm-pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,.16);font-weight:800;font-size:12.5px;letter-spacing:.08em}
+.pm-pill.on{background:#fff;color:#0A0A0A}.pm-pill.on svg{color:#FF7A1A;width:16px;height:16px}.pm-pill.sus{background:#B3261E}
+.pm-perks{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pm-perks li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start;padding:18px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.pm-perks li>span{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+.pm-perks b{font-size:16px}.pm-perks p{margin:4px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
+.pm-box{max-width:560px}.pm-box h2{font-size:22px;margin:0}
+.pm-seg{display:flex;gap:6px;padding:4px;border-radius:999px;background:var(--surface2);width:max-content;max-width:100%}
+.pm-seg button{height:38px;padding:0 18px;border-radius:999px;font-weight:700;color:var(--muted)}
+.pm-seg button.on{background:var(--fg);color:var(--bg)}
+.pm-ops{display:flex;flex-wrap:wrap;gap:8px}
+.pm-ops button{min-height:44px;padding:0 16px;border-radius:12px;border:1.5px solid var(--line);font-weight:700;color:var(--fg)}
+.pm-ops button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.pm-phone{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface2)}
+.pm-phone span{display:grid;place-items:center;padding:0 12px;font-weight:700;color:var(--muted);border-right:1px solid var(--line)}
+.pm-phone input{flex:1;min-width:0;border:0!important;border-radius:0!important;background:transparent!important;font-size:17px;letter-spacing:.02em}
+.pm-total{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:16px}.pm-total b{font-size:22px}
+.pm-go{height:52px;border-radius:999px;font-size:16px;font-weight:800;letter-spacing:.04em;width:100%;justify-content:center}
+.pm-fine{font-size:12.5px;color:var(--muted);line-height:1.5;margin:0}
+.pm-wait{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}.pm-wait p{margin:0;max-width:44ch;line-height:1.5}
+.pm-spin{width:54px;height:54px;border-radius:50%;border:5px solid var(--surface2);border-top-color:var(--accent);animation:pmSpin 1s linear infinite;margin-bottom:6px}
+@keyframes pmSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.pm-spin{animation-duration:3s}}
+.pm-okbox{text-align:center;border-color:var(--accent)}.pm-big{color:var(--accent)}.pm-big svg{width:56px;height:56px}
+.pm-errbox{border-color:var(--bad)}.pm-errbox p{line-height:1.5}
+.pm-hist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.pm-hrow{display:flex;justify-content:space-between;gap:14px;padding:14px 16px;border-top:1px solid var(--line);flex-wrap:wrap}.pm-hrow:first-child{border-top:0}
+.pm-hrow>div:first-child{display:flex;flex-direction:column;gap:2px}.pm-hrow span{font-size:13px;color:var(--muted)}
+.pm-hr-r{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
+.pm-st{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800;background:var(--surface2);color:var(--fg)!important}
+.pm-st.completed{background:color-mix(in srgb,#34C759 22%,transparent)}.pm-st.failed{background:color-mix(in srgb,var(--bad) 22%,transparent)}.pm-st.pending{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+.pm-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:6px;background:var(--accent);color:var(--accent-ink);font-size:10px;font-weight:900;letter-spacing:.08em;vertical-align:middle}
+.pm-badge.big{font-size:11.5px;padding:3px 9px;margin-left:8px}.pm-badge.big svg{width:13px;height:13px}
+.pm-mini{font-size:9.5px;font-weight:900;letter-spacing:.08em;padding:2px 5px;border-radius:4px;background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);margin-left:4px}
+.pm-nav svg{color:var(--accent)}
+.btn.pm-dl.on{border-color:var(--accent);color:var(--accent)}
+.pm-cta{text-align:center;padding:36px 20px;border-radius:18px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:10px}
+.pm-cta>div{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}.pm-cta h2{margin:0;font-size:22px}.pm-cta p{margin:0}
+.pm-dlhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.pm-admbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.pm-admbar .chips{margin:0}
+.pm-search{flex:1;min-width:200px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);color:var(--fg);padding:0 16px}
+.pm-who{display:flex;flex-direction:column;min-width:0}.pm-who span{font-size:12px;color:var(--muted)}
+@media (max-width:640px){.pm-perks{grid-template-columns:1fr}.pm-hrow{flex-direction:column}.pm-hr-r{align-items:flex-start;text-align:left}}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -1728,7 +1792,7 @@ pages.admin=sub=>{
     :api.me()?`<div class="auth"><h1>Access denied</h1><p class="muted">WMA ADMIN is reserved for the WMA team.</p><div class="actions"><a class="btn" href="#home">Back to home</a></div></div>`
     :`<div class="auth"><h1>WMA ADMIN</h1><p class="muted">Sign in with a WMA administrator account.</p><div class="actions"><a class="btn pri" href="#login">Sign in</a></div></div>`;
   sub=sub||'overview';
-  const nav=[['overview','Overview'],['submissions','Submissions'],['songs','Music manager'],['artists','Artists'],['albums','Albums'],['playlists','Official playlists'],['genres','Genres'],['videos','Videos'],['users','Listeners'],['stats','Statistics']];
+  const nav=[['overview','Overview'],['submissions','Submissions'],['premium','Premium'],['songs','Music manager'],['artists','Artists'],['albums','Albums'],['playlists','Official playlists'],['genres','Genres'],['videos','Videos'],['users','Listeners'],['stats','Statistics']];
   return `<div class="eyebrow">WMA UNITED AFRICA</div><h1 class="ltitle" style="margin-top:4px">WMA ADMIN</h1>
    ${cloud()?'':`<div class="note" style="margin-bottom:12px;border-color:var(--warn)"><b style="color:var(--fg)">Demo mode: nothing is published for other listeners.</b> Songs added here stay in this browser.<br>${/claude/.test(location.hostname)?'Open the app from your Claude account to use the shared database.':!window.WMA_CONFIG?'The config.js file is missing or has a typo (a missing quote or comma). Fix it, then redeploy the site on Vercel.':!window.WMA_CONFIG.supabaseUrl||!window.WMA_CONFIG.supabaseAnonKey?'config.js is empty: paste the Supabase URL and the public key, then redeploy.':!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(window.WMA_CONFIG.supabaseUrl)?'The Supabase URL in config.js is wrong: it must look exactly like https://xxxx.supabase.co (no /rest/v1/ and no trailing slash).':'The Supabase library could not load: check your internet connection and reload the page.'}</div>`}
    <nav class="adm-nav">${nav.map(([k,l])=>`<a href="#admin${k==='overview'?'':'-'+k}" class="${sub===k?'on':''}">${l}</a>`).join('')}</nav>${(admin[sub]||admin.overview)()}`;
@@ -2800,7 +2864,8 @@ const inAppBrowser=()=>/FBAN|FBAV|Instagram|Line\/|TikTok|Snapchat|; wv\)/i.test
 const installDone=()=>lsGet('wma_installed','')==='1'||isStandalone();
 const installOK=()=>!art()&&location.protocol==='https:'&&!installDone();
 
-if(installOK()&&'serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+// le service worker sert aussi à ouvrir l'application hors connexion (téléchargements Premium) : on l'enregistre aussi dans l'appli installée
+if(!art()&&(location.protocol==='https:'||location.hostname==='localhost')&&'serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;if(installShown)renderInstall()});
 window.addEventListener('appinstalled',()=>{lsSet('wma_installed','1');hideInstall(false);toast('WMA MUSIC is installed on your device.')});
 
@@ -3278,6 +3343,269 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
   else if(a==='plShuf'){e.preventDefault();e.stopImmediatePropagation();const id=el.dataset.pl,ids=plIds(id);if(!ids.length)return;
     P.shuffle=!P.shuffle;store.set('shuffle',P.shuffle);if(P.shuffle){toast('Shuffle on');playTrack(ids[Math.floor(Math.random()*ids.length)],ids)}else{toast('Shuffle off');const c=curTrack();if(c&&plIsCurrent(id))buildOrder(c.id);renderPlayer()}}
 },true);
+
+/* ---------- Toucher n'importe où sur la ligne d'une chanson la lance (pas seulement la pochette) ----------
+   Les boutons (favori, +, partager, ⋮…) et les liens vers l'artiste ou l'album gardent leur rôle.
+   Le titre lance aussi la chanson ; la fiche détaillée reste accessible par le menu ⋮ › Song details. */
+document.addEventListener('click',e=>{
+  const row=e.target.closest('.trow[data-id],.trow2[data-id],.drow[data-id],.ts-row[data-id]');if(!row||e.defaultPrevented)return;
+  if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey)return;
+  const a=e.target.closest('a,button,input,select,textarea,label,[data-act]');
+  if(a&&!(a.tagName==='A'&&/^#track-/.test(a.getAttribute('href')||'')))return;
+  const s=window.getSelection&&String(window.getSelection());if(s&&s.length>1)return;
+  e.preventDefault();const p=row.querySelector('[data-act="play"]');if(p)p.click();else playTrack(row.dataset.id,[row.dataset.id]);
+},true);
+
+/* =====================================================================
+   PREMIUM : abonnement 1,50 $ / mois (Mobile Money via pawaPay),
+   téléchargements hors connexion, badge, espace admin.
+   Le statut Premium est lu dans Supabase (table music_premium_subs) ;
+   seul le serveur (api/premium.js) peut l'écrire, après confirmation de pawaPay.
+   ===================================================================== */
+const PI={
+  crown:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 7.5 7.5 11 12 4l4.5 7L21 7.5 19.5 18h-15z"/><rect x="4.5" y="19.3" width="15" height="2" rx="1"/></svg>',
+  dl:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>',
+  done:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.7 2.7L16.5 9.5"/></svg>',
+  check:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  phone:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>',
+  heart:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
+  music:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>',
+  trash:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>'
+};
+const PREM={loaded:false,uid:null,sub:null,pays:[],cfg:null,setup:true,form:{},wait:null,result:null};
+const premDate=d=>d?new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
+const premMoney=(a,c)=>c==='UGX'?Number(a).toLocaleString('en-US')+' UGX':c==='USD'?'$'+Number(a).toFixed(2):Number(a).toFixed(2)+' '+c;
+const premKey=()=>'wma_prem_'+(PREM.uid||UID||'');
+function premCacheSave(){try{if(PREM.uid){localStorage.setItem(premKey(),JSON.stringify(PREM.sub?{exp:PREM.sub.expires_at,susp:!!PREM.sub.suspended}:{}));localStorage.setItem('wma_last_user',JSON.stringify({id:PREM.uid,name:(api.me()&&api.me().name)||''}))}}catch(e){}}
+function premCache(){try{return JSON.parse(localStorage.getItem('wma_prem_'+(UID||''))||'{}')}catch(e){return {}}}
+// Premium actif ? (en ligne : selon Supabase ; hors connexion : selon le dernier statut connu)
+function isPremium(){const s=PREM.loaded&&PREM.ok&&PREM.uid===UID?(PREM.sub?{exp:PREM.sub.expires_at,susp:PREM.sub.suspended}:{}):premCache();return !!(s.exp&&!s.susp&&Date.parse(s.exp)>Date.now())}
+async function premToken(){try{const {data}=await SB.auth.getSession();return data&&data.session?data.session.access_token:''}catch(e){return ''}}
+async function premApi(action,{method='GET',query='',body}={}){
+  const tok=await premToken();const r=await fetch(`/api/premium?action=${action}${query}`,{method,cache:'no-store',headers:{'Content-Type':'application/json',...(tok?{Authorization:'Bearer '+tok}:{})},body:body?JSON.stringify(body):undefined});
+  let j={};try{j=await r.json()}catch(e){}return {...j,http:r.status}}
+async function premLoad(force){
+  if(!supa()||!UID){PREM.loaded=true;PREM.ok=false;PREM.uid=UID;PREM.sub=null;PREM.pays=[];return}
+  if(PREM.loaded&&PREM.uid===UID&&!force)return;
+  try{const [s,p]=await Promise.all([SB.from('music_premium_subs').select('*').eq('user_id',UID).maybeSingle(),SB.from('music_premium_payments').select('id,status,failure,amount,currency,operator,country,phone_hint,period_end,created_at').eq('user_id',UID).order('created_at',{ascending:false}).limit(50)]);
+    if(s.error&&/does not exist|relation|schema cache/i.test(s.error.message||'')){PREM.setup=false;PREM.loaded=true;PREM.ok=false;PREM.uid=UID;PREM.sub=null}
+    else if(!s.error){PREM.setup=true;PREM.sub=s.data||null;PREM.pays=(p.data||[]).slice().sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));PREM.uid=UID;PREM.loaded=true;PREM.ok=true;premCacheSave()}
+    else console.warn('premium',s.error);
+  }catch(e){console.warn('premium',e)}
+  // en cas d'erreur réseau : on garde le dernier statut connu (cache), sans rien effacer
+}
+async function premCfg(){if(PREM.cfg)return PREM.cfg;try{const r=await fetch('/api/premium?action=config',{cache:'no-store'});PREM.cfg=r.ok?await r.json():{enabled:false}}catch(e){PREM.cfg={enabled:false}}return PREM.cfg}
+const premRefresh=()=>{chrome();if(/^#(premium|profile|library)/.test(location.hash))rerender()};
+
+/* ---------- Page PREMIUM ---------- */
+const PREM_ERR={PAYER_NOT_FOUND:'This number is not registered for this Mobile Money service.',PAYMENT_NOT_APPROVED:'The payment was not approved on the phone.',
+  PAYER_LIMIT_REACHED:'Your Mobile Money limit has been reached.',INSUFFICIENT_BALANCE:'Your Mobile Money balance is too low.',PAYMENT_IN_PROGRESS:'Another payment is already waiting on this phone. Finish it, then try again.',
+  INVALID_PHONE_NUMBER:'This phone number is not valid for this operator.',AMOUNT_MISMATCH:'The amount received did not match the price. Contact WMA MUSIC.',NOT_FOUND:'The payment was never received by the operator.',
+  bad_phone:'Check the phone number.',bad_operator:'Choose your Mobile Money operator.',too_many:'Too many attempts. Wait 10 minutes, then try again.',pending:'A payment is already waiting for your approval.',auth:'Sign in again, then retry.'};
+const premErr=c=>PREM_ERR[c]||'The payment did not go through. No money was taken. Please try again.';
+function premHero(){const on=isPremium(),s=PREM.sub;
+  const st=on?`<span class="pm-pill on">${PI.crown} PREMIUM</span>`:s&&s.suspended?`<span class="pm-pill sus">SUSPENDED</span>`:`<span class="pm-pill">FREE</span>`;
+  const line=on?`Active until <b>${premDate(s.expires_at)}</b>`:s&&s.suspended?'Your subscription is suspended. Contact WMA MUSIC.':s&&Date.parse(s.expires_at)<=Date.now()?`Expired on ${premDate(s.expires_at)}`:'You are on the free plan.';
+  return `<div class="pm-status">${st}<span>${line}</span></div>`}
+function premPerks(){const c=PREM.cfg;const ug=c&&c.countries&&c.countries.find(x=>x.code==='UGA');
+  return `<div class="pm-hero"><div class="pm-hero-in"><div class="pm-eyebrow">${PI.crown} WMA MUSIC PREMIUM</div><h1>Take your music <em>everywhere</em>.</h1>
+   <div class="pm-price"><b>$1.50</b><span>/ month</span></div>${ug?`<div class="pm-alt">${premMoney(ug.amount,'UGX')} / month in Uganda · Mobile Money</div>`:''}${premHero()}</div></div>
+   <ul class="pm-perks">
+    <li><span>${PI.dl}</span><div><b>Download songs</b><p>Save songs in the app and listen with no internet connection.</p></div></li>
+    <li><span>${PI.crown}</span><div><b>PREMIUM badge</b><p>Shown on your profile.</p></div></li>
+    <li><span>${PI.music}</span><div><b>Everything in Free</b><p>Unlimited streaming, playlists, favourites and following artists. WMA MUSIC has no ads, for everyone.</p></div></li>
+    <li><span>${PI.heart}</span><div><b>Support African music</b><p>Your subscription helps WMA MUSIC grow and promote its artists.</p></div></li></ul>`}
+function premPayBox(){
+  if(art())return `<div class="panel pm-box"><h2>Premium</h2><p class="muted">Premium is available on www.wmamusic.net.</p></div>`;
+  if(!api.me())return `<div class="panel pm-box"><h2>Get Premium</h2><p class="muted">Create a free account or sign in to subscribe.</p><div class="actions"><a class="btn pri" href="#signup">Create an account</a><a class="btn" href="#login">Sign in</a></div></div>`;
+  const c=PREM.cfg;if(!c)return `<div class="panel pm-box"><p class="muted">Loading…</p></div>`;
+  if(!PREM.setup||!c.enabled)return `<div class="panel pm-box"><h2>Payments open soon</h2><p class="muted">Premium payments are not open yet. Nothing can be charged for now — come back soon.</p></div>`;
+  if(PREM.wait)return `<div class="panel pm-box pm-wait" aria-live="polite"><div class="pm-spin" aria-hidden="true"></div><h2>Check your phone</h2><p>Approve the payment of <b>${premMoney(PREM.wait.amount,PREM.wait.currency)}</b> with your Mobile Money PIN on <b>${esc(PREM.wait.opName)}</b>.</p><p class="muted">Premium is activated as soon as your operator confirms the payment. Keep this page open.</p><button class="btn" data-act="pmStopWait">Hide</button></div>`;
+  if(PREM.result){const r=PREM.result;PREM.result=null;
+    if(r.ok)return `<div class="panel pm-box pm-okbox" role="status"><div class="pm-big">${PI.done}</div><h2>Payment confirmed</h2><p>You're <b>PREMIUM</b> until <b>${premDate(r.end)}</b>. Downloads are unlocked.</p><div class="actions"><a class="btn pri" href="#home">Start listening</a></div></div>`;
+    return `<div class="panel pm-box pm-errbox" role="alert"><h2>Payment not completed</h2><p>${esc(premErr(r.code))}</p><button class="btn pri" data-act="pmRetry">Try again</button></div>`}
+  const F=PREM.form,ctry=c.countries.find(x=>x.code===F.country)||c.countries.find(x=>x.code===({UG:'UGA',CD:'COD'})[(api.me().country||'').toUpperCase()])||c.countries[0];F.country=ctry.code;
+  if(!ctry.providers.some(p=>p.code===F.provider))F.provider=ctry.providers[0].code;const on=isPremium();
+  return `<div class="panel pm-box"><h2>${on?'Renew Premium':'Activate Premium'}</h2><p class="muted" style="margin-top:4px">${on?'Add 30 days to your current subscription.':'30 days of Premium.'} Pay with Mobile Money.</p>
+   <form class="form" id="pmForm" novalidate>
+    <div class="fld"><label>Country</label><div class="pm-seg" role="radiogroup" aria-label="Country">${c.countries.map(x=>`<button type="button" role="radio" aria-checked="${x.code===ctry.code}" class="${x.code===ctry.code?'on':''}" data-act="pmCountry" data-c="${x.code}">${esc(x.name)}</button>`).join('')}</div></div>
+    <div class="fld"><label>Mobile Money</label><div class="pm-ops" role="radiogroup" aria-label="Operator">${ctry.providers.map(p=>`<button type="button" role="radio" aria-checked="${p.code===F.provider}" class="${p.code===F.provider?'on':''}" data-act="pmOp" data-p="${p.code}">${esc(p.name)}</button>`).join('')}</div></div>
+    <div class="fld"><label for="pmPhone">Phone number</label><div class="pm-phone"><span>+${ctry.prefix}</span><input id="pmPhone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="${ctry.code==='UGA'?'772 123 456':'81 234 5678'}" value="${esc(F.phone||'')}" maxlength="16" required></div></div>
+    <div class="pm-total"><span>Total</span><b>${premMoney(ctry.amount,ctry.currency)}</b></div>
+    <div class="err" id="pmErr"></div>
+    <button class="btn pri pm-go" type="submit">${on?'RENEW PREMIUM':'ACTIVATE PREMIUM'}</button>
+    <p class="pm-fine">You'll receive a prompt on your phone to confirm with your PIN. Premium is activated only after your operator confirms the payment. No automatic renewal.${c.sandbox?' <b>Test mode: no real money is taken.</b>':''}</p>
+   </form></div>`}
+function premHistory(){if(!PREM.pays.length)return '';const L={completed:'Paid',failed:'Failed',pending:'Waiting'};
+  return sec('Payment history',`<div class="pm-hist">${PREM.pays.map(p=>`<div class="pm-hrow"><div><b>${premMoney(p.amount,p.currency)}</b><span>${premDate(p.created_at)} · ${esc(premOpName(p.operator))}</span></div><div class="pm-hr-r"><span class="pm-st ${p.status}">${L[p.status]||p.status}</span>${p.status==='completed'&&p.period_end?`<span class="muted">until ${premDate(p.period_end)}</span>`:p.status==='failed'?`<span class="muted">${esc(premErr(p.failure).replace(/\. .*$/,'.'))}</span>`:''}</div></div>`).join('')}</div>`)}
+const PREM_OPS={MTN_MOMO_UGA:'MTN Mobile Money',AIRTEL_OAPI_UGA:'Airtel Money',VODACOM_MPESA_COD:'Vodacom M-Pesa',AIRTEL_COD:'Airtel Money',ORANGE_COD:'Orange Money'};
+const premOpName=c=>PREM_OPS[c]||c;
+pages.premium=()=>{if(!PREM.cfg)premCfg().then(()=>{if(location.hash==='#premium')rerender()});if(supa()&&UID&&!(PREM.loaded&&PREM.uid===UID)&&PREM.tried!==UID){PREM.tried=UID;premLoad().then(()=>{if(location.hash==='#premium')rerender()})}
+  return `<div class="pm">${premPerks()}${premPayBox()}${premHistory()}</div>`};
+
+async function premPay(){const F=PREM.form,c=PREM.cfg,ctry=c.countries.find(x=>x.code===F.country),err=$('#pmErr'),btn=$('#pmForm .pm-go');
+  F.phone=$('#pmPhone').value.trim();const digits=F.phone.replace(/\D/g,'');
+  if(digits.length<8){err.textContent=PREM_ERR.bad_phone;$('#pmPhone').focus();return}
+  btn.disabled=true;btn.textContent='Sending…';err.textContent='';
+  const r=await premApi('pay',{method:'POST',body:{country:F.country,provider:F.provider,phone:F.phone}});
+  if(r.http===200||(r.http===409&&r.id)){PREM.wait={id:r.id,amount:ctry.amount,currency:ctry.currency,opName:premOpName(F.provider),t0:Date.now()};rerender();premPoll()}
+  else if(r.http===402){PREM.result={ok:false,code:r.code};await premLoad(true);rerender()}
+  else{btn.disabled=false;btn.textContent=isPremium()?'RENEW PREMIUM':'ACTIVATE PREMIUM';err.textContent=r.http===501?'Premium payments are not open yet.':premErr(r.error)}}
+let premTimer=null,premPoll;
+// suivi du paiement (la réponse JSON contient « status » = état du paiement)
+premPoll=async function(){clearTimeout(premTimer);const w=PREM.wait;if(!w)return;
+  let pay=null;try{const tok=await premToken();const r=await fetch('/api/premium?action=status&id='+encodeURIComponent(w.id),{cache:'no-store',headers:tok?{Authorization:'Bearer '+tok}:{}});if(r.ok)pay=await r.json()}catch(e){}
+  if(PREM.wait!==w)return;
+  if(pay&&pay.status==='completed'){PREM.wait=null;PREM.result={ok:true,end:pay.period_end};await premLoad(true);toast('Welcome to Premium!');premRefresh();return}
+  if(pay&&pay.status==='failed'){PREM.wait=null;PREM.result={ok:false,code:pay.failure};await premLoad(true);premRefresh();return}
+  if(Date.now()-w.t0>4*60e3){PREM.wait=null;await premLoad(true);toast('Still waiting for your operator. Your payment history will update as soon as it is confirmed.');premRefresh();return}
+  premTimer=setTimeout(premPoll,4000)};
+
+document.addEventListener('submit',e=>{if(e.target&&e.target.id==='pmForm'){e.preventDefault();premPay()}},true);
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='pmCountry'){e.preventDefault();const ph=$('#pmPhone');if(ph)PREM.form.phone=ph.value;PREM.form.country=el.dataset.c;PREM.form.provider='';rerender();const p=$('#pmPhone');p&&p.focus()}
+  else if(a==='pmOp'){e.preventDefault();const ph=$('#pmPhone');if(ph)PREM.form.phone=ph.value;PREM.form.provider=el.dataset.p;document.querySelectorAll('.pm-ops button').forEach(b=>{const on=b.dataset.p===el.dataset.p;b.classList.toggle('on',on);b.setAttribute('aria-checked',on)})}
+  else if(a==='pmStopWait'){e.preventDefault();PREM.wait=null;clearTimeout(premTimer);premLoad(true).then(premRefresh)}
+  else if(a==='pmRetry'){e.preventDefault();PREM.result=null;rerender()}
+  else if(a==='dlTrack'){e.preventDefault();e.stopImmediatePropagation();offSave(el.dataset.id)}
+  else if(a==='dlRemove'){e.preventDefault();e.stopImmediatePropagation();offRemove(el.dataset.id)}
+  else if(a==='dlAll'){e.preventDefault();e.stopImmediatePropagation();offRemoveAll()}
+},true);
+
+/* ---------- Badge, menu, profil ---------- */
+const _chromePrem=chrome;chrome=function(){_chromePrem.apply(this,arguments);
+  const nav=$('#sideNav');if(nav&&!art()){const lib=nav.querySelector('a[href="#library"]');if(lib&&!nav.querySelector('a[href="#premium"]'))lib.insertAdjacentHTML('afterend',`<a href="#premium" class="${location.hash==='#premium'?'on':''} pm-nav">${PI.crown} Premium</a>`)}
+  const me=$('#topActions .me');if(me&&isPremium()&&!me.querySelector('.pm-badge'))me.insertAdjacentHTML('beforeend','<span class="pm-badge" title="Premium member">PREMIUM</span>')};
+const _profilePrem=pages.profile;pages.profile=()=>{let h=_profilePrem();if(!api.me()||art())return h;
+  const on=isPremium();h=h.replace(/<div class="eyebrow">([^<]*)<\/div>/,(m,x)=>`<div class="eyebrow">${x}${on?' <span class="pm-badge big">'+PI.crown+' PREMIUM</span>':''}</div>`);
+  return h.replace('<div class="actions">',`<div class="actions"><a class="btn ${on?'':'pri'} pm-btn" href="#premium">${PI.crown} ${on?'Premium · until '+premDate(PREM.sub&&PREM.sub.expires_at):'Get Premium'}</a>`)};
+
+/* ---------- Téléchargements hors connexion (IndexedDB, dans l'application) ---------- */
+const OFF={db:null,ids:new Set(),meta:{},urls:{},busy:new Set()};
+function offOpen(){if(OFF.db)return Promise.resolve(OFF.db);return new Promise((ok,ko)=>{try{const r=indexedDB.open('wma-offline',1);r.onupgradeneeded=()=>r.result.createObjectStore('tracks',{keyPath:'id'});r.onsuccess=()=>{OFF.db=r.result;ok(OFF.db)};r.onerror=()=>ko(r.error)}catch(e){ko(e)}})}
+const offTx=(mode,fn)=>offOpen().then(db=>new Promise((ok,ko)=>{const tx=db.transaction('tracks',mode),st=tx.objectStore('tracks');const r=fn(st);tx.oncomplete=()=>ok(r&&r.result);tx.onerror=()=>ko(tx.error)}));
+async function offIndex(){try{const all=await offTx('readonly',st=>st.getAll());OFF.ids=new Set();OFF.meta={};
+  for(const x of all||[]){if(x.uid&&UID&&x.uid!==UID)continue;OFF.ids.add(x.id);const {audio,cover,...m}=x;OFF.meta[x.id]={...m,hasCover:!!cover,size:audio?audio.size:0}}}catch(e){}}
+const isDownloaded=id=>OFF.ids.has(id);
+async function offGet(id){try{return await offTx('readonly',st=>st.get(id))}catch(e){return null}}
+async function offSave(id){
+  const t=api.track(id);if(!t)return;
+  if(!api.me())return needLogin('Sign in to download songs.');
+  if(!isPremium()){toast('Downloads are a Premium feature.');location.hash='#premium';closeModal();return}
+  if(isDownloaded(id)){toast('Already downloaded');return}
+  if(OFF.busy.has(id))return;OFF.busy.add(id);toast('Downloading “'+t.title+'”…');offMark(id);
+  try{const r=await premApi('download',{query:'&track='+encodeURIComponent(id)});
+    if(r.http===403){await premLoad(true);premRefresh();throw new Error('Your Premium subscription is not active.')}
+    let audio;
+    if(r.demo)audio=await (await fetch(await (_demoUrlPrem||demoUrl)(t))).blob();
+    else if(r.url){const a=await fetch(r.url);if(!a.ok)throw new Error('The audio file could not be downloaded.');audio=await a.blob()}
+    else throw new Error('This song cannot be downloaded.');
+    let cover=null;try{const cu=trackCover(t);const c=await fetch(cu);if(c.ok)cover=await c.blob()}catch(e){}
+    const a=api.artist(t.artistId);
+    await offTx('readwrite',st=>st.put({id:t.id,uid:UID,title:t.title,artistId:t.artistId,artistName:a?a.name:'',featIds:t.featIds||[],featNames:(t.featIds||[]).map(x=>api.artist(x)?.name||''),
+      albumId:t.albumId||null,genre:t.genre||'',duration:t.duration||0,demo:!!t.demo,savedAt:Date.now(),audio,cover}));
+    await offIndex();toast('Downloaded — available offline');
+  }catch(e){toast(e.message||'Download failed. Check your connection and try again.')}
+  OFF.busy.delete(id);offMark(id);if(/^#library-downloads/.test(location.hash))rerender()}
+async function offRemove(id){try{await offTx('readwrite',st=>st.delete(id))}catch(e){}if(OFF.urls[id]){URL.revokeObjectURL(OFF.urls[id]);delete OFF.urls[id]}await offIndex();offMark(id);toast('Removed from downloads');if(/^#library-downloads/.test(location.hash))rerender()}
+async function offRemoveAll(){for(const id of [...OFF.ids])try{await offTx('readwrite',st=>st.delete(id))}catch(e){}await offIndex();rerender()}
+function offMark(id){document.querySelectorAll(`[data-dl="${id}"]`).forEach(b=>{const on=isDownloaded(id),busy=OFF.busy.has(id);b.dataset.act=on?'dlRemove':'dlTrack';b.classList.toggle('on',on);b.disabled=busy;
+  b.innerHTML=busy?`${PI.dl} Downloading…`:on?`${PI.done} Downloaded`:`${PI.dl} Download`;b.setAttribute('aria-label',on?'Remove download':'Download for offline listening')})}
+async function offAudioUrl(id){if(!isDownloaded(id)||!isPremium())return null;if(OFF.urls[id])return OFF.urls[id];const x=await offGet(id);if(!x||!x.audio)return null;return OFF.urls[id]=URL.createObjectURL(x.audio)}
+// Lecture : une chanson téléchargée est lue depuis l'appareil (sans internet), seulement si Premium est actif.
+const _audioSrcPrem=audioSrc;audioSrc=async function(aid){
+  if(typeof aid==='string'&&aid.startsWith('offline/')){const u=await offAudioUrl(aid.slice(8));if(u)return u;throw new Error(isPremium()?'nofile':'Premium expired: renew to play your downloads.')}
+  const t=curTrack();if(t&&t.audioId===aid&&(!navigator.onLine||isDownloaded(t.id))){const u=await offAudioUrl(t.id);if(u)return u}
+  return _audioSrcPrem.apply(this,arguments)};
+const _demoUrlPrem=demoUrl;demoUrl=async function(t){if(t&&isDownloaded(t.id)&&isPremium()){const u=await offAudioUrl(t.id);if(u)return u}return _demoUrlPrem.apply(this,arguments)};
+// Hors connexion : rend les chansons téléchargées visibles et jouables même sans catalogue en ligne.
+async function offInject(){
+  // sans internet et session expirée : on reconnaît le dernier compte utilisé sur cet appareil, pour ses téléchargements seulement
+  if(!navigator.onLine&&!api.me()&&!art()){try{const l=JSON.parse(localStorage.getItem('wma_last_user')||'null');if(l&&l.id){UID=l.id;ME={...emptyMe(),id:l.id,name:l.name||'You',hue:24};PEOPLE=[ME];chrome()}}catch(e){}}
+  await offIndex();let added=0;
+  for(const id of OFF.ids){const m=OFF.meta[id];if(api.track(id))continue;let cover=null;
+    if(m.hasCover){const x=await offGet(id);if(x&&x.cover)cover=URL.createObjectURL(x.cover)}
+    if(!api.artist(m.artistId))DB.artists.push({id:m.artistId,name:m.artistName||'Unknown artist',hue:24});
+    (m.featIds||[]).forEach((f,i)=>{if(!api.artist(f))DB.artists.push({id:f,name:m.featNames[i]||'',hue:24})});
+    DB.tracks.push(normTrack({id,title:m.title,artistId:m.artistId,featIds:m.featIds||[],genre:m.genre,duration:m.duration,status:'published',audioId:'offline/'+id,cover:cover||undefined,demo:false,offline:true}));added++}
+  if(added)scheduleRender()}
+
+/* ---------- Boutons de téléchargement ---------- */
+const dlBtn=t=>art()||!t?'':`<button class="btn pm-dl ${isDownloaded(t.id)?'on':''}" data-act="${isDownloaded(t.id)?'dlRemove':'dlTrack'}" data-dl="${t.id}" data-id="${t.id}" aria-label="${isDownloaded(t.id)?'Remove download':'Download for offline listening'}">${isDownloaded(t.id)?PI.done+' Downloaded':PI.dl+' Download'}${isPremium()?'':' <span class="pm-mini">PREMIUM</span>'}</button>`;
+const _trackPrem=pages.track;pages.track=id=>{const h=_trackPrem(id),t=api.track(id);if(!t||!isLive(t))return h;
+  return h.replace(/(<button class="btn" data-act="share" data-k="track" data-id="[^"]+">[\s\S]*?<\/button>)/,`$1${dlBtn(t)}`)};
+const _tmPrem=trackMenu;trackMenu=function(id,q){_tmPrem.apply(this,arguments);const t=api.track(id),m=$('.tmenu');if(!t||!m||art())return;
+  const sh=m.querySelector('[data-act="share"]');const on=isDownloaded(id);
+  sh&&sh.insertAdjacentHTML('beforebegin',`<button data-act="${on?'dlRemove':'dlTrack'}" data-id="${id}">${on?PI.trash+' Remove download':PI.dl+' Download'+(isPremium()?'':' <span class="pm-mini">PREMIUM</span>')}</button>`)};
+document.addEventListener('click',e=>{const el=e.target.closest('.tmenu [data-act="dlTrack"],.tmenu [data-act="dlRemove"]');if(el)setTimeout(()=>{const m=$('#modal');if(m&&m.querySelector('.tmenu'))closeModal()},0)},true);
+
+/* ---------- Bibliothèque : onglet Téléchargements ---------- */
+const _libPrem=pages.library;pages.library=tab=>{const h=_libPrem(tab);if(!api.me()||art())return h;
+  const on=libTab==='downloads';let out=h.replace(/(href="#library-history">History<\/a>)/,`$1<a class="chip ${on?'on':''}" style="display:inline-flex;align-items:center;gap:6px" href="#library-downloads">${PI.dl} Downloads</a>`);
+  if(!on)return out;
+  const list=[...OFF.ids].map(api.track).filter(Boolean),bytes=Object.values(OFF.meta).reduce((s,m)=>s+(m.size||0),0);
+  let body;
+  if(!isPremium()&&!list.length)body=`<div class="pm-cta"><div>${PI.dl}</div><h2>Listen offline with Premium</h2><p class="muted">Download songs to play them with no internet connection. $1.50 / month.</p><a class="btn pri" href="#premium">${PI.crown} Get Premium</a></div>`;
+  else if(!list.length)body='<div class="empty">No downloads yet. Tap <b>Download</b> on a song, or in its ⋮ menu.</div>';
+  else body=(isPremium()?'':`<div class="note" style="margin-bottom:14px">Your Premium has ended: downloaded songs can't be played offline. <a href="#premium" style="color:var(--accent);font-weight:700">Renew Premium</a></div>`)
+    +`<div class="pm-dlhead"><span class="muted">${list.length} song${list.length>1?'s':''} · ${(bytes/1048576).toFixed(1)} MB on this device</span><button class="btn sm" data-act="dlAll">${PI.trash} Remove all</button></div>`+trackRows(list);
+  return out.replace(/<\/div>\s*$/,'</div>')+body};
+
+/* ---------- Démarrage ---------- */
+let premLastUid;
+const _onDataPrem=typeof onDataLoaded==='function'?onDataLoaded:null;
+onDataLoaded=function(){_onDataPrem&&_onDataPrem.apply(this,arguments);
+  if(UID!==premLastUid){premLastUid=UID;PREM.loaded=false;PREM.ok=false;premLoad().then(()=>{offCleanup();premRefresh()})}
+  if(!navigator.onLine)offInject()};
+// Premium expiré ou suspendu depuis plus de 7 jours : on libère l'espace pris par les téléchargements.
+async function offCleanup(){if(!PREM.ok||PREM.uid!==UID||!UID||isPremium())return;const s=PREM.sub;const end=s?Date.parse(s.expires_at):0;
+  if(OFF.ids.size&&(!s||Date.now()-end>7*864e5)&&!s?.suspended)offRemoveAll()}
+offIndex().then(()=>{if(!navigator.onLine)offInject()});
+window.addEventListener('offline',()=>offInject());
+setTimeout(()=>{try{BOOT.then(()=>{if(!navigator.onLine||!DB.tracks.length)offInject()})}catch(e){}},0);
+
+/* ---------- WMA ADMIN : Premium ---------- */
+const ADMPREM={data:null,err:'',tab:'subs',q:'',loading:false};
+async function admPremLoad(){if(ADMPREM.loading)return;ADMPREM.loading=true;
+  try{const r=await SB.rpc('music_premium_admin_overview');if(r.error)throw r.error;ADMPREM.data=r.data;ADMPREM.err=''}
+  catch(e){ADMPREM.err=/does not exist|function|schema cache/i.test(e.message||'')?'The Premium tables are not installed yet. Run supabase/06-premium.sql in Supabase › SQL Editor.':(e.message||'Could not load Premium data.')}
+  ADMPREM.loading=false;if(location.hash==='#admin-premium')rerender()}
+admin.premium=()=>{
+  if(!supa())return '<div class="empty">Premium is managed on www.wmamusic.net.</div>';
+  if(!ADMPREM.data&&!ADMPREM.err){admPremLoad();return '<div class="empty">Loading Premium data…</div>'}
+  if(ADMPREM.err)return `<div class="note" style="border-color:var(--warn)">${esc(ADMPREM.err)}</div><div class="actions"><button class="btn" data-act="admPremReload">Retry</button></div>`;
+  const D=ADMPREM.data,now=Date.now(),subs=D.subs||[],pays=D.payments||[],q=ADMPREM.q.toLowerCase();
+  const act=subs.filter(s=>s.active),exp=subs.filter(s=>!s.suspended&&Date.parse(s.expires_at)<=now),sus=subs.filter(s=>s.suspended);
+  const done=pays.filter(p=>p.status==='completed'),failed=pays.filter(p=>p.status==='failed'),pend=pays.filter(p=>p.status==='pending');
+  const rev={},month={},m0=new Date();m0.setDate(1);m0.setHours(0,0,0,0);
+  done.forEach(p=>{rev[p.currency]=(rev[p.currency]||0)+Number(p.amount);if(Date.parse(p.completed_at||p.created_at)>=m0)month[p.currency]=(month[p.currency]||0)+Number(p.amount)});
+  const money=o=>Object.keys(o).length?Object.entries(o).map(([c,a])=>premMoney(a,c)).join(' + '):'0';
+  const match=x=>!q||[x.email,x.name,x.phone_hint,x.provider_tx].some(v=>String(v||'').toLowerCase().includes(q));
+  const tabs=[['subs','Subscribers',subs.length],['payments','Payments received',done.length],['failed','Failed',failed.length],['pending','Waiting',pend.length],['log','Activity log',(D.log||[]).length]];
+  const who=x=>`<div class="pm-who"><b>${esc(x.name||x.email)}</b><span>${esc(x.email||'')}</span></div>`;
+  let body='';
+  if(ADMPREM.tab==='subs'){const l=subs.filter(match);body=l.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Listener</th><th>Status</th><th>Since</th><th>Expires</th><th></th></tr></thead><tbody>${l.map(s=>`<tr><td>${who(s)}</td>
+     <td>${s.suspended?`<span class="pm-st failed">Suspended</span>${s.suspend_reason?`<div class="muted" style="font-size:12px">${esc(s.suspend_reason)}</div>`:''}`:s.active?'<span class="pm-st completed">Active</span>':'<span class="pm-st pending">Expired</span>'}</td>
+     <td>${premDate(s.started_at)}</td><td>${premDate(s.expires_at)}</td><td>${s.suspended?`<button class="btn sm" data-act="admPremSet" data-u="${s.user_id}" data-a="reactivate">Reactivate</button>`:`<button class="btn sm danger" data-act="admPremSet" data-u="${s.user_id}" data-a="suspend">Suspend</button>`}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No Premium subscribers yet.</div>'}
+  else if(ADMPREM.tab==='log'){const l=(D.log||[]).filter(match);body=l.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Listener</th><th>Action</th><th>By</th><th>Reason</th></tr></thead><tbody>${l.map(x=>`<tr><td>${new Date(x.at).toLocaleString('en-GB')}</td><td>${esc(x.email)}</td><td>${x.action==='suspend'?'Suspended':'Reactivated'}</td><td>${esc(x.admin||'')}</td><td>${esc(x.note||'')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No admin actions yet.</div>'}
+  else{const l=(ADMPREM.tab==='payments'?done:ADMPREM.tab==='failed'?failed:pend).filter(match);
+    body=l.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Listener</th><th>Amount</th><th>Operator</th><th>${ADMPREM.tab==='failed'?'Reason':ADMPREM.tab==='payments'?'Operator ref. · Premium until':'Status'}</th></tr></thead><tbody>${l.map(p=>`<tr><td>${new Date(p.created_at).toLocaleString('en-GB')}</td><td>${who(p)}</td><td><b>${premMoney(p.amount,p.currency)}</b></td><td>${esc(premOpName(p.operator))}<div class="muted" style="font-size:12px">${esc(p.phone_hint||'')}</div></td>
+      <td>${ADMPREM.tab==='failed'?esc(p.failure||'—'):ADMPREM.tab==='payments'?`<span class="mono" style="font-size:12px">${esc(p.provider_tx||'—')}</span><div class="muted" style="font-size:12px">${premDate(p.period_end)}</div>`:'Waiting for the operator'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nothing here.</div>'}
+  return `<div class="kpis"><div class="kpi"><b>${act.length}</b><span>Active Premium</span></div><div class="kpi"><b>${exp.length}</b><span>Expired</span></div><div class="kpi"><b>${sus.length}</b><span>Suspended</span></div>
+     <div class="kpi"><b>${money(month)}</b><span>Revenue this month</span></div><div class="kpi"><b>${money(rev)}</b><span>Total revenue</span></div><div class="kpi"><b>${failed.length}</b><span>Failed payments</span></div></div>
+   <p class="muted" style="margin:10px 0 18px;font-size:13px">Revenue = payments confirmed by pawaPay, before operator fees. Amounts are shown in the currency paid (no conversion).</p>
+   <div class="pm-admbar"><div class="chips">${tabs.map(([k,l,n])=>`<button class="chip ${ADMPREM.tab===k?'on':''}" data-act="admPremTab" data-t="${k}">${l} · ${n}</button>`).join('')}</div>
+    <input class="pm-search" type="search" id="admPremQ" placeholder="Search name, email, phone, reference" value="${esc(ADMPREM.q)}" aria-label="Search a listener"><button class="btn sm" data-act="admPremReload">Refresh</button></div>${body}`};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='admPremTab'){e.preventDefault();ADMPREM.tab=el.dataset.t;rerender()}
+  else if(a==='admPremReload'){e.preventDefault();ADMPREM.data=null;ADMPREM.err='';rerender()}
+  else if(a==='admPremSet'){e.preventDefault();const u=el.dataset.u,act=el.dataset.a,s=(ADMPREM.data.subs||[]).find(x=>x.user_id===u);
+    openModal(`<h3>${act==='suspend'?'Suspend':'Reactivate'} Premium</h3><p class="muted">${esc(s?(s.name||s.email):'')} — ${esc(s?s.email:'')}</p><form class="form" id="admPremF"><div class="fld"><label for="admPremN">Reason (saved in the activity log)</label><input id="admPremN" maxlength="300" ${act==='suspend'?'required':''}></div><div class="err" id="admPremE"></div><div class="actions" style="margin-top:0"><button class="btn ${act==='suspend'?'danger':'pri'}">${act==='suspend'?'Suspend':'Reactivate'}</button><button class="btn" type="button" data-act="close">Cancel</button></div></form>`);
+    $('#admPremF').onsubmit=async ev=>{ev.preventDefault();const n=$('#admPremN').value.trim();if(act==='suspend'&&!n){$('#admPremE').textContent='Give a reason.';return}
+      const r=await SB.rpc('music_premium_admin_set',{p_user:u,p_action:act,p_note:n});if(r.error){$('#admPremE').textContent=r.error.message;return}
+      closeModal();toast(act==='suspend'?'Subscription suspended':'Subscription reactivated');ADMPREM.data=null;rerender()}}
+},true);
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='admPremQ'){ADMPREM.q=e.target.value;const pos=e.target.selectionStart;rerender();const i=$('#admPremQ');if(i){i.focus();try{i.setSelectionRange(pos,pos)}catch(x){}}}});
 
 
 /* =========================================================
