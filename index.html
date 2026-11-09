@@ -223,8 +223,6 @@
 
 
 
-
-
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -569,11 +567,6 @@ body.no-track .player{display:none}
 .bk-meta{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bk-e{color:var(--bad)}
 .bk-bar{height:4px;border-radius:2px;background:var(--line);overflow:hidden}.bk-bar i{display:block;height:100%;background:var(--accent);transition:width .2s}
 .bk-act{display:flex;align-items:center;gap:2px}.bk-act .ic{width:34px;height:34px}
-.bk-cov{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;position:relative;flex:none;box-shadow:0 0 0 1px var(--line)}
-.bk-cov img{width:100%;height:100%;object-fit:cover;display:block}
-.bk-cov::after{content:"✎";position:absolute;right:3px;bottom:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;font-size:11px;display:grid;place-items:center}
-.bk-row:has(.bk-cov){grid-template-columns:56px minmax(0,1fr) auto}
-.bk-art{height:34px!important;padding:0 8px!important;font-size:13px;max-width:100%}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -3654,11 +3647,11 @@ async function id3Read(file){
 const bkCleanName=n=>n.replace(/\.[^.]+$/,'').replace(/^\s*(\d{1,3})\s*[-._)]\s*/,'').replace(/[_]+/g,' ').trim();
 const bkNumFromName=n=>{const m=n.match(/^\s*(\d{1,3})\s*[-._) ]/);return m?+m[1]:null};
 /* ---- fenêtre ---- */
-function bulkForm(albumId,mode){
+function bulkForm(albumId){
   if(!supa()&&!art()){}
-  Object.assign(BK,{rows:[],busy:false,cover:null,coverFromTags:false,done:false,mode:mode||(albumId?'existing':'new'),artistId:albumId?(api.album(albumId)?.artistId||''):''});
+  Object.assign(BK,{rows:[],busy:false,cover:null,coverFromTags:false,done:false,mode:albumId?'existing':'new',artistId:albumId?(api.album(albumId)?.artistId||''):''});
   const als=DB.albums.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
-  openModal(`<h3>${BK.mode==='singles'?'Upload singles':'Upload several songs'}</h3><p class="muted" style="margin:-4px 0 14px">An album, an EP or several singles at once. Titles, track numbers and covers are read from the files when available.</p>
+  openModal(`<h3>Upload several songs</h3><p class="muted" style="margin:-4px 0 14px">An album, an EP or several singles at once. Titles, track numbers and covers are read from the files when available.</p>
    <form class="form" id="bkForm" style="max-width:none" novalidate>
     <fieldset><legend>Where do these songs go?</legend>
      <div class="seg" role="radiogroup">${[['new','New album / EP'],['existing','Existing album'],['singles','Singles']].map(([k,l])=>`<label><input type="radio" name="bkMode" value="${k}" ${BK.mode===k?'checked':''}><span>${l}</span></label>`).join('')}</div>
@@ -3669,7 +3662,7 @@ function bulkForm(albumId,mode){
      <div class="fld" id="bkExisting" ${BK.mode==='existing'?'':'hidden'}><label for="bkAlbum">Album</label><select id="bkAlbum">${als.length?als.map(a=>`<option value="${a.id}" ${a.id===albumId?'selected':''}>${esc(a.title)} — ${esc(api.artist(a.artistId)?.name||'')}</option>`).join(''):'<option value="">No album yet</option>'}</select></div>
     </fieldset>
     <fieldset><legend>Details for every song</legend>
-     <div class="fld ac" id="bkArtistWrap"><label for="bkArtist" id="bkArtLbl">Main artist *</label><input id="bkArtist" autocomplete="off" placeholder="Start typing a name…" value="${esc(api.artist(BK.artistId)?.name||'')}" role="combobox" aria-expanded="false" aria-controls="acBk"><ul class="ac-list" id="acBk" role="listbox" hidden></ul></div>
+     <div class="fld ac" id="bkArtistWrap"><label for="bkArtist">Main artist *</label><input id="bkArtist" autocomplete="off" placeholder="Start typing a name…" value="${esc(api.artist(BK.artistId)?.name||'')}" role="combobox" aria-expanded="false" aria-controls="acBk"><ul class="ac-list" id="acBk" role="listbox" hidden></ul></div>
      <div class="row2"><div class="fld"><label for="bkGenre">Genre</label><select id="bkGenre">${opts(DB.genres,DB.genres[0])}</select></div><div class="fld"><label for="bkRelease">Release date *</label><input id="bkRelease" type="date" value="${today()}"></div></div>
     </fieldset>
     <fieldset><legend>Audio files</legend>
@@ -3703,29 +3696,28 @@ async function bkAdd(files){
     if(BK.rows.some(r=>r.file.name===file.name&&r.file.size===file.size))continue;
     const tags=ext==='mp3'||/mpeg/.test(file.type)?await id3Read(file):{};
     const n=parseInt((tags.TRCK||'').split('/')[0],10)||bkNumFromName(file.name);
-    const ta=tags.TPE1?DB.artists.find(x=>key(x.name)===key(tags.TPE1.split(/\s*(?:feat\.?|ft\.?|&|,|\/)\s*/i)[0])):null;
-    BK.rows.push({id:uid('bk'),file,artistId:ta?ta.id:'',img:null,title:tags.TIT2||bkCleanName(file.name),no:n||null,tagArtist:tags.TPE1||'',tagAlbum:tags.TALB||'',pic:tags.pic||null,state:'ready',msg:''});
+    BK.rows.push({id:uid('bk'),file,title:tags.TIT2||bkCleanName(file.name),no:n||null,tagArtist:tags.TPE1||'',tagAlbum:tags.TALB||'',pic:tags.pic||null,state:'ready',msg:''});
     if(!BK.cover&&tags.pic&&BK.mode==='new'){try{BK.cover=await readImg(new File([tags.pic],'cover.jpg',{type:tags.pic.type}),1600);BK.coverFromTags=true;const im=$('#bkCovPrev');if(im){im.src=BK.cover.url;im.hidden=false}$('#bkCoverNote').textContent='Cover taken from the first MP3 file. You can choose another one.'}catch(e){}}
     if(BK.mode==='new'&&!$('#bkAlTitle').value&&tags.TALB)$('#bkAlTitle').value=tags.TALB;
     if(!BK.artistId&&tags.TPE1){const a=DB.artists.find(x=>key(x.name)===key(tags.TPE1.split(/\s*(?:feat\.?|ft\.?|&|,|\/)\s*/i)[0]));if(a){BK.artistId=a.id;$('#bkArtist').value=a.name}}
   }
   BK.rows.sort((a,b)=>(a.no??999)-(b.no??999)||a.file.name.localeCompare(b.file.name,undefined,{numeric:true}));
   bkRender()}
-function bkRender(){const lb=$('#bkArtLbl');if(lb)lb.textContent=BK.mode==='singles'?'Artist for all the singles (you can change it for each song below)':'Main artist *';const l=$('#bkList');if(!l)return;
+function bkRender(){const l=$('#bkList');if(!l)return;
   if(!BK.rows.length){l.innerHTML='<div class="empty" style="padding:18px">No files yet.</div>';return}
   const S={ready:'',work:'<span class="badge">…</span>',ok:'<span class="badge ok">DONE</span>',err:'<span class="badge off">FAILED</span>'};
   l.innerHTML=`<div class="muted" style="font-size:13px;margin-bottom:8px">${BK.rows.length} song${BK.rows.length>1?'s':''} · ${(BK.rows.reduce((s,r)=>s+r.file.size,0)/1048576).toFixed(1)} MB${BK.mode==='singles'?' · each one becomes a single':' · in this order on the album'}</div>
    <div class="bk-rows">${BK.rows.map((r,i)=>`<div class="bk-row ${r.state}" data-id="${r.id}">
-    ${BK.mode==='singles'?`<label class="bk-cov" title="Change the cover"><img src="${r.img?r.img.url:(r.picUrl||(r.pic?(r.picUrl=URL.createObjectURL(r.pic)):genCover(r.id)))}" alt="Cover of ${esc(r.title)}"><input type="file" accept="image/*" class="bk-covin" data-id="${r.id}" hidden ${BK.busy||r.state==='ok'?'disabled':''}></label>`:`<span class="bk-no mono">${i+1}</span>`}
+    <span class="bk-no mono">${BK.mode==='singles'?'•':i+1}</span>
     <div class="bk-main"><input class="bk-title" data-id="${r.id}" value="${esc(r.title)}" maxlength="120" aria-label="Title of song ${i+1}" ${BK.busy||r.state==='ok'?'disabled':''}>
-     ${BK.mode==='singles'?`<select class="bk-art" data-id="${r.id}" aria-label="Artist of ${esc(r.title)}" ${BK.busy||r.state==='ok'?'disabled':''}><option value="">Main artist (above)</option>${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value="${a.id}" ${a.id===r.artistId?'selected':''}>${esc(a.name)}</option>`).join('')}</select>`:''}<div class="bk-meta">${esc(r.file.name)} · ${(r.file.size/1048576).toFixed(1)} MB${r.tagArtist?' · '+esc(r.tagArtist):''}${r.msg?` · <span class="${r.state==='err'?'bk-e':''}">${esc(r.msg)}</span>`:''}</div>
+     <div class="bk-meta">${esc(r.file.name)} · ${(r.file.size/1048576).toFixed(1)} MB${r.tagArtist?' · '+esc(r.tagArtist):''}${r.msg?` · <span class="${r.state==='err'?'bk-e':''}">${esc(r.msg)}</span>`:''}</div>
      ${r.state==='work'?`<div class="bk-bar"><i style="width:${Math.round((r.p||0)*100)}%"></i></div>`:''}</div>
     <div class="bk-act">${S[r.state]}${BK.busy||r.state==='ok'?'':`<button type="button" class="ic" data-act="bkUp" data-id="${r.id}" aria-label="Move up" ${i?'':'disabled'}>↑</button><button type="button" class="ic" data-act="bkDown" data-id="${r.id}" aria-label="Move down" ${i<BK.rows.length-1?'':'disabled'}>↓</button><button type="button" class="ic" data-act="bkRm" data-id="${r.id}" aria-label="Remove">✕</button>`}</div></div>`).join('')}</div>`}
 async function bkUpload(){
   if(BK.busy)return;const err=$('#bkErr');err.textContent='';
   const todo=BK.rows.filter(r=>r.state!=='ok');
   if(!todo.length)return err.textContent=BK.rows.length?'All the songs are already uploaded.':'Choose the audio files.';
-  if(BK.mode==='singles'?BK.rows.some(r=>!(r.artistId&&api.artist(r.artistId))&&!(BK.artistId&&api.artist(BK.artistId))):(!BK.artistId||!api.artist(BK.artistId)))return err.textContent=BK.mode==='singles'?'Choose the artist of each single (or a main artist for all).':'Select the main artist from the list (or create them).';
+  if(!BK.artistId||!api.artist(BK.artistId))return err.textContent='Select the main artist from the list (or create them).';
   const release=$('#bkRelease').value;if(!release)return err.textContent='Enter the release date.';
   for(const r of BK.rows)if(!r.title.trim())return err.textContent='Every song needs a title.';
   const pub=(document.querySelector('input[name=bkPub]:checked')||{}).value||'draft';let publishAt=null;
@@ -3745,9 +3737,9 @@ async function bkUpload(){
       try{const a=await prepareAudio(r.file,(msg,p)=>{r.msg=msg;r.p=p*.6;bkRender()});
         r.msg='Uploading the audio…';r.p=.65;bkRender();
         const up=await uploadFile(a.blob,a.type);
-        let coverPatch={};if(BK.mode==='singles'&&(r.img||r.pic)){try{const img=r.img||await readImg(new File([r.pic],'c.jpg',{type:r.pic.type}),1600);const c=await storeImage(img);coverPatch=c.coverId?{coverId:c.coverId}:{cover:c.cover}}catch(e){}}
+        let coverPatch={};if(BK.mode==='singles'&&r.pic){try{const img=await readImg(new File([r.pic],'c.jpg',{type:r.pic.type}),1600);const c=await storeImage(img);coverPatch=c.coverId?{coverId:c.coverId}:{cover:c.cover}}catch(e){}}
         r.msg='Saving…';r.p=.95;bkRender();const now=Date.now();
-        const tr={id:uid('t'),title:r.title.trim(),artistId:(BK.mode==='singles'&&r.artistId&&api.artist(r.artistId))?r.artistId:BK.artistId,featIds:[],albumId:albumId||null,genre:$('#bkGenre').value,releaseDate:release,producer:'',writers:'',description:'',lyrics:'',rightsNote:'',
+        const tr={id:uid('t'),title:r.title.trim(),artistId:BK.artistId,featIds:[],albumId:albumId||null,genre:$('#bkGenre').value,releaseDate:release,producer:'',writers:'',description:'',lyrics:'',rightsNote:'',
           rights:$('#bkRights').checked?'confirmed':'pending',status:pub,publishAt:pub==='scheduled'?publishAt:null,publishedAt:pub==='published'?now:(pub==='scheduled'?publishAt:null),
           trackNo:albumId?++n:null,createdAt:now,updatedAt:now,duration:a.duration,demo:false,audioType:a.type,...(up.id?{audioId:up.id}:{audioUrl:up.local,audioId:null}),...coverPatch};
         await putDoc('tracks',tr);r.state='ok';r.msg=a.converted?`${fmt(a.duration)} · converted`:fmt(a.duration);ok++}
@@ -3761,18 +3753,15 @@ async function bkUpload(){
     BK.rows.forEach(r=>{if(r.state==='work'){r.state='err';r.msg='Interrupted'}});bkRender()}
 }
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
-  if(a==='bulkUp'){e.preventDefault();e.stopImmediatePropagation();bulkForm(el.dataset.id||'',el.dataset.mode||'')}
+  if(a==='bulkUp'){e.preventDefault();e.stopImmediatePropagation();bulkForm(el.dataset.id||'')}
   else if(/^bk(Up|Down|Rm)$/.test(a)){e.preventDefault();const i=BK.rows.findIndex(r=>r.id===el.dataset.id);if(i<0||BK.busy)return;
     if(a==='bkRm')BK.rows.splice(i,1);else{const j=a==='bkUp'?i-1:i+1;if(j<0||j>=BK.rows.length)return;[BK.rows[i],BK.rows[j]]=[BK.rows[j],BK.rows[i]]}bkRender()}
   else if(a==='close'&&BK.busy&&$('#bkForm')){e.preventDefault();e.stopImmediatePropagation();toast('Please wait: the songs are still uploading.')}
   else if(a==='close'&&BK.done&&$('#bkForm')){BK.done=false;setTimeout(()=>{location.hash==='#admin-songs'?rerender():location.hash='#admin-songs'},0)}
 },true);
-document.addEventListener('change',async e=>{const t=e.target;if(!t.classList)return;
-  if(t.classList.contains('bk-art')){const r=BK.rows.find(x=>x.id===t.dataset.id);if(r)r.artistId=t.value}
-  else if(t.classList.contains('bk-covin')){const r=BK.rows.find(x=>x.id===t.dataset.id),f=t.files[0];if(!r||!f)return;try{r.img=await readImg(f,1600);if(r.img.w!==r.img.h)toast('Tip: this cover isn\'t square, so it will be cropped on display.');bkRender()}catch(x){toast(x.message)}}});
 document.addEventListener('input',e=>{if(e.target.classList&&e.target.classList.contains('bk-title')){const r=BK.rows.find(x=>x.id===e.target.dataset.id);if(r)r.title=e.target.value}});
 /* ---- boutons d'accès ---- */
-const _admSongsBk=admin.songs;admin.songs=function(){return _admSongsBk.apply(this,arguments).replace(/(<button class="btn pri big-add" data-act="aTrack"[^>]*>[\s\S]*?<\/button>)/,`<div style="display:flex;gap:10px;flex-wrap:wrap">$1<button class="btn big-add" data-act="bulkUp" style="margin:0">${I.upload} UPLOAD AN ALBUM</button><button class="btn big-add" data-act="bulkUp" data-mode="singles" style="margin:0">${I.upload} UPLOAD SINGLES</button></div>`)};
+const _admSongsBk=admin.songs;admin.songs=function(){return _admSongsBk.apply(this,arguments).replace(/(<button class="btn pri big-add" data-act="aTrack"[^>]*>[\s\S]*?<\/button>)/,`<div style="display:flex;gap:10px;flex-wrap:wrap">$1<button class="btn big-add" data-act="bulkUp" style="margin:0">${I.upload} UPLOAD SEVERAL SONGS</button></div>`)};
 const _admAlbumsBk=admin.albums;admin.albums=function(){let h=_admAlbumsBk.apply(this,arguments);
   h=h.replace(/(<button class="btn pri" data-act="aAlbum">[\s\S]*?<\/button>)/,`$1<button class="btn" data-act="bulkUp">${I.upload} Upload an album (several songs)</button>`);
   return h.replace(/<button class="btn sm" data-act="aAlbum" data-id="([^"]+)">Edit<\/button>/g,'<button class="btn sm" data-act="bulkUp" data-id="$1">Add songs</button> <button class="btn sm" data-act="aAlbum" data-id="$1">Edit</button>')};
