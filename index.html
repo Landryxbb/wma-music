@@ -219,6 +219,16 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -495,6 +505,8 @@ body.no-track .player{display:none}
   .pl-acts{margin-top:12px}
   .pl-ra .d{display:none}
 }
+.trow[data-id],.trow2[data-id],.drow[data-id],.ts-row[data-id]{cursor:pointer}
+@media (hover:hover){.trow[data-id]:hover,.trow2[data-id]:hover,.drow[data-id]:hover,.ts-row[data-id]:hover{background:color-mix(in srgb,var(--fg) 5%,transparent);border-radius:10px}}
 
 /* ===== Premium ===== */
 .pm{display:flex;flex-direction:column;gap:26px;max-width:980px}
@@ -550,6 +562,22 @@ body.no-track .player{display:none}
 .pm-search{flex:1;min-width:200px;height:38px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);color:var(--fg);padding:0 16px}
 .pm-who{display:flex;flex-direction:column;min-width:0}.pm-who span{font-size:12px;color:var(--muted)}
 @media (max-width:640px){.pm-perks{grid-template-columns:1fr}.pm-hrow{flex-direction:column}.pm-hr-r{align-items:flex-start;text-align:left}}
+
+/* Envoi groupé (album / plusieurs chansons) */
+.bk-rows{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;padding-right:4px}
+.bk-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface2)}
+.bk-row.ok{border-color:color-mix(in srgb,var(--good) 55%,transparent)}.bk-row.err{border-color:var(--bad)}.bk-row.work{border-color:var(--accent)}
+.bk-no{color:var(--muted);text-align:center;font-weight:700}
+.bk-main{min-width:0;display:flex;flex-direction:column;gap:3px}
+.bk-title{width:100%;min-width:0;font-weight:700;padding:6px 8px!important;height:auto!important}
+.bk-meta{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bk-e{color:var(--bad)}
+.bk-bar{height:4px;border-radius:2px;background:var(--line);overflow:hidden}.bk-bar i{display:block;height:100%;background:var(--accent);transition:width .2s}
+.bk-act{display:flex;align-items:center;gap:2px}.bk-act .ic{width:34px;height:34px}
+.bk-cov{width:56px;height:56px;border-radius:10px;overflow:hidden;cursor:pointer;position:relative;flex:none;box-shadow:0 0 0 1px var(--line)}
+.bk-cov img{width:100%;height:100%;object-fit:cover;display:block}
+.bk-cov::after{content:"✎";position:absolute;right:3px;bottom:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;font-size:11px;display:grid;place-items:center}
+.bk-row:has(.bk-cov){grid-template-columns:56px minmax(0,1fr) auto}
+.bk-art{height:34px!important;padding:0 8px!important;font-size:13px;max-width:100%}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -3340,6 +3368,18 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
     P.shuffle=!P.shuffle;store.set('shuffle',P.shuffle);if(P.shuffle){toast('Shuffle on');playTrack(ids[Math.floor(Math.random()*ids.length)],ids)}else{toast('Shuffle off');const c=curTrack();if(c&&plIsCurrent(id))buildOrder(c.id);renderPlayer()}}
 },true);
 
+/* ---------- Toucher n'importe où sur la ligne d'une chanson la lance (pas seulement la pochette) ----------
+   Les boutons (favori, +, partager, ⋮…) et les liens vers l'artiste ou l'album gardent leur rôle.
+   Le titre lance aussi la chanson ; la fiche détaillée reste accessible par le menu ⋮ › Song details. */
+document.addEventListener('click',e=>{
+  const row=e.target.closest('.trow[data-id],.trow2[data-id],.drow[data-id],.ts-row[data-id]');if(!row||e.defaultPrevented)return;
+  if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey)return;
+  const a=e.target.closest('a,button,input,select,textarea,label,[data-act]');
+  if(a&&!(a.tagName==='A'&&/^#track-/.test(a.getAttribute('href')||'')))return;
+  const s=window.getSelection&&String(window.getSelection());if(s&&s.length>1)return;
+  e.preventDefault();const p=row.querySelector('[data-act="play"]');if(p)p.click();else playTrack(row.dataset.id,[row.dataset.id]);
+},true);
+
 /* =====================================================================
    PREMIUM : abonnement 1,50 $ / mois (Mobile Money via pawaPay),
    téléchargements hors connexion, badge, espace admin.
@@ -3590,6 +3630,422 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if
       closeModal();toast(act==='suspend'?'Subscription suspended':'Subscription reactivated');ADMPREM.data=null;rerender()}}
 },true);
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='admPremQ'){ADMPREM.q=e.target.value;const pos=e.target.selectionStart;rerender();const i=$('#admPremQ');if(i){i.focus();try{i.setSelectionRange(pos,pos)}catch(x){}}}});
+
+/* =====================================================================
+   WMA ADMIN : envoyer plusieurs chansons d'un coup (album, EP, ou plusieurs singles)
+   Lit automatiquement les infos contenues dans les fichiers MP3 (titre, numéro de piste,
+   pochette) ; chaque chanson passe ensuite par la même préparation et le même envoi
+   que « Add a song ».
+   ===================================================================== */
+const BK={rows:[],artistId:'',mode:'new',busy:false,cover:null,coverFromTags:false,done:false};
+/* ---- lecture des tags ID3 (MP3) ---- */
+async function id3Read(file){
+  try{const head=new Uint8Array(await file.slice(0,10).arrayBuffer());
+    if(head[0]!==0x49||head[1]!==0x44||head[2]!==0x33)return {};
+    const ver=head[3],size=(head[6]&127)<<21|(head[7]&127)<<14|(head[8]&127)<<7|(head[9]&127);
+    const b=new Uint8Array(await file.slice(10,10+Math.min(size,8*1048576)).arrayBuffer());
+    const out={};let p=0;if(head[5]&0x40&&ver>=3){const ext=ver===4?((b[0]&127)<<21|(b[1]&127)<<14|(b[2]&127)<<7|(b[3]&127)):((b[0]<<24|b[1]<<16|b[2]<<8|b[3])+4);p=ext}
+    const txt=(enc,arr)=>{try{if(enc===0)return new TextDecoder('latin1').decode(arr);if(enc===1)return new TextDecoder('utf-16').decode(arr);if(enc===2)return new TextDecoder('utf-16be').decode(arr);return new TextDecoder('utf-8').decode(arr)}catch(e){return ''}};
+    const clean=s=>s.replace(/\u0000+$/,'').replace(/\u0000/g,' / ').trim();
+    while(p+10<=b.length){const id=String.fromCharCode(b[p],b[p+1],b[p+2],b[p+3]);if(!/^[A-Z0-9]{4}$/.test(id))break;
+      const fs=ver===4?((b[p+4]&127)<<21|(b[p+5]&127)<<14|(b[p+6]&127)<<7|(b[p+7]&127)):(b[p+4]<<24|b[p+5]<<16|b[p+6]<<8|b[p+7]);
+      const d=b.subarray(p+10,p+10+fs);p+=10+fs;if(fs<=0||fs>b.length)break;
+      if(/^(TIT2|TPE1|TRCK|TALB|TCON|TYER|TDRC)$/.test(id))out[id]=clean(txt(d[0],d.subarray(1)));
+      else if(id==='APIC'&&!out.pic){const enc=d[0];let i=1;while(i<d.length&&d[i]!==0)i++;const mime=txt(0,d.subarray(1,i))||'image/jpeg';i+=2;
+        if(enc===1||enc===2){while(i+1<d.length&&!(d[i]===0&&d[i+1]===0))i+=2;i+=2}else{while(i<d.length&&d[i]!==0)i++;i++}
+        out.pic=new Blob([d.slice(i)],{type:/^image\//.test(mime)?mime:'image/jpeg'})}}
+    return out}catch(e){return {}}}
+const bkCleanName=n=>n.replace(/\.[^.]+$/,'').replace(/^\s*(\d{1,3})\s*[-._)]\s*/,'').replace(/[_]+/g,' ').trim();
+const bkNumFromName=n=>{const m=n.match(/^\s*(\d{1,3})\s*[-._) ]/);return m?+m[1]:null};
+/* ---- fenêtre ---- */
+function bulkForm(albumId,mode){
+  if(!supa()&&!art()){}
+  Object.assign(BK,{rows:[],busy:false,cover:null,coverFromTags:false,done:false,mode:mode||(albumId?'existing':'new'),artistId:albumId?(api.album(albumId)?.artistId||''):''});
+  const als=DB.albums.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  openModal(`<h3>${BK.mode==='singles'?'Upload singles':'Upload several songs'}</h3><p class="muted" style="margin:-4px 0 14px">An album, an EP or several singles at once. Titles, track numbers and covers are read from the files when available.</p>
+   <form class="form" id="bkForm" style="max-width:none" novalidate>
+    <fieldset><legend>Where do these songs go?</legend>
+     <div class="seg" role="radiogroup">${[['new','New album / EP'],['existing','Existing album'],['singles','Singles']].map(([k,l])=>`<label><input type="radio" name="bkMode" value="${k}" ${BK.mode===k?'checked':''}><span>${l}</span></label>`).join('')}</div>
+     <div id="bkNew" ${BK.mode==='new'?'':'hidden'}>
+      <div class="row2"><div class="fld"><label for="bkAlTitle">Album title *</label><input id="bkAlTitle" maxlength="100"></div><div class="fld"><label for="bkAlType">Type</label><select id="bkAlType">${opts(['Album','EP','Mixtape','Compilation'],'Album')}</select></div></div>
+      <div class="fld"><label for="bkCover">Album cover (square, 3000 × 3000 px recommended)</label><input id="bkCover" type="file" accept="image/*"><div class="muted" id="bkCoverNote" style="font-size:13px;margin-top:6px">If you don't add one, the cover inside the first MP3 file is used.</div><img id="bkCovPrev" alt="" hidden style="width:96px;height:96px;object-fit:cover;border-radius:10px;margin-top:8px"></div>
+     </div>
+     <div class="fld" id="bkExisting" ${BK.mode==='existing'?'':'hidden'}><label for="bkAlbum">Album</label><select id="bkAlbum">${als.length?als.map(a=>`<option value="${a.id}" ${a.id===albumId?'selected':''}>${esc(a.title)} — ${esc(api.artist(a.artistId)?.name||'')}</option>`).join(''):'<option value="">No album yet</option>'}</select></div>
+    </fieldset>
+    <fieldset><legend>Details for every song</legend>
+     <div class="fld ac" id="bkArtistWrap"><label for="bkArtist" id="bkArtLbl">Main artist *</label><input id="bkArtist" autocomplete="off" placeholder="Start typing a name…" value="${esc(api.artist(BK.artistId)?.name||'')}" role="combobox" aria-expanded="false" aria-controls="acBk"><ul class="ac-list" id="acBk" role="listbox" hidden></ul></div>
+     <div class="row2"><div class="fld"><label for="bkGenre">Genre</label><select id="bkGenre">${opts(DB.genres,DB.genres[0])}</select></div><div class="fld"><label for="bkRelease">Release date *</label><input id="bkRelease" type="date" value="${today()}"></div></div>
+    </fieldset>
+    <fieldset><legend>Audio files</legend>
+     <label class="btn" for="bkFiles" style="display:inline-flex;gap:8px;align-items:center;cursor:pointer">${I.upload} Choose the audio files</label><input id="bkFiles" type="file" accept="audio/*,.mp3,.m4a,.wav,.flac,.aac,.ogg" multiple hidden>
+     <span class="muted" style="font-size:13px;margin-left:8px">MP3, M4A, WAV, FLAC… You can select them all at once.</span>
+     <div id="bkList" style="margin-top:12px"></div>
+    </fieldset>
+    <fieldset><legend>Publishing</legend>
+     <div class="seg" role="radiogroup">${[['draft','Draft'],['scheduled','Schedule'],['published','Publish now']].map(([k,l])=>`<label><input type="radio" name="bkPub" value="${k}" ${k==='draft'?'checked':''}><span>${l}</span></label>`).join('')}</div>
+     <div class="fld" id="bkWhenWrap" hidden><label for="bkWhen">Release date and time</label><input id="bkWhen" type="datetime-local"></div>
+     <label class="check" style="display:flex;gap:10px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="bkRights"><span>I confirm that WMA holds the streaming rights for all these songs.</span></label>
+    </fieldset>
+    <div class="err" id="bkErr" role="alert"></div>
+    <div class="actions sticky-actions"><button class="btn pri" type="submit" id="bkSubmit">Upload the songs</button><button class="btn" type="button" data-act="close" id="bkCancel">Cancel</button></div>
+   </form>`,true);
+  acSetup('bkArtist','acBk',a=>{BK.artistId=a.id;$('#bkArtist').value=a.name},{onType:()=>{BK.artistId=''}});
+  const f=$('#bkForm');
+  f.addEventListener('change',e=>{if(e.target.name==='bkMode'){BK.mode=e.target.value;$('#bkNew').hidden=BK.mode!=='new';$('#bkExisting').hidden=BK.mode!=='existing';bkRender()}
+    if(e.target.name==='bkPub')$('#bkWhenWrap').hidden=e.target.value!=='scheduled';
+    if(e.target.id==='bkAlbum'){const al=api.album(e.target.value);if(al&&!BK.artistId){BK.artistId=al.artistId;$('#bkArtist').value=api.artist(al.artistId)?.name||''}}});
+  $('#bkCover').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{BK.cover=await readImg(file,1600);BK.coverFromTags=false;const im=$('#bkCovPrev');im.src=BK.cover.url;im.hidden=false;$('#bkCoverNote').textContent=BK.cover.w!==BK.cover.h?'Tip: the cover isn\'t square, so it will be cropped on display.':'Cover ready.'}catch(x){$('#bkErr').textContent=x.message;e.target.value=''}};
+  $('#bkFiles').onchange=e=>{bkAdd([...e.target.files]);e.target.value=''};
+  f.onsubmit=e=>{e.preventDefault();bkUpload()};
+  if(albumId){const al=api.album(albumId);if(al){BK.artistId=al.artistId;$('#bkArtist').value=api.artist(al.artistId)?.name||''}}
+  bkRender()}
+async function bkAdd(files){
+  const err=$('#bkErr');err.textContent='';
+  for(const file of files){
+    const ext=(file.name.split('.').pop()||'').toLowerCase();
+    if(!/^audio\//.test(file.type)&&!/^(mp3|m4a|mp4|aac|wav|flac|ogg|oga|opus|webm|aif|aiff)$/.test(ext)){err.textContent=`“${file.name}” is not an audio file and was skipped.`;continue}
+    if(BK.rows.some(r=>r.file.name===file.name&&r.file.size===file.size))continue;
+    const tags=ext==='mp3'||/mpeg/.test(file.type)?await id3Read(file):{};
+    const n=parseInt((tags.TRCK||'').split('/')[0],10)||bkNumFromName(file.name);
+    const ta=tags.TPE1?DB.artists.find(x=>key(x.name)===key(tags.TPE1.split(/\s*(?:feat\.?|ft\.?|&|,|\/)\s*/i)[0])):null;
+    BK.rows.push({id:uid('bk'),file,artistId:ta?ta.id:'',img:null,title:tags.TIT2||bkCleanName(file.name),no:n||null,tagArtist:tags.TPE1||'',tagAlbum:tags.TALB||'',pic:tags.pic||null,state:'ready',msg:''});
+    if(!BK.cover&&tags.pic&&BK.mode==='new'){try{BK.cover=await readImg(new File([tags.pic],'cover.jpg',{type:tags.pic.type}),1600);BK.coverFromTags=true;const im=$('#bkCovPrev');if(im){im.src=BK.cover.url;im.hidden=false}$('#bkCoverNote').textContent='Cover taken from the first MP3 file. You can choose another one.'}catch(e){}}
+    if(BK.mode==='new'&&!$('#bkAlTitle').value&&tags.TALB)$('#bkAlTitle').value=tags.TALB;
+    if(!BK.artistId&&tags.TPE1){const a=DB.artists.find(x=>key(x.name)===key(tags.TPE1.split(/\s*(?:feat\.?|ft\.?|&|,|\/)\s*/i)[0]));if(a){BK.artistId=a.id;$('#bkArtist').value=a.name}}
+  }
+  BK.rows.sort((a,b)=>(a.no??999)-(b.no??999)||a.file.name.localeCompare(b.file.name,undefined,{numeric:true}));
+  bkRender()}
+function bkRender(){const lb=$('#bkArtLbl');if(lb)lb.textContent=BK.mode==='singles'?'Artist for all the singles (you can change it for each song below)':'Main artist *';const l=$('#bkList');if(!l)return;
+  if(!BK.rows.length){l.innerHTML='<div class="empty" style="padding:18px">No files yet.</div>';return}
+  const S={ready:'',work:'<span class="badge">…</span>',ok:'<span class="badge ok">DONE</span>',err:'<span class="badge off">FAILED</span>'};
+  l.innerHTML=`<div class="muted" style="font-size:13px;margin-bottom:8px">${BK.rows.length} song${BK.rows.length>1?'s':''} · ${(BK.rows.reduce((s,r)=>s+r.file.size,0)/1048576).toFixed(1)} MB${BK.mode==='singles'?' · each one becomes a single':' · in this order on the album'}</div>
+   <div class="bk-rows">${BK.rows.map((r,i)=>`<div class="bk-row ${r.state}" data-id="${r.id}">
+    ${BK.mode==='singles'?`<label class="bk-cov" title="Change the cover"><img src="${r.img?r.img.url:(r.picUrl||(r.pic?(r.picUrl=URL.createObjectURL(r.pic)):genCover(r.id)))}" alt="Cover of ${esc(r.title)}"><input type="file" accept="image/*" class="bk-covin" data-id="${r.id}" hidden ${BK.busy||r.state==='ok'?'disabled':''}></label>`:`<span class="bk-no mono">${i+1}</span>`}
+    <div class="bk-main"><input class="bk-title" data-id="${r.id}" value="${esc(r.title)}" maxlength="120" aria-label="Title of song ${i+1}" ${BK.busy||r.state==='ok'?'disabled':''}>
+     ${BK.mode==='singles'?`<select class="bk-art" data-id="${r.id}" aria-label="Artist of ${esc(r.title)}" ${BK.busy||r.state==='ok'?'disabled':''}><option value="">Main artist (above)</option>${DB.artists.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value="${a.id}" ${a.id===r.artistId?'selected':''}>${esc(a.name)}</option>`).join('')}</select>`:''}<div class="bk-meta">${esc(r.file.name)} · ${(r.file.size/1048576).toFixed(1)} MB${r.tagArtist?' · '+esc(r.tagArtist):''}${r.msg?` · <span class="${r.state==='err'?'bk-e':''}">${esc(r.msg)}</span>`:''}</div>
+     ${r.state==='work'?`<div class="bk-bar"><i style="width:${Math.round((r.p||0)*100)}%"></i></div>`:''}</div>
+    <div class="bk-act">${S[r.state]}${BK.busy||r.state==='ok'?'':`<button type="button" class="ic" data-act="bkUp" data-id="${r.id}" aria-label="Move up" ${i?'':'disabled'}>↑</button><button type="button" class="ic" data-act="bkDown" data-id="${r.id}" aria-label="Move down" ${i<BK.rows.length-1?'':'disabled'}>↓</button><button type="button" class="ic" data-act="bkRm" data-id="${r.id}" aria-label="Remove">✕</button>`}</div></div>`).join('')}</div>`}
+async function bkUpload(){
+  if(BK.busy)return;const err=$('#bkErr');err.textContent='';
+  const todo=BK.rows.filter(r=>r.state!=='ok');
+  if(!todo.length)return err.textContent=BK.rows.length?'All the songs are already uploaded.':'Choose the audio files.';
+  if(BK.mode==='singles'?BK.rows.some(r=>!(r.artistId&&api.artist(r.artistId))&&!(BK.artistId&&api.artist(BK.artistId))):(!BK.artistId||!api.artist(BK.artistId)))return err.textContent=BK.mode==='singles'?'Choose the artist of each single (or a main artist for all).':'Select the main artist from the list (or create them).';
+  const release=$('#bkRelease').value;if(!release)return err.textContent='Enter the release date.';
+  for(const r of BK.rows)if(!r.title.trim())return err.textContent='Every song needs a title.';
+  const pub=(document.querySelector('input[name=bkPub]:checked')||{}).value||'draft';let publishAt=null;
+  if(pub==='scheduled'){const v=$('#bkWhen').value;if(!v)return err.textContent='Choose the release date and time.';publishAt=new Date(v).getTime();if(publishAt<=Date.now()+60e3)return err.textContent='The scheduled release must be in the future.'}
+  if(pub!=='draft'&&!$('#bkRights').checked)return err.textContent='To publish or schedule, confirm that WMA holds the streaming rights.';
+  let albumId=null;
+  if(BK.mode==='new'&&!BK.albumId){const t=$('#bkAlTitle').value.trim();if(!t)return err.textContent='Enter the album title.'}
+  if(BK.mode==='existing'){albumId=$('#bkAlbum').value;if(!albumId||!api.album(albumId))return err.textContent='Choose the album.'}
+  BK.busy=true;const btn=$('#bkSubmit');btn.disabled=true;$('#bkCancel').disabled=true;bkRender();
+  try{
+    if(BK.mode==='new'){
+      if(!BK.albumId){btn.textContent='Creating the album…';let cv={};if(BK.cover)cv=await storeImage(BK.cover);
+        const al={id:uid('al'),createdAt:Date.now(),title:$('#bkAlTitle').value.trim(),artistId:BK.artistId,type:$('#bkAlType').value,date:release,...cv};await putDoc('albums',al);BK.albumId=al.id}
+      albumId=BK.albumId}
+    let n=albumId?DB.tracks.filter(x=>x.albumId===albumId).length:0,ok=0,fail=0;
+    for(const r of BK.rows){if(r.state==='ok')continue;r.state='work';r.msg='Preparing…';r.p=0;bkRender();btn.textContent=`Uploading ${BK.rows.indexOf(r)+1} / ${BK.rows.length}…`;
+      try{const a=await prepareAudio(r.file,(msg,p)=>{r.msg=msg;r.p=p*.6;bkRender()});
+        r.msg='Uploading the audio…';r.p=.65;bkRender();
+        const up=await uploadFile(a.blob,a.type);
+        let coverPatch={};if(BK.mode==='singles'&&(r.img||r.pic)){try{const img=r.img||await readImg(new File([r.pic],'c.jpg',{type:r.pic.type}),1600);const c=await storeImage(img);coverPatch=c.coverId?{coverId:c.coverId}:{cover:c.cover}}catch(e){}}
+        r.msg='Saving…';r.p=.95;bkRender();const now=Date.now();
+        const tr={id:uid('t'),title:r.title.trim(),artistId:(BK.mode==='singles'&&r.artistId&&api.artist(r.artistId))?r.artistId:BK.artistId,featIds:[],albumId:albumId||null,genre:$('#bkGenre').value,releaseDate:release,producer:'',writers:'',description:'',lyrics:'',rightsNote:'',
+          rights:$('#bkRights').checked?'confirmed':'pending',status:pub,publishAt:pub==='scheduled'?publishAt:null,publishedAt:pub==='published'?now:(pub==='scheduled'?publishAt:null),
+          trackNo:albumId?++n:null,createdAt:now,updatedAt:now,duration:a.duration,demo:false,audioType:a.type,...(up.id?{audioId:up.id}:{audioUrl:up.local,audioId:null}),...coverPatch};
+        await putDoc('tracks',tr);r.state='ok';r.msg=a.converted?`${fmt(a.duration)} · converted`:fmt(a.duration);ok++}
+      catch(x){r.state='err';r.msg=(x&&x.message)||'Upload failed';fail++}
+      bkRender()}
+    BK.busy=false;bkRender();
+    toast(fail?`${ok} song${ok>1?'s':''} uploaded, ${fail} failed. Fix them or try again.`:`${ok} song${ok>1?'s':''} uploaded ${pub==='published'?'and published':pub==='scheduled'?'and scheduled':'as drafts'}`);
+    if(!fail){btn.textContent='Done';$('#bkCancel').disabled=false;$('#bkCancel').textContent='Close';BK.done=true}
+    else{btn.disabled=false;btn.textContent='Retry the failed songs';$('#bkCancel').disabled=false}
+  }catch(x){BK.busy=false;err.textContent=(x&&x.message)||'The upload stopped. Check your connection and try again.';btn.disabled=false;btn.textContent='Upload the songs';$('#bkCancel').disabled=false;
+    BK.rows.forEach(r=>{if(r.state==='work'){r.state='err';r.msg='Interrupted'}});bkRender()}
+}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='bulkUp'){e.preventDefault();e.stopImmediatePropagation();bulkForm(el.dataset.id||'',el.dataset.mode||'')}
+  else if(/^bk(Up|Down|Rm)$/.test(a)){e.preventDefault();const i=BK.rows.findIndex(r=>r.id===el.dataset.id);if(i<0||BK.busy)return;
+    if(a==='bkRm')BK.rows.splice(i,1);else{const j=a==='bkUp'?i-1:i+1;if(j<0||j>=BK.rows.length)return;[BK.rows[i],BK.rows[j]]=[BK.rows[j],BK.rows[i]]}bkRender()}
+  else if(a==='close'&&BK.busy&&$('#bkForm')){e.preventDefault();e.stopImmediatePropagation();toast('Please wait: the songs are still uploading.')}
+  else if(a==='close'&&BK.done&&$('#bkForm')){BK.done=false;setTimeout(()=>{location.hash==='#admin-songs'?rerender():location.hash='#admin-songs'},0)}
+},true);
+document.addEventListener('change',async e=>{const t=e.target;if(!t.classList)return;
+  if(t.classList.contains('bk-art')){const r=BK.rows.find(x=>x.id===t.dataset.id);if(r)r.artistId=t.value}
+  else if(t.classList.contains('bk-covin')){const r=BK.rows.find(x=>x.id===t.dataset.id),f=t.files[0];if(!r||!f)return;try{r.img=await readImg(f,1600);if(r.img.w!==r.img.h)toast('Tip: this cover isn\'t square, so it will be cropped on display.');bkRender()}catch(x){toast(x.message)}}});
+document.addEventListener('input',e=>{if(e.target.classList&&e.target.classList.contains('bk-title')){const r=BK.rows.find(x=>x.id===e.target.dataset.id);if(r)r.title=e.target.value}});
+/* ---- boutons d'accès ---- */
+const _admSongsBk=admin.songs;admin.songs=function(){return _admSongsBk.apply(this,arguments).replace(/(<button class="btn pri big-add" data-act="aTrack"[^>]*>[\s\S]*?<\/button>)/,`<div style="display:flex;gap:10px;flex-wrap:wrap">$1<button class="btn big-add" data-act="bulkUp" style="margin:0">${I.upload} UPLOAD AN ALBUM</button><button class="btn big-add" data-act="bulkUp" data-mode="singles" style="margin:0">${I.upload} UPLOAD SINGLES</button></div>`)};
+const _admAlbumsBk=admin.albums;admin.albums=function(){let h=_admAlbumsBk.apply(this,arguments);
+  h=h.replace(/(<button class="btn pri" data-act="aAlbum">[\s\S]*?<\/button>)/,`$1<button class="btn" data-act="bulkUp">${I.upload} Upload an album (several songs)</button>`);
+  return h.replace(/<button class="btn sm" data-act="aAlbum" data-id="([^"]+)">Edit<\/button>/g,'<button class="btn sm" data-act="bulkUp" data-id="$1">Add songs</button> <button class="btn sm" data-act="aAlbum" data-id="$1">Edit</button>')};
+
+/* Traductions françaises de l'interface (clé = texte anglais affiché). */
+const I18N_FR={
+"1. The service":"1. Le service","2. Your account":"2. Votre compte","3. Music and videos":"3. Musique et vidéos","4. Fair use":"4. Utilisation loyale","5. Availability":"5. Disponibilité","6. Suspension":"6. Suspension","7. Changes":"7. Modifications","8. Contact":"8. Contact",
+"A cover is generated automatically.":"Une pochette est créée automatiquement.",
+"A song can only be published or scheduled once WMA confirms it holds the streaming rights or a written licence. A song being available on another platform does not make it licensed here.":"Une chanson ne peut être publiée ou programmée qu'une fois que WMA confirme détenir les droits de diffusion ou une licence écrite. Le fait qu'une chanson soit disponible sur une autre plateforme ne l'autorise pas ici.",
+"ADDED HERE":"AJOUTÉE ICI","About":"À propos","About the project":"À propos du projet","Accept":"Accepter",
+"Accepting does not publish the song. To add it to the catalogue, download the file and use “Add a song” in the Music manager.":"Accepter ne publie pas la chanson. Pour l'ajouter au catalogue, téléchargez le fichier et utilisez « Ajouter une chanson » dans le gestionnaire de musique.",
+"Access could not be saved:":"L'accès n'a pas pu être enregistré :","Access denied":"Accès refusé","Access saved":"Accès enregistré","Account":"Compte",
+"Account created. Open the confirmation email sent to":"Compte créé. Ouvrez l'e-mail de confirmation envoyé à","Account:":"Compte :","Action":"Action","Active":"Actif","Active Premium":"Premium actifs","Active since":"Actif depuis","Activity on WMA MUSIC:":"Activité sur WMA MUSIC :",
+"Add":"Ajouter","Add a featured artist…":"Ajouter un artiste invité…","Add a photo to an artist first (Artists tab).":"Ajoutez d'abord une photo à un artiste (onglet Artistes).","Add a song":"Ajouter une chanson","Add songs":"Ajouter des chansons","Add the audio file first.":"Ajoutez d'abord le fichier audio.",
+"Add to Home Screen":"Sur l'écran d'accueil","Add to Home screen":"Ajouter à l'écran d'accueil","Add to a playlist":"Ajouter à une playlist","Added to favourites":"Ajoutée aux favoris",
+"Administrators can add, edit and publish songs. All other accounts are listeners.":"Les administrateurs peuvent ajouter, modifier et publier des chansons. Les autres comptes sont des auditeurs.",
+"Album":"Album","Album cover (square, 3000 × 3000 px recommended)":"Pochette de l'album (carrée, 3000 × 3000 px recommandé)","Album title *":"Titre de l'album *","Albums":"Albums","Albums and singles":"Albums et singles",
+"All artists":"Tous les artistes","All countries":"Tous les pays","All dates":"Toutes les dates","All genres":"Tous les genres","All songs":"Toutes les chansons","All statuses":"Tous les statuts","Already downloaded":"Déjà téléchargée","Already have an account?":"Vous avez déjà un compte ?",
+"Amount":"Montant","An account already exists with this email. Please sign in.":"Un compte existe déjà avec cet e-mail. Connectez-vous.",
+"An album, an EP or several singles at once. Titles, track numbers and covers are read from the files when available.":"Un album, un EP ou plusieurs singles d'un coup. Les titres, numéros de piste et pochettes sont lus dans les fichiers quand ils existent.",
+"An artist with this name already exists.":"Un artiste porte déjà ce nom.","Approve the payment of":"Validez le paiement de",
+"Artist":"Artiste","Artist *":"Artiste *","Artist Dashboard":"Espace artiste","Artist Dashboard access":"Accès à l'espace artiste","Artist access":"Accès artiste","Artist links":"Liens de l'artiste","Artist name":"Nom de l'artiste","Artist name *":"Nom de l'artiste *","Artist sections":"Rubriques de l'artiste","Artist(s) *":"Artiste(s) *","Artists":"Artistes","Artists without a photo":"Artistes sans photo",
+"Artists, songs, albums, playlists":"Artistes, chansons, albums, playlists","Audio files":"Fichiers audio",
+"Automatic playlists (Top WMA MUSIC, New Releases, African Hits, Afrobeat, Gospel, Congolese Music, Made for You) update themselves from real listening data and genres. The playlists below are the ones you curate.":"Les playlists automatiques (Top WMA MUSIC, New Releases, African Hits, Afrobeat, Gospel, Congolese Music, Made for You) se mettent à jour d'elles-mêmes à partir des écoutes réelles et des genres. Celles ci-dessous sont celles que vous composez.",
+"Back":"Retour","Back to home":"Retour à l'accueil","Biography":"Biographie","Booking contact (shown on the profile)":"Contact booking (affiché sur le profil)","Breakdown":"Détail","Browse first":"Découvrir d'abord",
+"Browser storage is full: this change was not saved.":"Le stockage du navigateur est plein : cette modification n'a pas été enregistrée.","By":"Par","By continuing, you agree to our":"En continuant, vous acceptez nos",
+"COMING SOON":"BIENTÔT","Cancel":"Annuler","Category":"Catégorie","Change the cover":"Changer la pochette","Changes":"Modifications","Check your inbox":"Vérifiez votre boîte mail","Check your phone":"Regardez votre téléphone",
+"Choose a new password":"Choisissez un nouveau mot de passe","Choose an artist":"Choisissez un artiste","Choose the album.":"Choisissez l'album.","Choose the artist.":"Choisissez l'artiste.","Choose the artists whose statistics":"Choisissez les artistes dont les statistiques",
+"Choose the release date and time.":"Choisissez la date et l'heure de sortie.","Choose the video file to upload.":"Choisissez le fichier vidéo à envoyer.","Choose…":"Choisir…","City":"Ville","Close":"Fermer","Close the player":"Fermer le lecteur","Coming soon":"Bientôt disponible","Confirm":"Confirmer",
+"Confirm that WMA holds the rights to publish this video.":"Confirmez que WMA détient les droits de publier cette vidéo.","Contact (only visible to the WMA team)":"Contact (visible uniquement par l'équipe WMA)","Continue with Google":"Continuer avec Google","Contract or licence reference":"Référence du contrat ou de la licence",
+"Copy":"Copier","Copy link":"Copier le lien","Counted plays":"Écoutes comptées","Countries":"Pays","Country":"Pays",
+"Country is detected from each listener's connection when they use WMA MUSIC. “Unknown” covers listeners whose country could not be detected.":"Le pays est détecté à partir de la connexion de chaque auditeur. « Inconnu » regroupe les auditeurs dont le pays n'a pas pu être détecté.",
+"Country of origin *":"Pays d'origine *","Country:":"Pays :","Cover":"Pochette","Cover (square, 3000 × 3000 px recommended)":"Pochette (carrée, 3000 × 3000 px recommandé)","Cover image":"Image de couverture","Cover preview":"Aperçu de la pochette",
+"Cover taken from the first MP3 file. You can choose another one.":"Pochette prise dans le premier fichier MP3. Vous pouvez en choisir une autre.",
+"Create a free account":"Créer un compte gratuit","Create a free account or sign in to subscribe.":"Créez un compte gratuit ou connectez-vous pour vous abonner.","Create a free account to start listening.":"Créez un compte gratuit pour commencer à écouter.","Create a free account to watch":"Créez un compte gratuit pour regarder",
+"Create an account":"Créer un compte","Create and add":"Créer et ajouter","Create my account":"Créer mon compte","Create your account":"Créez votre compte","Creating the album…":"Création de l'album…","Creating the cover…":"Création de la pochette…",
+"Date":"Date","Delete":"Supprimer","Delete this playlist":"Supprimer cette playlist","Deleted":"Supprimé","Demo mode: nothing is published for other listeners.":"Mode démo : rien n'est publié pour les autres auditeurs.","Description":"Description","Details":"Détails","Details for every song":"Informations pour toutes les chansons","Detected on upload":"Détectée à l'envoi",
+"Device notifications appear while WMA MUSIC is open in your browser.":"Les notifications de l'appareil s'affichent quand WMA MUSIC est ouverte dans votre navigateur.","Discover the artists on WMA MUSIC.":"Découvrez les artistes de WMA MUSIC.","Display name":"Nom affiché",
+"Do not try to manipulate plays, statistics or charts (bots, scripts, repeated fake listens), and do not try to access accounts or data that are not yours. Plays that do not meet our listening rules are not counted.":"N'essayez pas de manipuler les écoutes, statistiques ou classements (robots, scripts, fausses écoutes répétées) ni d'accéder à des comptes ou données qui ne sont pas les vôtres. Les écoutes qui ne respectent pas nos règles ne sont pas comptées.",
+"Done":"Terminé","Download":"Télécharger","Download cancelled":"Téléchargement annulé","Download songs":"Télécharger des chansons","Download the file":"Télécharger le fichier","Downloaded — available offline":"Téléchargée : disponible hors connexion","Downloading “":"Téléchargement de « ",
+"Downloads are a Premium feature.":"Les téléchargements sont réservés au Premium.","Downloads aren't available here":"Les téléchargements ne sont pas disponibles ici","Drafts":"Brouillons","Duration":"Durée",
+"Edit":"Modifier","Edit profile":"Modifier le profil","Email":"E-mail","Email *":"E-mail *","Email the artist":"Écrire à l'artiste","Enter a name.":"Saisissez un nom.","Enter a valid email address.":"Saisissez une adresse e-mail valide.","Enter the album title.":"Saisissez le titre de l'album.",
+"Enter the email of your WMA MUSIC account. We'll send you a link to choose a new password.":"Saisissez l'e-mail de votre compte WMA MUSIC. Nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+"Enter the release date.":"Saisissez la date de sortie.","Enter the song title.":"Saisissez le titre de la chanson.","Enter the video title.":"Saisissez le titre de la vidéo.","Enter your email first.":"Saisissez d'abord votre e-mail.",
+"Every artist has a profile photo.":"Tous les artistes ont une photo de profil.","Every song needs a title.":"Chaque chanson doit avoir un titre.","Everything in Free":"Tout ce qu'offre la version gratuite","Expired":"Expiré","Expires":"Expire","Explore":"Explorer","Export file (.json or .csv)":"Fichier d'export (.json ou .csv)",
+"Failed payments":"Paiements échoués","Favourite":"Favori","Favourites":"Favoris","Featured artist":"Artiste invité","Featured artists":"Artistes à la une","Files":"Fichiers","Filter by album":"Filtrer par album","Filter by artist":"Filtrer par artiste","Filter by release date":"Filtrer par date de sortie","Filter by status":"Filtrer par statut",
+"First confirm the streaming rights in “Edit”.":"Confirmez d'abord les droits de diffusion dans « Modifier ».","First delete or reassign this artist's songs.":"Supprimez ou réattribuez d'abord les chansons de cet artiste.",
+"Follow the decision here and in your notifications":"Suivez la décision ici et dans vos notifications","Followers":"Abonnés","Following":"Abonnements","For Instagram or TikTok, copy the link and paste it into your story or bio.":"Pour Instagram ou TikTok, copiez le lien et collez-le dans votre story ou votre bio.","For You":"Pour vous",
+"Forgot password?":"Mot de passe oublié ?","Free streaming · African artists":"Écoute gratuite · Artistes africains","Free · no App Store needed":"Gratuit · sans App Store","From":"Du",
+"Genre":"Genre","Genre *":"Genre *","Genre added":"Genre ajouté","Genres":"Genres","Get Premium":"Passer à Premium","Give a reason.":"Indiquez une raison.","Got it":"J'ai compris",
+"Hide":"Masquer","Highlights":"À la une","History":"Historique","Home":"Accueil","How to install":"Comment installer",
+"I confirm that I own the rights to this song, or that I am authorised by the rights holders to submit it to WMA. I understand that submitting does not mean it will be published.":"Je confirme détenir les droits de cette chanson, ou être autorisé par les ayants droit à la proposer à WMA. Je comprends qu'une proposition ne garantit pas sa publication.",
+"I confirm that WMA UNITED AFRICA holds the streaming rights for this song, or written permission from the artist and rights holders. *":"Je confirme que WMA UNITED AFRICA détient les droits de diffusion de cette chanson, ou une autorisation écrite de l'artiste et des ayants droit. *",
+"I confirm that WMA holds the rights to publish this video. *":"Je confirme que WMA détient les droits de publier cette vidéo. *","I confirm that WMA holds the streaming rights for all these songs.":"Je confirme que WMA détient les droits de diffusion de toutes ces chansons.",
+"Identity":"Identité","If an account exists for":"Si un compte existe pour","If you don't add one, the cover inside the first MP3 file is used.":"Si vous n'en ajoutez pas, la pochette du premier fichier MP3 est utilisée.","Image (square, at least 1000 × 1000 recommended)":"Image (carrée, au moins 1000 × 1000 recommandé)","Images":"Images",
+"Incorrect email or password.":"E-mail ou mot de passe incorrect.","Install":"Installer","Install WMA MUSIC":"Installer WMA MUSIC","Install app":"Installer l'appli","Install the WMA MUSIC app":"Installez l'application WMA MUSIC",
+"It's free. Create an account to start listening, save favourites, build playlists and follow artists.":"C'est gratuit. Créez un compte pour écouter, enregistrer vos favoris, créer des playlists et suivre des artistes.",
+"JPG, PNG or WebP · square, 8 MB maximum":"JPG, PNG ou WebP · carrée, 8 Mo maximum","Joined":"Inscrit le","Label":"Label","Last active":"Dernière activité","Latest release":"Dernière sortie","Library":"Bibliothèque","Link":"Lien","Link copied":"Lien copié","Link copied — paste it in":"Lien copié : collez-le dans","Link copied — paste it in Safari":"Lien copié : collez-le dans Safari","Linked song":"Chanson liée",
+"Listen offline with Premium":"Écoutez hors connexion avec Premium","Listen to your favourite music and discover new artists.":"Écoutez votre musique préférée et découvrez de nouveaux artistes.","Listener":"Auditeur","Listeners":"Auditeurs","Listeners by country":"Auditeurs par pays","Live on WMA MUSIC":"En ligne sur WMA MUSIC",
+"Loading Premium data…":"Chargement des données Premium…","Loading the statistics…":"Chargement des statistiques…","Loading…":"Chargement…","Lyrics":"Paroles",
+"MP3 or WAV · 50 MB maximum":"MP3 ou WAV · 50 Mo maximum","MP3, M4A, WAV, FLAC… You can select them all at once.":"MP3, M4A, WAV, FLAC… Vous pouvez tous les sélectionner d'un coup.","MUSIC MANAGER":"GESTIONNAIRE DE MUSIQUE",
+"Main artist (above)":"Artiste principal (ci-dessus)","Main artist *":"Artiste principal *","Managed by WMA UNITED AFRICA (internal)":"Géré par WMA UNITED AFRICA (interne)","Mark as in review":"Marquer « en étude »","Message from WMA":"Message de WMA","Message to the artist":"Message à l'artiste","Mobile Money":"Mobile Money","More options":"Plus d'options",
+"Most played songs":"Chansons les plus écoutées","Most popular artists":"Artistes les plus populaires","Move down":"Descendre","Move up":"Monter","Music submissions":"Propositions de musique","My submissions":"Mes propositions",
+"Name":"Nom","New genre":"Nouveau genre","New password (at least 8 characters)":"Nouveau mot de passe (au moins 8 caractères)","New playlist":"Nouvelle playlist","New releases":"Nouveautés","Next":"Suivant","Next slide":"Diapositive suivante",
+"No Premium subscribers yet.":"Aucun abonné Premium pour l'instant.","No account yet?":"Pas encore de compte ?","No accounts yet.":"Aucun compte pour l'instant.","No admin actions yet.":"Aucune action d'administration pour l'instant.","No album yet":"Aucun album pour l'instant","No albums in your library.":"Aucun album dans votre bibliothèque.","No albums yet.":"Aucun album pour l'instant.",
+"No artist has a photo yet":"Aucun artiste n'a encore de photo","No artist is linked to your account yet.":"Aucun artiste n'est encore lié à votre compte.","No artists yet":"Aucun artiste pour l'instant","No artists yet.":"Aucun artiste pour l'instant.","No downloads yet. Tap":"Aucun téléchargement pour l'instant. Touchez","No files yet.":"Aucun fichier pour l'instant.","No linked song":"Aucune chanson liée","No listeners yet.":"Aucun auditeur pour l'instant.",
+"No lyrics for this song yet":"Pas encore de paroles pour cette chanson","No notifications yet. Pre-save a release or follow artists to get notified when new music comes out.":"Aucune notification pour l'instant. Pré-enregistrez une sortie ou suivez des artistes pour être prévenu des nouveautés.",
+"No official playlists yet.":"Aucune playlist officielle pour l'instant.","No playlists yet.":"Aucune playlist pour l'instant.","No plays counted yet.":"Aucune écoute comptée pour l'instant.","No related songs yet.":"Pas encore de chansons similaires.","No results in this category.":"Aucun résultat dans cette catégorie.","No songs here yet.":"Pas encore de chansons ici.","No songs in this genre yet.":"Pas encore de chansons dans ce genre.","No songs match these filters.":"Aucune chanson ne correspond à ces filtres.",
+"No songs released by this artist yet.":"Cet artiste n'a pas encore sorti de chanson.","No songs yet.":"Pas encore de chansons.","No songs yet. Tap “ADD A SONG” to upload your first track.":"Pas encore de chansons. Touchez « AJOUTER UNE CHANSON » pour envoyer la première.","No submission matches these filters.":"Aucune proposition ne correspond à ces filtres.","No upcoming releases right now. Check back soon.":"Aucune sortie à venir pour l'instant. Revenez bientôt.",
+"No video for this song yet":"Pas encore de vidéo pour cette chanson","No videos added yet.":"Aucune vidéo ajoutée pour l'instant.","No videos yet.":"Pas encore de vidéos.","No videos yet. Add an official music video or a live session.":"Pas encore de vidéos. Ajoutez un clip officiel ou une session live.","None yet":"Aucune pour l'instant","Not now":"Pas maintenant","Nothing here.":"Rien ici.","Nothing is playing.":"Aucune lecture en cours.","Nothing playing":"Aucune lecture","Nothing to sync.":"Rien à synchroniser.","Notifications":"Notifications",
+"Official music videos and live sessions.":"Clips officiels et sessions live.","Official videos on YouTube ↗":"Vidéos officielles sur YouTube ↗","On your device":"Sur votre appareil","Open":"Ouvrir","Open in Safari":"Ouvrir dans Safari","Open the song page":"Ouvrir la page de la chanson","Operator":"Opérateur","Optional for YouTube (its thumbnail is used) · 1280 × 720 px":"Facultatif pour YouTube (sa miniature est utilisée) · 1280 × 720 px","Or paste the data":"Ou collez les données","Out now":"Disponible",
+"PREMIUM badge":"Badge PREMIUM","Password":"Mot de passe","Password (at least 8 characters)":"Mot de passe (au moins 8 caractères)","Password reset email sent.":"E-mail de réinitialisation envoyé.","Paste a valid YouTube link (watch, youtu.be, shorts or live).":"Collez un lien YouTube valide (watch, youtu.be, shorts ou live).",
+"Payment confirmed":"Paiement confirmé","Payment not completed":"Paiement non abouti","Payments open soon":"Paiements bientôt ouverts","Period":"Période","Phone":"Téléphone","Phone number":"Numéro de téléphone","Phone number *":"Numéro de téléphone *","Photo":"Photo","Pick a song":"Choisissez une chanson","Pick a song to start listening":"Choisissez une chanson pour commencer","Play or pause":"Lecture ou pause","Playlist name":"Nom de la playlist","Playlist saved":"Playlist enregistrée","Playlists":"Playlists","Plays":"Écoutes","Plays per day":"Écoutes par jour","Plays · last 14 days":"Écoutes · 14 derniers jours",
+"Please enter a valid email address.":"Saisissez une adresse e-mail valide.","Please wait: the songs are still uploading.":"Patientez : les chansons sont encore en cours d'envoi.","Position in the song":"Position dans la chanson","Pre-save removed":"Pré-enregistrement retiré",
+"Pre-save upcoming releases: they are added to your favourites the moment they come out, and you get a notification.":"Pré-enregistrez les sorties à venir : elles s'ajoutent à vos favoris dès leur sortie et vous recevez une notification.","Pre-saved! It will be added to your favourites on release day.":"Pré-enregistrée ! Elle sera ajoutée à vos favoris le jour de sa sortie.",
+"Premium":"Premium","Premium is activated as soon as your operator confirms the payment. Keep this page open.":"Premium est activé dès que votre opérateur confirme le paiement. Gardez cette page ouverte.","Premium is available on www.wmamusic.net.":"Premium est disponible sur www.wmamusic.net.","Premium is managed on www.wmamusic.net.":"Premium se gère sur www.wmamusic.net.","Premium member":"Membre Premium",
+"Premium payments are not open yet. Nothing can be charged for now — come back soon.":"Les paiements Premium ne sont pas encore ouverts. Rien ne peut être prélevé pour l'instant : revenez bientôt.","Press Ctrl + C to copy":"Appuyez sur Ctrl + C pour copier","Preview before publishing":"Aperçu avant publication","Preview of the cover.":"Aperçu de la pochette.","Previous":"Précédent","Previous slide":"Diapositive précédente","Privacy Policy":"Politique de confidentialité","Producer":"Producteur","Profile photo":"Photo de profil","Profile saved":"Profil enregistré","Progress":"Progression","Publish":"Publier","Publishing":"Publication","Publishing failed:":"La publication a échoué :","Publishing…":"Publication…",
+"Questions or a rights request:":"Questions ou demande liée à vos droits :","Queue, lyrics and related songs":"File d'attente, paroles et chansons similaires",
+"Reactivate":"Réactiver","Ready":"Prête","Reason":"Raison","Reason (saved in the activity log)":"Raison (enregistrée dans l'historique)","Received":"Reçue","Refresh":"Actualiser","Registered listeners":"Auditeurs inscrits","Reject":"Refuser","Release":"Sortie","Release date":"Date de sortie","Release date *":"Date de sortie *","Release date and time":"Date et heure de sortie","Released":"Sortie le",
+"Remove":"Retirer","Remove from playlist":"Retirer de la playlist","Remove the current cover":"Retirer la pochette actuelle","Removed from downloads":"Retirée des téléchargements","Removed from favourites":"Retirée des favoris","Rename":"Renommer","Rename this playlist":"Renommer cette playlist","Renew Premium":"Renouveler Premium","Repeat":"Répéter","Report downloaded":"Rapport téléchargé","Request changes":"Demander des modifications",
+"Requires iOS 16.4 or later for Chrome, Edge and Firefox. In Safari it works on all recent iPhones.":"Nécessite iOS 16.4 ou plus récent pour Chrome, Edge et Firefox. Dans Safari, ça marche sur tous les iPhone récents.",
+"Reset your password":"Réinitialiser votre mot de passe","Retry":"Réessayer","Retry the failed songs":"Relancer les chansons échouées","Revenue this month":"Revenus du mois","Rights":"Droits","Role":"Rôle","Role change refused.":"Changement de rôle refusé.",
+"SENDING…":"ENVOI…","Save":"Enregistrer","Save my new password":"Enregistrer mon nouveau mot de passe","Save songs in the app and listen with no internet connection.":"Enregistrez des chansons dans l'application et écoutez-les sans connexion internet.","Saving…":"Enregistrement…","Scheduled releases":"Sorties programmées","Search":"Rechercher","Search a listener":"Rechercher un auditeur","Search a title, artist or producer":"Rechercher un titre, un artiste ou un producteur","Search a video or an artist":"Rechercher une vidéo ou un artiste","Search name, email, phone, reference":"Rechercher nom, e-mail, téléphone, référence","Search title, artist or email":"Rechercher titre, artiste ou e-mail",
+"Select an artist":"Choisissez un artiste","Select the link and copy it":"Sélectionnez le lien et copiez-le","Select the main artist from the list (or create them).":"Choisissez l'artiste principal dans la liste (ou créez-le).","Send the link":"Envoyer le lien","Send us your song. The WMA team listens to every submission and gets back to you here.":"Envoyez-nous votre chanson. L'équipe WMA écoute chaque proposition et vous répond ici.","Sending…":"Envoi…",
+"Share":"Partager","Share this playlist":"Partager cette playlist","Show in “Featured artists” on the home page":"Afficher dans « Artistes à la une » sur l'accueil","Shown on your profile.":"Affiché sur votre profil.","Shuffle":"Lecture aléatoire","Shuffle off":"Lecture aléatoire désactivée","Shuffle on":"Lecture aléatoire activée","Shuffle play":"Lecture aléatoire",
+"Sign in":"Se connecter","Sign in or create a free account to submit your music and follow its review.":"Connectez-vous ou créez un compte gratuit pour proposer votre musique et suivre son examen.","Sign in to find your favourites, playlists, albums and the artists you follow.":"Connectez-vous pour retrouver vos favoris, playlists, albums et les artistes que vous suivez.","Sign in with a WMA administrator account.":"Connectez-vous avec un compte administrateur WMA.","Sign in with the account WMA linked to your artist profile.":"Connectez-vous avec le compte que WMA a lié à votre profil d'artiste.",
+"Sign out":"Se déconnecter","Sign up":"S'inscrire","Sign up for free":"Inscription gratuite","Sign up in seconds to watch music videos and live sessions.":"Inscrivez-vous en quelques secondes pour regarder clips et sessions live.","Sign up with Google":"S'inscrire avec Google","Signed in":"Connecté","Since":"Depuis","Single":"Single","Single (no album)":"Single (sans album)","Singles only":"Singles uniquement","Social networks and platforms":"Réseaux sociaux et plateformes","Some songs still use this genre.":"Des chansons utilisent encore ce genre.",
+"Song":"Chanson","Song or video":"Chanson ou vidéo","Song page":"Page de la chanson","Song published":"Chanson publiée","Song title *":"Titre de la chanson *","Song unpublished: listeners can no longer see it":"Chanson dépubliée : les auditeurs ne la voient plus","Songs":"Chansons","Songs added here stay in this browser.":"Les chansons ajoutées ici restent dans ce navigateur.","Songs played":"Chansons écoutées","Songs ranking":"Classement des chansons",
+"Songs sent by artists from “Submit your music”. Files are private and never published automatically.":"Chansons envoyées par les artistes via « Proposer ma musique ». Les fichiers sont privés et jamais publiés automatiquement.",
+"Songs, covers, photos and videos remain the property of the artists and rights holders. WMA MUSIC only publishes content it is authorised to distribute. Streaming is for personal, non-commercial use: copying, downloading, recording or redistributing the content is not allowed.":"Les chansons, pochettes, photos et vidéos restent la propriété des artistes et des ayants droit. WMA MUSIC ne publie que les contenus qu'elle est autorisée à diffuser. L'écoute est réservée à un usage personnel et non commercial : copier, télécharger, enregistrer ou redistribuer les contenus est interdit.",
+"Songwriter and composer":"Auteur et compositeur","Square or portrait":"Carrée ou portrait","Square, 3000 × 3000 px recommended · gallery or files":"Carrée, 3000 × 3000 px recommandé · galerie ou fichiers","Start listening":"Commencer à écouter","Start typing a name…":"Tapez un nom…","Status":"Statut",
+"Still waiting for your operator. Your payment history will update as soon as it is confirmed.":"Toujours en attente de votre opérateur. Votre historique se mettra à jour dès la confirmation.",
+"Stream the sound of Africa for free. Discover rising voices, build your own playlists and follow the artists you love.":"Écoutez gratuitement le son de l'Afrique. Découvrez de nouvelles voix, créez vos playlists et suivez les artistes que vous aimez.",
+"Streaming rights":"Droits de diffusion","Streams":"Écoutes","Streams over time":"Écoutes dans le temps","Streams per day":"Écoutes par jour","Submission withdrawn":"Proposition retirée","Submissions are available on the online version of WMA MUSIC (wmamusic.net).":"Les propositions sont disponibles sur la version en ligne de WMA MUSIC (wmamusic.net).","Submissions are stored on Supabase: they are available on the online version (wmamusic.net).":"Les propositions sont stockées sur Supabase : elles sont disponibles sur la version en ligne (wmamusic.net).",
+"Submit your music":"Proposer ma musique","Support African music":"Soutenez la musique africaine","Suspend":"Suspendre","Suspended":"Suspendu","Sync":"Synchroniser","Sync photos from the WMA site":"Synchroniser les photos du site WMA",
+"Take your music":"Emportez votre musique","Tap Play to start the sound.":"Touchez Lecture pour lancer le son.","Tell us about the song, the story, the team…":"Parlez-nous de la chanson, de son histoire, de l'équipe…","Terms of Use":"Conditions d'utilisation","Test mode: no real money is taken.":"Mode test : aucun argent réel n'est prélevé.","The WMA team listens to it":"L'équipe WMA l'écoute",
+"The app stores your session and a few preferences (for example the selected home tab) in your browser so you stay signed in.":"L'application garde votre session et quelques préférences (par exemple l'onglet choisi sur l'accueil) dans votre navigateur pour que vous restiez connecté.",
+"The artist could not be created.":"L'artiste n'a pas pu être créé.","The chart will appear after the first counted plays.":"Le graphique apparaîtra après les premières écoutes comptées.","The chart will appear after the first counted streams.":"Le graphique apparaîtra après les premières écoutes comptées.","The genre could not be saved.":"Le genre n'a pas pu être enregistré.","The latest releases for fans of":"Les dernières sorties pour les fans de",
+"The name must be at least 2 characters long.":"Le nom doit comporter au moins 2 caractères.","The scheduled release must be in the future.":"La sortie programmée doit être dans le futur.","The song":"La chanson","The submission and its files will be deleted. This cannot be undone.":"La proposition et ses fichiers seront supprimés. C'est définitif.",
+"These terms may be updated. The date above shows the latest version.":"Ces conditions peuvent être mises à jour. La date ci-dessus indique la dernière version.","This action could not be completed.":"Cette action n'a pas pu être effectuée.","This cannot be shared.":"Impossible de partager ceci.","This could not be saved.":"Impossible d'enregistrer.","This genre already exists.":"Ce genre existe déjà.","This page doesn't exist or is no longer available.":"Cette page n'existe pas ou n'est plus disponible.",
+"This policy may be updated. The date above shows the latest version.":"Cette politique peut être mise à jour. La date ci-dessus indique la dernière version.","This song is not available.":"Cette chanson n'est pas disponible.",
+"This space is for WMA artists and their teams. Ask the WMA team to link your account to your artist profile.":"Cet espace est réservé aux artistes WMA et à leurs équipes. Demandez à l'équipe WMA de lier votre compte à votre profil d'artiste.",
+"This video is not available.":"Cette vidéo n'est pas disponible.","Thumbnail":"Miniature","Tip: the cover isn't square, so it will be cropped on display.":"Astuce : la pochette n'est pas carrée, elle sera recadrée à l'affichage.","Tip: this cover isn't square, so it will be cropped on display.":"Astuce : cette pochette n'est pas carrée, elle sera recadrée à l'affichage.",
+"Title":"Titre","Title *":"Titre *","To":"Au","To do":"À traiter","To publish or schedule, confirm that WMA holds the streaming rights.":"Pour publier ou programmer, confirmez que WMA détient les droits de diffusion.","To run your account, your library and your recommendations (“Made for You”).":"Pour faire fonctionner votre compte, votre bibliothèque et vos recommandations (« Made for You »).","To send you a notification when a song you pre-saved is released.":"Pour vous prévenir quand une chanson pré-enregistrée sort.",
+"Total":"Total","Total revenue":"Revenus totaux","Tracks":"Titres","Trending":"Tendances","Trending Songs":"Chansons tendance","Trending filter":"Filtre des tendances","Try again":"Réessayer","Turn on notifications on this device":"Activer les notifications sur cet appareil","Type":"Type","Type an artist name or a video title.":"Tapez un nom d'artiste ou un titre de vidéo.",
+"Unique listeners":"Auditeurs uniques","Unlimited streaming, playlists, favourites and following artists. WMA MUSIC has no ads, for everyone.":"Écoute illimitée, playlists, favoris et artistes suivis. WMA MUSIC n'a pas de publicité, pour tout le monde.","Unpublish":"Dépublier","Unreadable format: check that the JSON is complete.":"Format illisible : vérifiez que le JSON est complet.","Update my submission":"Mettre à jour ma proposition","Upload the songs":"Envoyer les chansons","Upload your song and its details":"Envoyez votre chanson et ses informations",
+"Uploading the audio…":"Envoi de l'audio…","Uploading the cover…":"Envoi de la pochette…","Uploading the thumbnail…":"Envoi de la miniature…","Uploading the video…":"Envoi de la vidéo…","Use at least 8 characters.":"Utilisez au moins 8 caractères.",
+"Verified artist":"Artiste vérifié","Verified artist (shows the verification badge)":"Artiste vérifié (affiche le badge de vérification)","Video":"Vidéo","Videos":"Vidéos","View artist":"Voir l'artiste","Views":"Vues",
+"WMA ADMIN is reserved for WMA administrators (Editor or owner access).":"WMA ADMIN est réservé aux administrateurs WMA.","WMA ADMIN is reserved for the WMA team.":"WMA ADMIN est réservé à l'équipe WMA.","WMA Artist Dashboard":"Espace artiste WMA","WMA account":"Compte WMA",
+"WMA MUSIC can't connect to its service right now. Please try again later.":"WMA MUSIC ne parvient pas à se connecter pour l'instant. Réessayez plus tard.",
+"WMA MUSIC is a free music streaming service of WMA UNITED AFRICA (WMA HUB) dedicated to African artists. A free account is required to listen to music.":"WMA MUSIC est un service gratuit d'écoute de musique de WMA UNITED AFRICA (WMA HUB), consacré aux artistes africains. Un compte gratuit est nécessaire pour écouter la musique.",
+"WMA MUSIC is installed on your device.":"WMA MUSIC est installée sur votre appareil.","Watch on YouTube ↗":"Regarder sur YouTube ↗","Watch videos on YouTube ↗":"Voir les vidéos sur YouTube ↗","We may suspend an account that breaks these terms.":"Nous pouvons suspendre un compte qui ne respecte pas ces conditions.",
+"We work to keep the service available, but it may be interrupted for maintenance or for reasons outside our control. Catalogue content can change at any time.":"Nous faisons en sorte que le service reste disponible, mais il peut être interrompu pour maintenance ou pour des raisons indépendantes de notre volonté. Le catalogue peut changer à tout moment.",
+"Welcome back to WMA MUSIC.":"Bon retour sur WMA MUSIC.","Welcome to Premium!":"Bienvenue dans Premium !","Welcome to WMA MUSIC":"Bienvenue sur WMA MUSIC","What we collect":"Ce que nous collectons","Where do these songs go?":"Où vont ces chansons ?","Who processes it":"Qui les traite","Why we use it":"Pourquoi nous les utilisons","Wide banner, 2400 × 800 px recommended":"Bannière large, 2400 × 800 px recommandé","Withdraw":"Retirer","Write the playlist name on the cover":"Écrire le nom de la playlist sur la couverture",
+"You":"Vous","You are signed out":"Vous êtes déconnecté","You can view and edit your profile in the app. To get a copy of your data or delete your account, write to":"Vous pouvez voir et modifier votre profil dans l'application. Pour obtenir une copie de vos données ou supprimer votre compte, écrivez à",
+"You don't follow any artists yet.":"Vous ne suivez encore aucun artiste.","You don't have any playlists yet.":"Vous n'avez pas encore de playlist.","You haven't submitted any music yet.":"Vous n'avez encore proposé aucune musique.",
+"You must give accurate information and keep your password secret. You are responsible for what happens with your account. You can stop using WMA MUSIC at any time.":"Vous devez donner des informations exactes et garder votre mot de passe secret. Vous êtes responsable de l'utilisation de votre compte. Vous pouvez arrêter d'utiliser WMA MUSIC à tout moment.",
+"You're":"Vous êtes","You're signed in":"Vous êtes connecté","YouTube link *":"Lien YouTube *","YouTube or Spotify link":"Lien YouTube ou Spotify","Your Premium has ended: downloaded songs can't be played offline.":"Votre Premium est terminé : les chansons téléchargées ne peuvent plus être écoutées hors connexion.","Your activity":"Votre activité",
+"Your data is hosted by our technical providers: Supabase (database and authentication) and Vercel (hosting of the app). Videos linked from YouTube are played through YouTube's player, which has its own privacy policy. We do not sell your data.":"Vos données sont hébergées par nos prestataires techniques : Supabase (base de données et connexion) et Vercel (hébergement de l'application). Les vidéos YouTube sont lues avec le lecteur de YouTube, qui a sa propre politique de confidentialité. Nous ne vendons pas vos données.",
+"Your library":"Votre bibliothèque","Your library isn't available with this access level.":"Votre bibliothèque n'est pas disponible avec ce niveau d'accès.","Your name must be at least 2 characters long.":"Votre nom doit comporter au moins 2 caractères.","Your password has been changed.":"Votre mot de passe a été modifié.","Your password must be at least 8 characters long.":"Votre mot de passe doit comporter au moins 8 caractères.","Your playlists":"Vos playlists","Your rights":"Vos droits","Your subscription helps WMA MUSIC grow and promote its artists.":"Votre abonnement aide WMA MUSIC à grandir et à promouvoir ses artistes.",
+"button. It is in the bar at the bottom of Safari — on recent iPhones, tap":"en bas de Safari. Sur les iPhone récents, touchez","can see in the WMA Artist Dashboard. Several accounts can be linked to the same artist (manager, team).":"peut voir dans l'espace artiste WMA. Plusieurs comptes peuvent être liés au même artiste (manager, équipe).",
+"e.g. 2016":"ex. 2016","e.g. Afrobeats, Rumba":"ex. Afrobeats, Rumba","e.g. Artist name ft. Other artist":"ex. Nom de l'artiste ft. Autre artiste","e.g. DR Congo":"ex. RD Congo","e.g. Editorial picks":"ex. Sélection de la rédaction","e.g. Kinshasa":"ex. Kinshasa","e.g. Soukous":"ex. Soukous","e.g. WMA UNITED AFRICA":"ex. WMA UNITED AFRICA","e.g. booking@wmaua.com":"ex. booking@wmaua.com","e.g. distribution contract no. 2026-014":"ex. contrat de distribution n° 2026-014",
+"first, then":"d'abord, puis","on a song, or in its ⋮ menu.":"sur une chanson, ou dans son menu ⋮.","song(s) · statistics based on plays actually counted":"chanson(s) · statistiques basées sur les écoutes réellement comptées","songs you play, favourites, playlists, artists you follow, pre-saves and videos you watch.":"les chansons que vous écoutez, vos favoris, playlists, artistes suivis, pré-enregistrements et les vidéos que vous regardez.",
+"the country of your connection (for example “CD”), detected when you use the app. Your IP address is not stored.":"le pays de votre connexion (par exemple « CD »), détecté quand vous utilisez l'application. Votre adresse IP n'est pas conservée.","with your Mobile Money PIN on":"avec votre code PIN Mobile Money sur",
+"your name, email address and password (the password is stored encrypted by our authentication provider). If you sign in with Google, we receive your name and email from Google.":"votre nom, votre adresse e-mail et votre mot de passe (chiffré par notre prestataire de connexion). Si vous vous connectez avec Google, nous recevons votre nom et votre e-mail de Google.",
+"“Accept & publish” adds the song to the public catalogue right away (audio, cover and artist profile), then emails the artist the listening link.":"« Accept & publish » ajoute aussitôt la chanson au catalogue public (audio, pochette et profil de l'artiste), puis envoie le lien d'écoute à l'artiste par e-mail.",
+"‹ Back":"‹ Retour","↻ Refresh":"↻ Actualiser","(optional — shown in the player's Lyrics tab)":"(facultatif, affiché dans l'onglet Paroles du lecteur)","(top right).":"(en haut à droite).","(you)":"(vous)","/ month":"/ mois","30 days":"30 jours","7 days":"7 jours","90 days":"90 jours",
+"30 days of Premium. Pay with Mobile Money.":"30 jours de Premium. Paiement par Mobile Money.","Add 30 days to your current subscription.":"Ajoutez 30 jours à votre abonnement actuel.","Pay with Mobile Money.":"Paiement par Mobile Money.","A WMA HUB platform.":"Une plateforme WMA HUB.",
+"ACTIVATE PREMIUM":"ACTIVER PREMIUM","RENEW PREMIUM":"RENOUVELER PREMIUM","ADD A SONG":"AJOUTER UNE CHANSON","Accepted":"Acceptée","Activate Premium":"Activer Premium","Add a video":"Ajouter une vidéo","Add an album":"Ajouter un album","Add an artist":"Ajouter un artiste","Add it to your home screen in a few taps.":"Ajoutez-la à votre écran d'accueil en quelques gestes.","Add the album":"Ajouter l'album","Add the artist":"Ajouter l'artiste","Add to favourites":"Ajouter aux favoris","Administration":"Administration",
+"All":"Tout","All playlists":"Toutes les playlists","All videos":"Toutes les vidéos","Artist photo":"Photo de l'artiste","Audio file *":"Fichier audio *","Automatic":"Automatique","Browse by genre":"Parcourir par genre","Changes requested":"Modifications demandées","Charts & picks":"Classements et sélections","Choose the audio files":"Choisir les fichiers audio","Confirm with":"Confirmez avec",
+"Counting rules: a play counts after 30 seconds actually played (75% for a short song), with sound on and at normal speed; at most one play per listener per song every 30 minutes; a cap of 200 plays per listener per 24 hours. No data is added or estimated.":"Règles de comptage : une écoute compte après 30 secondes réellement jouées (75 % pour une chanson courte), avec le son et à vitesse normale ; au plus une écoute par auditeur et par chanson toutes les 30 minutes ; maximum 200 écoutes par auditeur par 24 heures. Aucune donnée n'est ajoutée ni estimée.",
+"Cover art":"Pochette","Cover artwork *":"Pochette *","Create an official playlist":"Créer une playlist officielle","DR Congo":"RD Congo","Daily streams (CSV)":"Écoutes par jour (CSV)","Download CSV":"Télécharger le CSV","Download for offline listening":"Télécharger pour écouter hors connexion","Download songs to play them with no internet connection. $1.50 / month.":"Téléchargez des chansons pour les écouter sans connexion internet. 1,50 $ / mois.","Downloads":"Téléchargements","Draft":"Brouillon","Editorial picks":"Sélection de la rédaction","Existing album":"Album existant",
+"FREE":"GRATUIT","Failed":"Échoué","Fan":"Fan","Featured on":"Présent sur","Find something new":"Découvrez du nouveau","Fix":"Corriger","Follow":"Suivre","For artists, producers & creators":"Pour les artistes, producteurs et créateurs","Full history":"Historique complet","Goes live as soon as you save":"Mise en ligne dès l'enregistrement","Hidden gems":"Pépites à découvrir","Hot":"Populaire","Hot right now":"En ce moment",
+"In review":"En étude","Install the app":"Installer l'application","Last 30 days":"30 derniers jours","Last 7 days":"7 derniers jours","Last 90 days":"90 derniers jours","Latest singles":"Derniers singles","Like":"J'aime","Live session":"Session live","Live sessions":"Sessions live","MISSING":"MANQUANTE","MORE":"PLUS","MP3, M4A, WAV, FLAC, OGG · 50 MB max":"MP3, M4A, WAV, FLAC, OGG · 50 Mo max","Make admin":"Rendre admin","Music manager":"Gestionnaire de musique","Music video":"Clip","Music videos":"Clips","Mute":"Couper le son","My image":"Mon image",
+"New":"Nouveau","New album / EP":"Nouvel album / EP","New official playlist":"Nouvelle playlist officielle","New submission":"Nouvelle proposition","Next song":"Chanson suivante","No":"Non","No favourites yet. Tap the heart on a song to add it here.":"Pas encore de favoris. Touchez le cœur d'une chanson pour l'ajouter ici.","Not selected":"Non sélectionné","Nothing yet.":"Rien pour l'instant.","Now playing":"En cours de lecture","OFFICIAL VIDEO":"CLIP OFFICIEL","Official playlists":"Playlists officielles","On Android or computer:":"Sur Android ou ordinateur :","Open the browser menu":"Ouvrez le menu du navigateur","Other":"Autre","Other link":"Autre lien","Overview":"Vue d'ensemble",
+"PUBLISHED":"PUBLIÉE","Pause":"Pause","Pending":"En attente","Play":"Lecture","Play all":"Tout lire","Player":"Lecteur","Playlist":"Playlist","Popular albums":"Albums populaires","Popular artists":"Artistes populaires","Pre-saves":"Pré-enregistrements","Previous song":"Chanson précédente","Profile":"Profil","Publish now":"Publier maintenant","Published":"Publiée","Recently played":"Écoutés récemment","Recommended playlists":"Playlists recommandées","Related":"Similaires","Releases":"Sorties","Remove admin":"Retirer l'admin","Repeat: off":"Répétition : désactivée",
+"Revenue = payments confirmed by pawaPay, before operator fees. Amounts are shown in the currency paid (no conversion).":"Revenus = paiements confirmés par pawaPay, avant frais des opérateurs. Les montants sont affichés dans la devise payée (sans conversion).",
+"SEND MY SUBMISSION":"ENVOYER MA PROPOSITION","SINGLE":"SINGLE","Schedule":"Programmer","Scheduled":"Programmée","See all":"Tout voir","Singles":"Singles","Song details":"Détails de la chanson","Song title":"Titre de la chanson","Statistics":"Statistiques","Submissions":"Propositions","Tap":"Touchez","The label's latest releases.":"Les dernières sorties du label.","The most played songs on WMA MUSIC.":"Les chansons les plus écoutées sur WMA MUSIC.","The official WMA selection.":"La sélection officielle WMA.","This year":"Cette année",
+"To count plays and produce statistics. Public figures (plays, followers) are totals only; artists and their teams see aggregated statistics by song and by country, never your name or email.":"Pour compter les écoutes et produire des statistiques. Les chiffres publics (écoutes, abonnés) sont des totaux ; les artistes et leurs équipes voient des statistiques regroupées par chanson et par pays, jamais votre nom ni votre e-mail.",
+"Top Songs":"Top des chansons","UPLOAD AN ALBUM":"ENVOYER UN ALBUM","UPLOAD SINGLES":"ENVOYER DES SINGLES","Unknown artist":"Artiste inconnu","Unpublished":"Dépubliée","Up next":"À suivre","Upcoming (scheduled)":"À venir (programmées)","Upload an album (several songs)":"Envoyer un album (plusieurs chansons)","Upload several songs":"Envoyer plusieurs chansons","Upload singles":"Envoyer des singles","Uploading…":"Envoi…",
+"Use a YouTube link (recommended: no size limit, YouTube hosts the video) or upload a video file (50 MB maximum). View counts shown here are WMA MUSIC views (10 seconds watched), not YouTube's own counter.":"Utilisez un lien YouTube (recommandé : pas de limite de taille, YouTube héberge la vidéo) ou envoyez un fichier vidéo (50 Mo maximum). Les vues affichées ici sont des vues WMA MUSIC (10 secondes regardées), pas le compteur de YouTube.",
+"Volume":"Volume","WMA MUSIC, home":"WMA MUSIC, accueil","WMA Team":"Équipe WMA","Website":"Site web","Yes":"Oui","YOUR MUSIC. YOUR AFRICA. YOUR SOUND.":"YOUR MUSIC. YOUR AFRICA. YOUR SOUND.","You are on the free plan.":"Vous êtes sur l'offre gratuite.",
+"You'll receive a prompt on your phone to confirm with your PIN. Premium is activated only after your operator confirms the payment. No automatic renewal.":"Vous recevrez une demande sur votre téléphone à confirmer avec votre code PIN. Premium n'est activé qu'après confirmation du paiement par votre opérateur. Pas de renouvellement automatique.",
+"Your history will appear here after you listen to a song for 30 seconds.":"Votre historique apparaîtra ici après 30 secondes d'écoute d'une chanson.","Your song":"Votre chanson","and":"et","everywhere":"partout","or":"ou",
+"Take your music everywhere.":"Emportez votre musique partout.","Download songs":"Télécharger des chansons","Everything in Free":"Tout ce qu'offre la version gratuite","Get Premium":"Passer à Premium","Total":"Total","Country":"Pays","Uganda":"Ouganda","Kenya":"Kenya","Phone number":"Numéro de téléphone","Hide":"Masquer",
+"Active until":"Actif jusqu'au","Expired on":"Expiré le","Paid":"Payé","Waiting":"En attente","until":"jusqu'au","Payment history":"Historique des paiements","Remove download":"Retirer le téléchargement","Downloaded":"Téléchargée","Downloading…":"Téléchargement…","Remove all":"Tout retirer","on this device":"sur cet appareil",
+"Your subscription is suspended. Contact WMA MUSIC.":"Votre abonnement est suspendu. Contactez WMA MUSIC.","SUSPENDED":"SUSPENDU","Payment confirmed":"Paiement confirmé","Start listening":"Commencer à écouter","Downloads are unlocked.":"Les téléchargements sont débloqués.",
+"Language":"Langue","Automatic (phone language)":"Automatique (langue du téléphone)","Listen free on":"Écoutez gratuitement sur","Install Now":"Installer maintenant",
+"Subscribers":"Abonnés","Payments received":"Paiements reçus","Activity log":"Historique des actions","Listener":"Auditeur","Since":"Depuis","Expires":"Expire","Suspended":"Suspendu","Reactivated":"Réactivé",
+"Where do these songs go?":"Où vont ces chansons ?","Artist for all the singles (you can change it for each song below)":"Artiste de tous les singles (modifiable pour chaque chanson ci-dessous)","Main artist (above)":"Artiste principal (ci-dessus)","DONE":"TERMINÉ","FAILED":"ÉCHEC",
+"Accepted":"Acceptée","Rejected":"Refusée","Received":"Reçue","Withdraw":"Retirer","Profile":"Profil","Coming soon":"Bientôt disponible","Upcoming releases":"Sorties à venir","Pre-save":"Pré-enregistrer","Pre-saved":"Pré-enregistrée",
+"OFFLINE":"HORS LIGNE","No internet connection.":"Pas de connexion internet.","Previous":"Précédent","Song":"Chanson","Video":"Vidéo","Songs":"Chansons"
+};
+/* Formulations dynamiques (avec nombres ou noms) */
+const I18N_FR_RX=[
+[/^(\d+) songs?$/,(m,n)=>`${n} chanson${n>1?'s':''}`],
+[/^(\d+) songs? · (.+)$/,(m,n,r)=>`${n} chanson${n>1?'s':''} · ${r.replace(/\bmin\b/,'min').replace(/(\d+) h (\d+) min/,'$1 h $2 min')}`],
+[/^WMA MUSIC · (\d+) songs?$/,(m,n)=>`WMA MUSIC · ${n} chanson${n>1?'s':''}`],
+[/^(\d+) plays? in the last 30 days(.*)$/,(m,n,r)=>`${n} écoute${n>1?'s':''} ces 30 derniers jours${r.replace('DR Congo','RD Congo')}`],
+[/^(\d+) play\(s\)$/,(m,n)=>`${n} écoute${n>1?'s':''}`],
+[/^(\d+) streams?$/,(m,n)=>`${n} écoute${n>1?'s':''}`],
+[/^· (\d+) listeners?$/,(m,n)=>`· ${n} auditeur${n>1?'s':''}`],
+[/^(\d+) listeners?$/,(m,n)=>`${n} auditeur${n>1?'s':''}`],
+[/^(\d+) followers?$/,(m,n)=>`${n} abonné${n>1?'s':''}`],
+[/^(\d+) views?$/,(m,n)=>`${n} vue${n>1?'s':''}`],
+[/^(.+) · (\d+) views?$/,(m,a,n)=>`${a} · ${n} vue${n>1?'s':''}`],
+[/^(.+) · Uploaded file$/,(m,a)=>`${a} · Fichier envoyé`],
+[/^(\d+) artist\(s\) without a profile photo:$/,(m,n)=>`${n} artiste(s) sans photo de profil :`],
+[/^Play (.+)$/,(m,x)=>`Lire ${x}`],[/^Pause (.+)$/,(m,x)=>`Pause ${x}`],
+[/^Cover of (.+)$/,(m,x)=>`Pochette de ${x}`],[/^Photo of (.+)$/,(m,x)=>`Photo de ${x}`],
+[/^Go to (.+)$/,(m,x)=>`Aller à ${x}`],[/^More from (.+)$/,(m,x)=>`Plus de ${x}`],
+[/^More options for (.+)$/,(m,x)=>`Plus d'options pour ${x}`],[/^Remove (.+) from this playlist$/,(m,x)=>`Retirer ${x} de cette playlist`],
+[/^Playing from your queue · (\d+) songs? up next$/,(m,n)=>`Lecture depuis votre file · ${n} chanson${n>1?'s':''} à suivre`],
+[/^Songs \((\d+) live\)$/,(m,n)=>`Chansons (${n} en ligne)`],
+[/^(Subscribers|Payments received|Failed|Waiting|Activity log) · (\d+)$/,(m,x,n)=>`${({Subscribers:'Abonnés','Payments received':'Paiements reçus',Failed:'Échoués',Waiting:'En attente','Activity log':'Historique'})[x]} · ${n}`],
+[/^(.+) · Artist$/,(m,x)=>`${x.replace('DR Congo','RD Congo')} · Artiste`],
+[/^Streams per day over the last 30 days\. Highest: (\d+)\.$/,(m,n)=>`Écoutes par jour sur les 30 derniers jours. Maximum : ${n}.`],
+[/^Real data from WMA MUSIC listeners · updated (.+)$/,(m,d)=>`Données réelles des auditeurs WMA MUSIC · mise à jour le ${d}`],
+[/^Last updated: (.+)$/,(m,d)=>`Dernière mise à jour : ${d}`],
+[/^(\d+) songs? uploaded (and published|and scheduled|as drafts)$/,(m,n,w)=>`${n} chanson${n>1?'s':''} envoyée${n>1?'s':''} ${({' and published':'et publiée','and published':'et publiée','and scheduled':'et programmée','as drafts':'en brouillon'})[w]}${n>1&&w!=='as drafts'?'s':''}`],
+[/^Uploading (\d+) \/ (\d+)…$/,(m,a,b)=>`Envoi ${a} / ${b}…`],
+[/^(\d+) songs? · ([\d.]+) MB · (each one becomes a single|in this order on the album)$/,(m,n,mb,w)=>`${n} chanson${n>1?'s':''} · ${mb.replace('.',',')} Mo · ${w==='each one becomes a single'?'chacune devient un single':'dans cet ordre sur l\'album'}`],
+[/^(\d+) songs? · ([\d.]+) MB on this device$/,(m,n,mb)=>`${n} chanson${n>1?'s':''} · ${mb.replace('.',',')} Mo sur cet appareil`],
+[/^Downloading “(.+)”…$/,(m,x)=>`Téléchargement de « ${x} »…`],
+[/^Premium · until (.+)$/,(m,d)=>`Premium · jusqu'au ${d}`],
+[/^(\d+) song(s)? · ([\d,]+) MB(.*)$/,null]
+].filter(r=>r[1]);
+/* Quelques textes écrits directement en français dans le code : en anglais pour les autres langues */
+const I18N_EN_FIX={"Annuler":"Cancel","Retirer":"Remove","HORS LIGNE":"OFFLINE"};
+const I18N_EN_RX=[[/^Photo de (.+)$/,(m,x)=>`Photo of ${x}`]];
+/* ---------- Langue de l'interface : suit la langue du téléphone (français ou anglais), modifiable dans le profil ---------- */
+const I18N=(()=>{
+  let pref='auto';try{pref=localStorage.getItem('wma_lang')||'auto'}catch(e){}
+  const dev=((navigator.languages&&navigator.languages[0])||navigator.language||'en').toLowerCase();
+  const lang=pref==='fr'||pref==='en'?pref:(dev.startsWith('fr')?'fr':'en');
+  return {pref,lang,dev};
+})();
+document.documentElement.lang=I18N.lang;
+/* Dates et nombres dans la langue choisie */
+if(I18N.lang==='fr'){
+  const fx=l=>(l==null||(typeof l==='string'&&/^en/i.test(l)))?'fr-FR':l;
+  const D=Date.prototype,N=Number.prototype;
+  const _d=D.toLocaleDateString,_s=D.toLocaleString,_t=D.toLocaleTimeString,_n=N.toLocaleString;
+  D.toLocaleDateString=function(l,o){return _d.call(this,fx(l),o)};
+  D.toLocaleString=function(l,o){return _s.call(this,fx(l),o)};
+  D.toLocaleTimeString=function(l,o){return _t.call(this,fx(l),o)};
+  N.toLocaleString=function(l,o){return _n.call(this,fx(l),o)};
+}
+const I18N_ATTR_ONLY=[/^Add .+ to a playlist$/,/^Share /,/^Play /,/^Pause /,/^Cover of /,/^Photo of /,/^Go to /,/^More from /,/^More options for /,/^Remove .+ from this playlist$/];
+const I18N_EXTRA_RX=[
+  [/^Add (.+) to a playlist$/,(m,x)=>`Ajouter ${x} à une playlist`],[/^Share (.+)$/,(m,x)=>`Partager ${x}`],[/^Welcome, (.+)!$/,(m,x)=>`Bienvenue, ${x} !`],[/^Welcome back, (.+)!$/,(m,x)=>`Bon retour, ${x} !`],
+  [/^([\d,.\s]+) UGX \/ month in Uganda · Mobile Money$/,(m,n)=>`${n.replace(/,/g,' ')} UGX / mois en Ouganda · Mobile Money`],
+  [/^Single · (.+) · unknown duration$/,(m,g)=>`Single · ${g} · durée inconnue`],
+  [/^(.+): (\d+) streams?$/,(m,d,n)=>`${d} : ${n} écoute${n>1?'s':''}`],
+  [/^Upload the song (\d+)$/,(m,n)=>`Envoyer la chanson ${n}`],
+  [/^(.{0,40})\bDR Congo\b(.{0,40})$/,(m,a,b)=>`${a}RD Congo${b}`],
+  [/^“(.+)” is not an audio file and was skipped\.$/,(m,x)=>`« ${x} » n'est pas un fichier audio : il a été ignoré.`],
+  [/^Produced by (.+)$/,(m,x)=>`Produit par ${x}`],[/^Written by (.+)$/,(m,x)=>`Écrit par ${x}`],
+  [/^(\d+) results?$/,(m,n)=>`${n} résultat${n>1?'s':''}`],[/^(\d+) albums?$/,(m,n)=>`${n} album${n>1?'s':''}`],
+  [/^(\d+) playlists?$/,(m,n)=>`${n} playlist${n>1?'s':''}`],[/^(\d+) artists?$/,(m,n)=>`${n} artiste${n>1?'s':''}`],
+  [/^(\d+) plays?$/,(m,n)=>`${n} écoute${n>1?'s':''}`],[/^(\d+) monthly listeners?$/,(m,n)=>`${n} auditeur${n>1?'s':''} mensuel${n>1?'s':''}`]
+];
+const I18N_MORE={"WMA administrator":"Administrateur WMA","Signed in with your Claude account":"Connecté avec votre compte Claude","Pick a song":"Choisissez une chanson","Search WMA MUSIC":"Rechercher sur WMA MUSIC","What do you want to listen to?":"Que voulez-vous écouter ?","Good morning":"Bonjour","Good afternoon":"Bon après-midi","Good evening":"Bonsoir","Popular":"Populaire","Discography":"Discographie","Appears on":"Apparaît sur","Fans also like":"Les fans aiment aussi","Show all":"Tout afficher","Show less":"Afficher moins","Liked Songs":"Titres likés","Unfollow":"Ne plus suivre","Queue":"File d'attente","Clear":"Effacer","Credits":"Crédits","Album details":"Détails de l'album","Song details":"Détails de la chanson","Unknown":"Inconnu","Other countries":"Autres pays","Today":"Aujourd'hui","Yesterday":"Hier","Following ✓":"Abonné ✓","Cover ready.":"Pochette prête.","All the songs are already uploaded.":"Toutes les chansons sont déjà envoyées.","Choose the artist of each single (or a main artist for all).":"Choisissez l'artiste de chaque single (ou un artiste principal pour tous).","The upload stopped. Check your connection and try again.":"L'envoi s'est arrêté. Vérifiez votre connexion et réessayez.","Choose the audio files.":"Choisissez les fichiers audio.","LIVE SESSION":"SESSION LIVE","follower(s) ·":"abonné(s) ·","Afrobeat, afro-pop and amapiano.":"Afrobeat, afro-pop et amapiano.","unknown duration":"durée inconnue","This version of WMA MUSIC uses your Claude account, so there's no password to create. Your favourites, playlists and plays are saved automatically.":"Cette version de WMA MUSIC utilise votre compte Claude : aucun mot de passe à créer. Vos favoris, playlists et écoutes sont enregistrés automatiquement.","Paste the artist export from the site (JSON from the Supabase table, or one “Name, photo URL” line per artist), or choose the exported file. Only the photo is updated: names and biographies stay the same.":"Collez l'export des artistes du site (JSON de la table Supabase, ou une ligne « Nom, URL de la photo » par artiste), ou choisissez le fichier exporté. Seule la photo est mise à jour : les noms et biographies ne changent pas.","Songs, artists, albums, playlists":"Chansons, artistes, albums, playlists"};
+function i18nLookup(s,attr){
+  if(I18N.lang==='fr'){
+    const v=I18N_MORE[s]??I18N_FR[s];if(v!=null)return v;
+    if(!attr&&I18N_ATTR_ONLY.some(r=>r.test(s)))return null;
+    for(const [rx,f] of I18N_FR_RX.concat(I18N_EXTRA_RX)){const m=s.match(rx);if(m)return f(...m)}
+    if(s.endsWith(':')){const b=I18N_MORE[s.slice(0,-1)]??I18N_FR[s.slice(0,-1)];if(b)return b+' :'}
+    return null;
+  }
+  const v=I18N_EN_FIX[s];if(v!=null)return v;
+  for(const [rx,f] of I18N_EN_RX){const m=s.match(rx);if(m)return f(...m)}
+  return null;
+}
+const I18N_CACHE=new Map();
+function i18nT(raw,attr){
+  if(!raw)return raw;const k=(attr?'@':'')+raw;if(I18N_CACHE.has(k))return I18N_CACHE.get(k);
+  const m=raw.match(/^(\s*)([\s\S]*?)(\s*)$/),core=m[2].replace(/\s+/g,' ');let out=raw;
+  if(core&&/[A-Za-zÀ-ÿ]/.test(core)){const t=i18nLookup(core,attr);if(t!=null&&t!==core)out=m[1]+t+m[3]}
+  if(I18N_CACHE.size>5000)I18N_CACHE.clear();I18N_CACHE.set(k,out);return out;
+}
+const I18N_SKIP=new Set(['SCRIPT','STYLE','TEXTAREA','CODE','PRE','NOSCRIPT']);
+const i18nSkip=el=>{for(let e=el;e&&e!==document.documentElement;e=e.parentElement){if(I18N_SKIP.has(e.tagName)||e.isContentEditable||e.getAttribute('translate')==='no')return true}return false};
+const I18N_ATTRS=['placeholder','aria-label','title','alt'];
+function i18nText(n){if(!n.parentElement||i18nSkip(n.parentElement))return;const t=i18nT(n.data);if(t!==n.data)n.data=t}
+function i18nAttrs(el){if(i18nSkip(el))return;
+  for(const a of I18N_ATTRS){const v=el.getAttribute(a);if(v){const t=i18nT(v,true);if(t!==v)el.setAttribute(a,t)}}
+  if(el.tagName==='INPUT'&&/^(button|submit)$/i.test(el.type)&&el.value){const t=i18nT(el.value,true);if(t!==el.value)el.value=t}}
+function i18nWalk(root){
+  if(root.nodeType===3)return i18nText(root);if(root.nodeType!==1||I18N_SKIP.has(root.tagName))return;
+  i18nAttrs(root);const w=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);let n;
+  while((n=w.nextNode())){if(n.nodeType===3)i18nText(n);else i18nAttrs(n)}
+}
+function i18nStart(){
+  i18nWalk(document.documentElement);
+  new MutationObserver(ms=>{for(const m of ms){
+    if(m.type==='childList')m.addedNodes.forEach(i18nWalk);
+    else if(m.type==='characterData')i18nText(m.target);
+    else if(m.type==='attributes')i18nAttrs(m.target);
+  }}).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:I18N_ATTRS});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',i18nStart);else i18nStart();
+
+/* Choix de la langue dans le profil */
+const _profileI18n=pages.profile;pages.profile=()=>{const h=_profileI18n();if(!api.me())return h;
+  const o=(v,l)=>`<option value="${v}" ${I18N.pref===v?'selected':''}>${l}</option>`;
+  return h+`<div class="panel" style="margin-top:22px;max-width:460px"><h3 style="font-size:18px;margin-bottom:12px">Language</h3><div class="fld"><label for="langSel" class="muted" style="font-size:13px">Automatic (phone language)</label><select id="langSel" translate="no">${o('auto',I18N.lang==='fr'?'Automatique':'Automatic')}${o('en','English')}${o('fr','Français')}</select></div></div>`};
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='langSel'){try{localStorage.setItem('wma_lang',e.target.value)}catch(x){}location.reload()}});
 
 
 /* =========================================================
