@@ -8,6 +8,10 @@
   ],
   "rewrites": [
     {
+      "source": "/.well-known/assetlinks.json",
+      "destination": "/assetlinks.json"
+    },
+    {
       "source": "/s/:k/:id",
       "destination": "/api/share?k=:k&id=:id"
     },
@@ -25,6 +29,36 @@
     }
   ],
   "headers": [
+    {
+      "source": "/assetlinks.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
+    {
+      "source": "/wma-music.apk",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/vnd.android.package-archive"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"WMA-MUSIC.apk\""
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
     {
       "source": "/artists/(.*)",
       "headers": [
