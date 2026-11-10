@@ -71,6 +71,7 @@ summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-cont
 summary::after{content:"+";color:var(--or);font-size:22px;line-height:1}
 details[open] summary::after{content:"–"}
 details p{color:#c9c9c9;margin:12px 0 0}
+.alt{margin:18px 0 0;color:var(--mu);font-size:15px}.alt a{color:var(--or);font-weight:700}
 .final{text-align:center}
 .final .cta{justify-content:center}
 footer{border-top:1px solid var(--ln);padding-block:28px 40px;color:var(--mu);font-size:14px;display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}
@@ -101,24 +102,25 @@ footer a{text-decoration:none}
       <a class="btn ghost" href="#steps" data-t="how">Comment installer</a>
     </div>
     <div class="status" id="status" role="status" aria-live="polite"></div>
-    <div class="meta"><span data-t="m1">100 % gratuit</span><span data-t="m2">Sans App Store ni Play Store</span><span data-t="m3">Très léger</span></div>
+    <div class="meta"><span data-t="m1">100 % gratuit</span><span data-t="m2">Sans App Store ni Play Store</span><span data-t="m3">Très léger (1 Mo)</span><span><a href="/wma-music.apk" data-t="m4">APK Android</a></span></div>
   </div>
   <div class="phone"><img src="/artists/app-accueil.jpg" width="585" height="1266" alt="Écran d'accueil de l'application WMA MUSIC" data-ta="alt"></div>
 </div>
 
 <section id="steps">
   <h2 data-t="sh">Installer en 3 étapes</h2>
-  <p class="sub" data-t="ss">WMA MUSIC s'installe depuis votre navigateur, sans passer par un magasin d'applications. L'icône apparaît ensuite sur votre écran d'accueil, comme une application classique.</p>
+  <p class="sub" data-t="ss">Sur Android, installez l'APK officiel de WMA MUSIC. Sur iPhone et ordinateur, l'application s'installe depuis le navigateur. L'icône apparaît ensuite sur votre écran d'accueil, comme une application classique.</p>
   <div class="tabs" role="tablist">
     <button type="button" role="tab" data-os="android" data-t="ta">Android</button>
     <button type="button" role="tab" data-os="ios" data-t="ti">iPhone / iPad</button>
     <button type="button" role="tab" data-os="pc" data-t="tp">Ordinateur</button>
   </div>
   <ol class="steps" data-os-panel="android">
-    <li><div class="n">1</div><b data-t="a1">Ouvrez wmamusic.net</b><p data-t="a1p">Dans Google Chrome, allez sur www.wmamusic.net/download.</p></li>
-    <li><div class="n">2</div><b data-t="a2">Touchez « Télécharger »</b><p data-t="a2p">Le bouton orange en haut de cette page. Sinon, ouvrez le menu <span class="k">⋮</span> puis « Installer l'application ».</p></li>
-    <li><div class="n">3</div><b data-t="a3">Confirmez « Installer »</b><p data-t="a3p">L'icône WMA MUSIC apparaît sur votre écran d'accueil. Ouvrez-la et créez votre compte gratuit.</p></li>
+    <li><div class="n">1</div><b data-t="a1">Téléchargez l'APK</b><p data-t="a1p">Touchez le bouton orange « Télécharger » : le fichier WMA-MUSIC.apk (environ 1 Mo) se télécharge.</p></li>
+    <li><div class="n">2</div><b data-t="a2">Ouvrez le fichier</b><p data-t="a2p">Touchez la notification « Téléchargement terminé », ou ouvrez Fichiers › Téléchargements. Si Android le demande, autorisez « Installer des applis inconnues » pour Chrome.</p></li>
+    <li><div class="n">3</div><b data-t="a3">Touchez « Installer »</b><p data-t="a3p">Puis « Ouvrir ». L'icône WMA MUSIC reste sur votre écran d'accueil. Créez votre compte gratuit et écoutez.</p></li>
   </ol>
+  <p class="alt" data-os-note="android"><span data-t="alt1">Vous préférez ne pas installer d'APK ?</span> <a href="#" id="pwa" data-t="alt2">Installer depuis Chrome</a></p>
   <ol class="steps" data-os-panel="ios" hidden>
     <li><div class="n">1</div><b data-t="i1">Ouvrez la page dans Safari</b><p data-t="i1p">Sur iPhone, l'installation se fait depuis Safari.</p></li>
     <li><div class="n">2</div><b data-t="i2">Touchez « Partager »</b><p data-t="i2p">L'icône <span class="k">⬆︎</span> en bas de l'écran (sur certains iPhone, touchez d'abord <span class="k">•••</span>).</p></li>
@@ -145,8 +147,8 @@ footer a{text-decoration:none}
 <section>
   <h2 data-t="qh">Questions fréquentes</h2>
   <details><summary data-t="q1">WMA MUSIC est-elle gratuite ?</summary><p data-t="q1p">Oui. L'application et l'écoute sont gratuites, il suffit de créer un compte gratuit. Une option Premium payante permettra en plus de télécharger des chansons pour les écouter sans connexion.</p></details>
-  <details><summary data-t="q2">Pourquoi l'application n'est pas sur le Play Store ou l'App Store ?</summary><p data-t="q2p">WMA MUSIC est une application web installable : elle s'installe directement depuis le site, sans magasin d'applications, et se met à jour toute seule. Elle prend très peu de place sur votre téléphone.</p></details>
-  <details><summary data-t="q3">Le bouton « Télécharger » ne fait rien, que faire ?</summary><p data-t="q3p">Sur Android, ouvrez la page dans Google Chrome puis menu ⋮ › « Installer l'application ». Sur iPhone, ouvrez la page dans Safari puis Partager › « Sur l'écran d'accueil ». Si l'application est déjà installée, ouvrez-la depuis votre écran d'accueil.</p></details>
+  <details><summary data-t="q2">Comment installer sans le Play Store ?</summary><p data-t="q2p">Sur Android, téléchargez l'APK officiel depuis cette page (www.wmamusic.net). Android affiche un avertissement car le fichier ne vient pas du Play Store : c'est normal, autorisez l'installation pour Chrome. Sur iPhone, ajoutez WMA MUSIC à l'écran d'accueil depuis Safari. Le contenu se met à jour tout seul, sans réinstaller.</p></details>
+  <details><summary data-t="q3">Le bouton « Télécharger » ne fait rien, que faire ?</summary><p data-t="q3p">Sur Android, vérifiez vos téléchargements (Fichiers › Téléchargements), ou utilisez « Installer depuis Chrome » : menu ⋮ › « Installer l'application ». Sur iPhone, ouvrez la page dans Safari puis Partager › « Sur l'écran d'accueil ». Si l'application est déjà installée, ouvrez-la depuis votre écran d'accueil.</p></details>
   <details><summary data-t="q4">Je suis artiste, comment mettre ma musique sur WMA MUSIC ?</summary><p data-t="q4p">Créez un compte, puis utilisez « Proposer ma musique » dans l'application. L'équipe WMA écoute chaque proposition et vous répond.</p></details>
 </section>
 
@@ -165,15 +167,15 @@ footer a{text-decoration:none}
 
 <script>
 (function(){
-var EN={open:"Open in browser",eyebrow:"Free · Android · iPhone · Computer",h1:"Download <span>WMA MUSIC</span>",lead:"The free African music app. Listen to your artists, build your playlists and discover new voices, right from your phone's home screen.",btn:"Download for free",how:"How to install",m1:"100% free",m2:"No App Store or Play Store",m3:"Very light",sh:"Install in 3 steps",ss:"WMA MUSIC installs from your browser, without an app store. Its icon then appears on your home screen, like any other app.",ta:"Android",ti:"iPhone / iPad",tp:"Computer",
-a1:"Open wmamusic.net",a1p:"In Google Chrome, go to www.wmamusic.net/download.",a2:"Tap “Download”",a2p:"The orange button at the top of this page. Otherwise, open the <span class=\"k\">⋮</span> menu, then “Install app”.",a3:"Confirm “Install”",a3p:"The WMA MUSIC icon appears on your home screen. Open it and create your free account.",
+var EN={open:"Open in browser",eyebrow:"Free · Android · iPhone · Computer",h1:"Download <span>WMA MUSIC</span>",lead:"The free African music app. Listen to your artists, build your playlists and discover new voices, right from your phone's home screen.",btn:"Download for free",how:"How to install",m1:"100% free",m2:"No App Store or Play Store",m3:"Very light (1 MB)",sh:"Install in 3 steps",ss:"On Android, install the official WMA MUSIC APK. On iPhone and computer, the app installs from the browser. Its icon then appears on your home screen, like any other app.",ta:"Android",ti:"iPhone / iPad",tp:"Computer",
+a1:"Download the APK",a1p:"Tap the orange “Download” button: the WMA-MUSIC.apk file (about 1 MB) downloads.",a2:"Open the file",a2p:"Tap the “Download complete” notification, or open Files › Downloads. If Android asks, allow “Install unknown apps” for Chrome.",a3:"Tap “Install”",a3p:"Then “Open”. The WMA MUSIC icon stays on your home screen. Create your free account and listen.",alt1:"Prefer not to install an APK?",alt2:"Install from Chrome",m4:"Android APK",s_apk:"Downloading WMA-MUSIC.apk… Then open it from your notifications to install.",
 i1:"Open the page in Safari",i1p:"On iPhone, installation is done from Safari.",i2:"Tap “Share”",i2p:"The <span class=\"k\">⬆︎</span> icon at the bottom of the screen (on some iPhones, tap <span class=\"k\">•••</span> first).",i3:"“Add to Home Screen”",i3p:"Scroll down, choose “Add to Home Screen”, then “Add”. You're done.",
 p1:"Open Chrome or Edge",p1p:"Go to www.wmamusic.net/download.",p2:"Click “Download”",p2p:"Or click the install icon <span class=\"k\">⊕</span> on the right of the address bar.",p3:"Launch WMA MUSIC",p3p:"The app opens in its own window and stays in your programs.",
 fh:"What you'll find in WMA MUSIC",fs:"A WMA UNITED AFRICA platform dedicated to African artists.",f1:"Free streaming",f1p:"New music from African artists, free, with a free account.",f2:"Your playlists",f2p:"Build playlists, keep your favourites and find your history.",f3:"Follow your artists",f3p:"Get notified of new releases and pre-save upcoming songs.",f4:"Videos and live sessions",f4p:"Official music videos and live sessions from your artists in one place.",
-qh:"Frequently asked questions",q1:"Is WMA MUSIC free?",q1p:"Yes. The app and streaming are free; you just need a free account. A paid Premium option will also let you download songs to listen offline.",q2:"Why isn't the app on the Play Store or App Store?",q2p:"WMA MUSIC is an installable web app: it installs straight from the website, without an app store, and updates itself. It takes very little space on your phone.",q3:"The “Download” button does nothing. What should I do?",q3p:"On Android, open the page in Google Chrome, then ⋮ menu › “Install app”. On iPhone, open the page in Safari, then Share › “Add to Home Screen”. If the app is already installed, open it from your home screen.",q4:"I'm an artist. How do I get my music on WMA MUSIC?",q4p:"Create an account, then use “Submit your music” in the app. The WMA team listens to every submission and gets back to you.",
+qh:"Frequently asked questions",q1:"Is WMA MUSIC free?",q1p:"Yes. The app and streaming are free; you just need a free account. A paid Premium option will also let you download songs to listen offline.",q2:"How do I install without the Play Store?",q2p:"On Android, download the official APK from this page (www.wmamusic.net). Android shows a warning because the file doesn't come from the Play Store: that's normal, allow installation for Chrome. On iPhone, add WMA MUSIC to your home screen from Safari. Content updates by itself, no reinstall needed.",q3:"The “Download” button does nothing. What should I do?",q3p:"On Android, check your downloads (Files › Downloads), or use “Install from Chrome”: ⋮ menu › “Install app”. On iPhone, open the page in Safari, then Share › “Add to Home Screen”. If the app is already installed, open it from your home screen.",q4:"I'm an artist. How do I get my music on WMA MUSIC?",q4p:"Create an account, then use “Submit your music” in the app. The WMA team listens to every submission and gets back to you.",
 eh:"Africa's sound, in your pocket.",es:"Install WMA MUSIC in seconds.",fo:"Open WMA MUSIC",alt:"WMA MUSIC app home screen",
 s_ok:"WMA MUSIC is installing. Find it on your home screen.",s_inst:"WMA MUSIC is already installed on this device.",s_ios:"On iPhone: tap Share ⬆︎ then “Add to Home Screen” (steps below).",s_iosx:"Open this page in Safari to install WMA MUSIC on iPhone.",s_and:"Open the browser menu ⋮ then “Install app” (steps below).",s_pc:"Click the install icon ⊕ in the address bar, or use the browser menu › “Install WMA MUSIC”.",s_open:"Open the app"};
-var FR={s_ok:"WMA MUSIC s'installe. Retrouvez-la sur votre écran d'accueil.",s_inst:"WMA MUSIC est déjà installée sur cet appareil.",s_ios:"Sur iPhone : touchez Partager ⬆︎ puis « Sur l'écran d'accueil » (étapes ci-dessous).",s_iosx:"Ouvrez cette page dans Safari pour installer WMA MUSIC sur iPhone.",s_and:"Ouvrez le menu du navigateur ⋮ puis « Installer l'application » (étapes ci-dessous).",s_pc:"Cliquez l'icône d'installation ⊕ dans la barre d'adresse, ou menu du navigateur › « Installer WMA MUSIC ».",s_open:"Ouvrir l'application"};
+var FR={s_apk:"Téléchargement de WMA-MUSIC.apk… Ouvrez-le ensuite depuis vos notifications pour l'installer.",s_ok:"WMA MUSIC s'installe. Retrouvez-la sur votre écran d'accueil.",s_inst:"WMA MUSIC est déjà installée sur cet appareil.",s_ios:"Sur iPhone : touchez Partager ⬆︎ puis « Sur l'écran d'accueil » (étapes ci-dessous).",s_iosx:"Ouvrez cette page dans Safari pour installer WMA MUSIC sur iPhone.",s_and:"Ouvrez le menu du navigateur ⋮ puis « Installer l'application » (étapes ci-dessous).",s_pc:"Cliquez l'icône d'installation ⊕ dans la barre d'adresse, ou menu du navigateur › « Installer WMA MUSIC ».",s_open:"Ouvrir l'application"};
 var pref='auto';try{pref=localStorage.getItem('wma_lang')||'auto'}catch(e){}
 var dev=((navigator.languages&&navigator.languages[0])||navigator.language||'fr').toLowerCase();
 var en=pref==='en'||(pref!=='fr'&&!dev.startsWith('fr'));
@@ -188,7 +190,7 @@ var ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform=
     standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 var os=ios?'ios':android?'android':'pc';
 function showOS(o){document.querySelectorAll('[data-os]').forEach(function(b){var on=b.getAttribute('data-os')===o;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
-  document.querySelectorAll('[data-os-panel]').forEach(function(p){p.hidden=p.getAttribute('data-os-panel')!==o})}
+  document.querySelectorAll('[data-os-panel],[data-os-note]').forEach(function(p){p.hidden=(p.getAttribute('data-os-panel')||p.getAttribute('data-os-note'))!==o})}
 showOS(os);
 document.querySelectorAll('[data-os]').forEach(function(b){b.addEventListener('click',function(){showOS(b.getAttribute('data-os'))})});
 
@@ -200,11 +202,13 @@ window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();evt
 window.addEventListener('appinstalled',function(){evt=null;say(T.s_ok);setOpen()});
 function go(){
   if(standalone){location.href='/';return}
+  if(android){say(T.s_apk);location.href='/wma-music.apk';return}
   if(evt){evt.prompt();evt.userChoice.then(function(c){if(c&&c.outcome==='accepted'){say(T.s_ok);setOpen();standalone=true}});evt=null;return}
   if(ios){say(safari?T.s_ios:T.s_iosx)}else if(android){say(T.s_and)}else{say(T.s_pc)}
   showOS(os);document.getElementById('steps').scrollIntoView({behavior:'smooth',block:'start'});
 }
 document.getElementById('install').addEventListener('click',go);
+var pw=document.getElementById('pwa');if(pw)pw.addEventListener('click',function(e){e.preventDefault();if(evt){evt.prompt();evt=null}else say(T.s_and)});
 document.querySelectorAll('[data-install]').forEach(function(b){b.addEventListener('click',go)});
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('/sw.js').catch(function(){});
 })();

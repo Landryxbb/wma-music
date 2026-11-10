@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "net.wmamusic.www.twa",
+        "sha256_cert_fingerprints": ["FD:EB:98:45:4C:4D:1A:9B:C7:52:E5:D0:5A:51:4A:53:CB:9D:D2:47:FF:12:E7:41:7B:3D:94:AC:E4:67:27:17"]
+      }
+    }]
