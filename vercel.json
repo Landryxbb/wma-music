@@ -4,6 +4,10 @@
     {
       "path": "/api/premium?action=reconcile",
       "schedule": "15 3 * * *"
+    },
+    {
+      "path": "/api/mail?action=cron",
+      "schedule": "7 6 * * *"
     }
   ],
   "rewrites": [

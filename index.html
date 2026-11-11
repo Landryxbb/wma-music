@@ -232,6 +232,8 @@
 
 
 
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -599,6 +601,15 @@ body.no-track .player{display:none}
   #player .p-ctl .opt{display:none}
   #player .p-mini-prog{left:28px;right:28px;bottom:3px}
 }
+.ml-chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:var(--fg,#fff);cursor:pointer}
+.ml-chk input{flex:none;width:18px;height:18px;margin-top:2px;accent-color:#FF7A1A}
+.ml-ask{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin:4px 0 22px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,rgba(255,122,26,.16),rgba(255,122,26,.05));border:1px solid rgba(255,122,26,.35)}
+.ml-ask .ml-ic{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#FF7A1A;color:#0A0A0A;font-size:20px;font-weight:900}
+.ml-ask .ml-tx{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ml-ask .ml-tx b{font-size:15.5px}.ml-ask .ml-tx span{font-size:13.5px;color:var(--muted,#aaa);line-height:1.4}
+.ml-ask .ml-bt{display:flex;gap:8px;flex-wrap:wrap}
+.ml-rel{display:flex;align-items:center;gap:12px;min-width:0}.ml-rel img{width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none}
+.ml-rel div{display:flex;flex-direction:column;min-width:0}.ml-rel span{font-size:12.5px;color:var(--muted,#aaa)}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -1837,7 +1848,7 @@ pages.admin=sub=>{
     :api.me()?`<div class="auth"><h1>Access denied</h1><p class="muted">WMA ADMIN is reserved for the WMA team.</p><div class="actions"><a class="btn" href="#home">Back to home</a></div></div>`
     :`<div class="auth"><h1>WMA ADMIN</h1><p class="muted">Sign in with a WMA administrator account.</p><div class="actions"><a class="btn pri" href="#login">Sign in</a></div></div>`;
   sub=sub||'overview';
-  const nav=[['overview','Overview'],['submissions','Submissions'],['premium','Premium'],['songs','Music manager'],['artists','Artists'],['albums','Albums'],['playlists','Official playlists'],['genres','Genres'],['videos','Videos'],['users','Listeners'],['stats','Statistics']];
+  const nav=[['overview','Overview'],['submissions','Submissions'],['premium','Premium'],['emails','Emails'],['songs','Music manager'],['artists','Artists'],['albums','Albums'],['playlists','Official playlists'],['genres','Genres'],['videos','Videos'],['users','Listeners'],['stats','Statistics']];
   return `<div class="eyebrow">WMA UNITED AFRICA</div><h1 class="ltitle" style="margin-top:4px">WMA ADMIN</h1>
    ${cloud()?'':`<div class="note" style="margin-bottom:12px;border-color:var(--warn)"><b style="color:var(--fg)">Demo mode: nothing is published for other listeners.</b> Songs added here stay in this browser.<br>${/claude/.test(location.hostname)?'Open the app from your Claude account to use the shared database.':!window.WMA_CONFIG?'The config.js file is missing or has a typo (a missing quote or comma). Fix it, then redeploy the site on Vercel.':!window.WMA_CONFIG.supabaseUrl||!window.WMA_CONFIG.supabaseAnonKey?'config.js is empty: paste the Supabase URL and the public key, then redeploy.':!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(window.WMA_CONFIG.supabaseUrl)?'The Supabase URL in config.js is wrong: it must look exactly like https://xxxx.supabase.co (no /rest/v1/ and no trailing slash).':'The Supabase library could not load: check your internet connection and reload the page.'}</div>`}
    <nav class="adm-nav">${nav.map(([k,l])=>`<a href="#admin${k==='overview'?'':'-'+k}" class="${sub===k?'on':''}">${l}</a>`).join('')}</nav>${(admin[sub]||admin.overview)()}`;
@@ -3802,6 +3813,112 @@ const _admAlbumsBk=admin.albums;admin.albums=function(){let h=_admAlbumsBk.apply
   h=h.replace(/(<button class="btn pri" data-act="aAlbum">[\s\S]*?<\/button>)/,`$1<button class="btn" data-act="bulkUp">${I.upload} Upload an album (several songs)</button>`);
   return h.replace(/<button class="btn sm" data-act="aAlbum" data-id="([^"]+)">Edit<\/button>/g,'<button class="btn sm" data-act="bulkUp" data-id="$1">Add songs</button> <button class="btn sm" data-act="aAlbum" data-id="$1">Edit</button>')};
 
+/* ---------- E-mails « nouvelle sortie » : consentement des auditeurs + envoi depuis WMA ADMIN ---------- */
+const MAIL={loaded:false,ok:false,uid:null,row:null,busy:false,adm:null,admErr:'',admLoading:false,dueRun:false};
+const mailLang=()=>(typeof I18N!=='undefined'&&I18N.lang==='fr')?'fr':'en';
+async function mailLoad(force){
+  if(!supa()||!UID||!api.me()){MAIL.loaded=true;MAIL.ok=false;MAIL.uid=UID;MAIL.row=null;return}
+  if(MAIL.loaded&&MAIL.uid===UID&&!force)return;
+  try{const r=await SB.from('music_mail_prefs').select('opt_in,lang').eq('user_id',UID).maybeSingle();
+    if(r.error){MAIL.ok=false}else{MAIL.ok=true;MAIL.row=r.data||null}}catch(e){MAIL.ok=false}
+  MAIL.uid=UID;MAIL.loaded=true;
+  // choix fait à l'inscription, appliqué dès que le compte est connecté
+  let pend=null;try{pend=localStorage.getItem('wma_mail_pending')}catch(e){}
+  if(MAIL.ok&&pend!==null&&!MAIL.row){await mailSet(pend==='1','signup',true)}
+  try{localStorage.removeItem('wma_mail_pending')}catch(e){}
+  if(/^#(home|profile)?$/.test(location.hash||'#home'))rerender();
+}
+async function mailSet(on,source,quiet){
+  if(MAIL.busy)return false;MAIL.busy=true;
+  try{const r=await SB.rpc('music_mail_set',{p_opt:!!on,p_lang:mailLang(),p_source:source||'app'});if(r.error)throw r.error;
+    MAIL.row={opt_in:!!on,lang:mailLang()};if(!quiet)toast(on?'You will get an email for each new release':'New-release emails turned off');MAIL.busy=false;return true}
+  catch(e){MAIL.busy=false;if(!quiet)toast('This could not be saved.');return false}}
+const _odlMail=onDataLoaded;onDataLoaded=function(){_odlMail.apply(this,arguments);mailLoad(true)};
+
+/* Case à cocher à l'inscription */
+const _signupMail=pages.signup;pages.signup=function(){const h=_signupMail.apply(this,arguments);
+  if(!supa()||art()||h.indexOf('id="suErr"')<0)return h;
+  return h.replace('<div class="err" id="suErr"','<label class="ml-chk"><input type="checkbox" id="suMail" checked><span>Email me when new songs come out on WMA MUSIC. You can stop anytime.</span></label><div class="err" id="suErr"')};
+document.addEventListener('submit',e=>{if(e.target&&e.target.id==='signupForm'){const c=document.getElementById('suMail');if(c){try{localStorage.setItem('wma_mail_pending',c.checked?'1':'0')}catch(x){}}}},true);
+
+/* Question unique pour les comptes déjà inscrits (sur l'accueil) */
+const _homeMail=pages.home;pages.home=function(){const h=_homeMail.apply(this,arguments);
+  if(!MAIL.ok||MAIL.row||!api.me()||art())return h;
+  let skip=false;try{skip=sessionStorage.getItem('wma_mail_later')==='1'}catch(e){}if(skip)return h;
+  return `<div class="ml-ask" role="region" aria-label="New releases by email"><div class="ml-ic" aria-hidden="true">✉</div><div class="ml-tx"><b>Get new releases by email?</b><span>We'll email you when a new song or album comes out on WMA MUSIC. No spam, and you can stop anytime.</span></div>
+   <div class="ml-bt"><button class="btn pri sm" data-act="mailYes">Yes, email me</button><button class="btn sm" data-act="mailNo">No thanks</button></div></div>`+h};
+
+/* Réglage dans le profil */
+const _profileMail=pages.profile;pages.profile=function(){const h=_profileMail.apply(this,arguments);
+  if(!api.me()||!MAIL.ok)return h;const on=!!(MAIL.row&&MAIL.row.opt_in);
+  return h+`<div class="panel" style="margin-top:22px;max-width:460px"><h3 style="font-size:18px;margin-bottom:10px">Emails</h3>
+   <label class="ml-chk"><input type="checkbox" id="mailPref" ${on?'checked':''}><span>Email me when new songs come out on WMA MUSIC</span></label>
+   <p class="muted" style="font-size:13px;margin-top:8px">Sent to ${esc(api.me().email||'your account email')}. Every email has a link to stop.</p></div>`};
+document.addEventListener('change',async e=>{if(e.target&&e.target.id==='mailPref'){const ok=await mailSet(e.target.checked,'profile');if(!ok)e.target.checked=!e.target.checked}});
+document.addEventListener('click',async e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='mailYes'||a==='mailNo'){e.preventDefault();await mailSet(a==='mailYes','home_prompt');rerender()}
+},true);
+
+/* ---------- WMA ADMIN : E-mails ---------- */
+async function mailApi(action,body){const tok=await premToken();
+  const r=await fetch('/api/mail?action='+action,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json',...(tok?{Authorization:'Bearer '+tok}:{})},body:JSON.stringify(body||{})});
+  let j={};try{j=await r.json()}catch(x){}return {...j,http:r.status}}
+async function mailAdmLoad(){if(MAIL.admLoading)return;MAIL.admLoading=true;
+  try{const r=await SB.rpc('music_mail_admin_overview');if(r.error)throw r.error;MAIL.adm=r.data;MAIL.admErr=''}
+  catch(e){MAIL.admErr=/does not exist|function|schema cache/i.test(e.message||'')?'The email tables are not installed yet. Run supabase/07-emails.sql in Supabase › SQL Editor.':(e.message||'Could not load the email data.')}
+  MAIL.admLoading=false;if(location.hash==='#admin-emails')rerender();
+  // envois programmés arrivés à échéance, ou mis en pause par le quota de la veille
+  const c=(MAIL.adm&&MAIL.adm.campaigns)||[];
+  if(!MAIL.dueRun&&c.some(x=>(x.status==='scheduled'&&Date.parse(x.send_at)<=Date.now())||x.status==='sending'||(x.status==='paused'&&/quota/.test(x.note||'')))){MAIL.dueRun=true;const r=await mailApi('due');if(r.http===200){MAIL.adm=null;mailAdmLoad()}}}
+const mailNote=n=>!n?'':/daily_quota/.test(n)?'Daily limit reached (free Resend plan). Continues tomorrow.':/monthly_quota/.test(n)?'Monthly limit reached (free Resend plan).':n;
+const MAILST={scheduled:['Scheduled','pending'],sending:['Sending','pending'],paused:['Paused','pending'],done:['Sent','completed'],cancelled:['Cancelled','failed']};
+function mailReleases(){
+  const out=[],seen=new Set();
+  DB.tracks.filter(t=>t.status==='published'||t.status==='scheduled').forEach(t=>{
+    if(t.albumId&&api.album(t.albumId)){if(seen.has(t.albumId))return;seen.add(t.albumId);const al=api.album(t.albumId);
+      const ts=DB.tracks.filter(x=>x.albumId===t.albumId&&(x.status==='published'||x.status==='scheduled'));const live=ts.some(isLive);
+      const at=live?Math.max(...ts.filter(isLive).map(x=>pubDate(x)||0)):Math.min(...ts.map(x=>x.publishAt||Infinity));
+      out.push({kind:'album',id:al.id,title:al.title,artist:(api.artist(al.artistId)||{}).name||'',cover:albumCover(al),at,live,n:ts.length})}
+    else out.push({kind:'track',id:t.id,title:t.title,artist:(api.artist(t.artistId)||{}).name||'',cover:trackCover(t),at:pubDate(t)||0,live:isLive(t)})});
+  return out.sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,30)}
+admin.emails=()=>{
+  if(!supa())return '<div class="empty">Emails are managed on www.wmamusic.net.</div>';
+  if(!MAIL.adm&&!MAIL.admErr){mailAdmLoad();return '<div class="empty">Loading…</div>'}
+  if(MAIL.admErr)return `<div class="note" style="border-color:var(--warn)">${esc(MAIL.admErr)}</div><div class="actions"><button class="btn" data-act="mailAdmReload">Retry</button></div>`;
+  const D=MAIL.adm,camps=D.campaigns||[],by={};camps.forEach(c=>{if(c.status!=='cancelled'||!by[c.kind+':'+c.ref_id])by[c.kind+':'+c.ref_id]=c});
+  const rel=mailReleases(),d=(x)=>x?new Date(x).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
+  const row=r=>{const c=by[r.kind+':'+r.id],st=c&&MAILST[c.status];
+    const btn=!c||c.status==='cancelled'?`<button class="btn sm pri" data-act="mailSend" data-k="${r.kind}" data-id="${esc(r.id)}">${r.live?'Send email':'Email on release day'}</button>`
+      :c.status==='paused'?`<button class="btn sm" data-act="mailResume" data-c="${c.id}">Resume</button>`:'';
+    return `<tr><td><div class="ml-rel"><img src="${r.cover}" alt="" loading="lazy"><div><b>${esc(r.title)}</b><span>${esc(r.artist)}${r.kind==='album'?` · ${r.n} songs`:''}</span></div></div></td>
+      <td>${r.live?d(r.at):`<span class="pm-st pending">Out ${d(r.at)}</span>`}</td>
+      <td>${st?`<span class="pm-st ${st[1]}">${st[0]}</span>${c.sent?`<div class="muted" style="font-size:12px">${c.sent} sent</div>`:''}${c.note?`<div class="muted" style="font-size:12px">${esc(mailNote(c.note))}</div>`:''}`:'<span class="muted">—</span>'}</td><td>${btn}</td></tr>`};
+  const hist=camps.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Release</th><th>Planned</th><th>Status</th><th>Sent</th><th></th></tr></thead><tbody>${camps.map(c=>{const st=MAILST[c.status]||[c.status,'pending'];
+    return `<tr><td><b>${esc(c.title)}</b><div class="muted" style="font-size:12px">${esc(c.artist||'')} · ${c.kind==='album'?'Album':'Song'}</div></td><td>${new Date(c.send_at).toLocaleString('en-GB')}</td>
+      <td><span class="pm-st ${st[1]}">${st[0]}</span>${c.note?`<div class="muted" style="font-size:12px">${esc(mailNote(c.note))}</div>`:''}</td><td><b>${c.sent}</b></td>
+      <td>${['scheduled','paused','sending'].includes(c.status)?`<button class="btn sm danger" data-act="mailCancel" data-c="${c.id}">Cancel</button>`:''}</td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">No emails sent yet.</div>';
+  return `<div class="kpis"><div class="kpi"><b>${D.opted_in}</b><span>Listeners who accepted emails</span></div><div class="kpi"><b>${D.not_asked}</b><span>Not answered yet</span></div><div class="kpi"><b>${D.opted_out}</b><span>Said no / unsubscribed</span></div>
+    <div class="kpi"><b>${D.sent_24h} / 90</b><span>Sent in the last 24 h</span></div><div class="kpi"><b>${D.sent_30d} / 2900</b><span>Sent in the last 30 days</span></div></div>
+   <p class="muted" style="margin:10px 0 18px;font-size:13px">Only listeners who accepted and confirmed their email address receive these emails. Free Resend plan: up to 100 emails a day and 3,000 a month. When the limit is reached, sending pauses and continues the next day.</p>
+   <h3 style="font-size:18px;margin:6px 0 12px">Announce a release</h3>
+   ${rel.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Release</th><th>Date</th><th>Email</th><th></th></tr></thead><tbody>${rel.map(row).join('')}</tbody></table></div>`:'<div class="empty">No published or scheduled songs yet.</div>'}
+   <h3 style="font-size:18px;margin:26px 0 12px">History</h3>${hist}
+   <div class="actions"><button class="btn sm" data-act="mailAdmReload">Refresh</button></div>`};
+document.addEventListener('click',async e=>{const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='mailAdmReload'){e.preventDefault();MAIL.adm=null;MAIL.admErr='';MAIL.dueRun=false;rerender()}
+  else if(a==='mailSend'||a==='mailResume'){e.preventDefault();if(el.disabled)return;
+    const r0=a==='mailSend'?mailReleases().find(x=>x.kind===el.dataset.k&&x.id===el.dataset.id):null;
+    if(a==='mailSend'){const n=(MAIL.adm&&MAIL.adm.opted_in)||0;
+      openModal(`<h3>${r0&&r0.live?'Send the email':'Email on release day'}</h3><p class="muted">“${esc(r0?r0.title:'')}”${r0&&r0.artist?' — '+esc(r0.artist):''}</p>
+        <p style="margin:12px 0">${r0&&r0.live?`An email will be sent now to the <b>${n}</b> listener(s) who accepted new-release emails.`:`The email will be sent automatically on release day (${esc(new Date(r0.at).toLocaleString('en-GB'))}) to the listeners who accepted. Open WMA ADMIN that day, or set up the daily automatic sending, so it goes out.`}</p>
+        <div class="err" id="mailE"></div><div class="actions" style="margin-top:0"><button class="btn pri" id="mailGo">${r0&&r0.live?'Send now':'Schedule'}</button><button class="btn" type="button" data-act="close">Cancel</button></div>`);
+      $('#mailGo').onclick=async()=>{const b=$('#mailGo');b.disabled=true;b.textContent='Sending…';const r=await mailApi('send',{kind:el.dataset.k,id:el.dataset.id});
+        if(r.http===200){closeModal();const c=r.campaign||{};toast(r.scheduled?'Email scheduled for release day':c.status==='done'?`Email sent to ${c.sent} listener(s)`:c.status==='paused'?`${c.sent} sent — paused: ${mailNote(c.note)}`:'Sending started');MAIL.adm=null;rerender()}
+        else{b.disabled=false;b.textContent='Try again';$('#mailE').textContent=r.error==='already_exists'?'An email was already created for this release.':r.error==='not_live'?'This release is not published or scheduled.':r.error==='mail_not_configured'?'Resend is not configured (RESEND_API_KEY and MAIL_FROM in Vercel).':r.error==='forbidden'?'Access denied':(r.detail||r.error||'This could not be sent.')}}}
+    else{el.disabled=true;const r=await mailApi('send',{campaignId:el.dataset.c});const c=r.campaign||{};toast(r.http===200?(c.status==='done'?'Email sent':`${c.sent||0} sent${c.note?' — '+mailNote(c.note):''}`):(r.detail||r.error||'This could not be sent.'));MAIL.adm=null;rerender()}}
+  else if(a==='mailCancel'){e.preventDefault();const r=await mailApi('cancel',{campaignId:el.dataset.c});toast(r.http===200?'Email cancelled':'This could not be saved.');MAIL.adm=null;rerender()}
+},true);
+
 /* Traductions françaises de l'interface (clé = texte anglais affiché). */
 const I18N_FR={
 "1. The service":"1. Le service","2. Your account":"2. Votre compte","3. Music and videos":"3. Musique et vidéos","4. Fair use":"4. Utilisation loyale","5. Availability":"5. Disponibilité","6. Suspension":"6. Suspension","7. Changes":"7. Modifications","8. Contact":"8. Contact",
@@ -4015,12 +4132,13 @@ const I18N_EXTRA_RX=[
   [/^Upload the song (\d+)$/,(m,n)=>`Envoyer la chanson ${n}`],
   [/^(.{0,40})\bDR Congo\b(.{0,40})$/,(m,a,b)=>`${a}RD Congo${b}`],
   [/^“(.+)” is not an audio file and was skipped\.$/,(m,x)=>`« ${x} » n'est pas un fichier audio : il a été ignoré.`],
+  [/^Email sent to (\d+) listener\(s\)$/,(m,n)=>`E-mail envoyé à ${n} auditeur(s)`],[/^(\d+) sent$/,(m,n)=>`${n} envoyé(s)`],[/^Out (.+)$/,(m,d)=>`Sort le ${d}`],[/^Sent to (.+)\. Every email has a link to stop\.$/,(m,x)=>`Envoyé à ${x}. Chaque e-mail contient un lien pour arrêter.`],[/^(\d+) sent — (.+)$/,(m,n,x)=>`${n} envoyé(s) — ${x}`],
   [/^Produced by (.+)$/,(m,x)=>`Produit par ${x}`],[/^Written by (.+)$/,(m,x)=>`Écrit par ${x}`],
   [/^(\d+) results?$/,(m,n)=>`${n} résultat${n>1?'s':''}`],[/^(\d+) albums?$/,(m,n)=>`${n} album${n>1?'s':''}`],
   [/^(\d+) playlists?$/,(m,n)=>`${n} playlist${n>1?'s':''}`],[/^(\d+) artists?$/,(m,n)=>`${n} artiste${n>1?'s':''}`],
   [/^(\d+) plays?$/,(m,n)=>`${n} écoute${n>1?'s':''}`],[/^(\d+) monthly listeners?$/,(m,n)=>`${n} auditeur${n>1?'s':''} mensuel${n>1?'s':''}`]
 ];
-const I18N_MORE={"WMA administrator":"Administrateur WMA","Signed in with your Claude account":"Connecté avec votre compte Claude","Pick a song":"Choisissez une chanson","Search WMA MUSIC":"Rechercher sur WMA MUSIC","What do you want to listen to?":"Que voulez-vous écouter ?","Good morning":"Bonjour","Good afternoon":"Bon après-midi","Good evening":"Bonsoir","Popular":"Populaire","Discography":"Discographie","Appears on":"Apparaît sur","Fans also like":"Les fans aiment aussi","Show all":"Tout afficher","Show less":"Afficher moins","Liked Songs":"Titres likés","Unfollow":"Ne plus suivre","Queue":"File d'attente","Clear":"Effacer","Credits":"Crédits","Album details":"Détails de l'album","Song details":"Détails de la chanson","Unknown":"Inconnu","Other countries":"Autres pays","Today":"Aujourd'hui","Yesterday":"Hier","Following ✓":"Abonné ✓","Cover ready.":"Pochette prête.","All the songs are already uploaded.":"Toutes les chansons sont déjà envoyées.","Choose the artist of each single (or a main artist for all).":"Choisissez l'artiste de chaque single (ou un artiste principal pour tous).","The upload stopped. Check your connection and try again.":"L'envoi s'est arrêté. Vérifiez votre connexion et réessayez.","Choose the audio files.":"Choisissez les fichiers audio.","LIVE SESSION":"SESSION LIVE","follower(s) ·":"abonné(s) ·","Afrobeat, afro-pop and amapiano.":"Afrobeat, afro-pop et amapiano.","unknown duration":"durée inconnue","This version of WMA MUSIC uses your Claude account, so there's no password to create. Your favourites, playlists and plays are saved automatically.":"Cette version de WMA MUSIC utilise votre compte Claude : aucun mot de passe à créer. Vos favoris, playlists et écoutes sont enregistrés automatiquement.","Paste the artist export from the site (JSON from the Supabase table, or one “Name, photo URL” line per artist), or choose the exported file. Only the photo is updated: names and biographies stay the same.":"Collez l'export des artistes du site (JSON de la table Supabase, ou une ligne « Nom, URL de la photo » par artiste), ou choisissez le fichier exporté. Seule la photo est mise à jour : les noms et biographies ne changent pas.","Songs, artists, albums, playlists":"Chansons, artistes, albums, playlists"};
+const I18N_MORE={"Email me when new songs come out on WMA MUSIC. You can stop anytime.":"Recevoir un e-mail à chaque nouvelle sortie sur WMA MUSIC. Vous pouvez arrêter à tout moment.","Get new releases by email?":"Recevoir les nouvelles sorties par e-mail ?","We'll email you when a new song or album comes out on WMA MUSIC. No spam, and you can stop anytime.":"Nous vous écrivons quand une nouvelle chanson ou un nouvel album sort sur WMA MUSIC. Pas de spam, et vous pouvez arrêter à tout moment.","Yes, email me":"Oui, prévenez-moi","No thanks":"Non merci","Emails":"E-mails","New releases by email":"Nouvelles sorties par e-mail","Email me when new songs come out on WMA MUSIC":"Recevoir un e-mail à chaque nouvelle sortie sur WMA MUSIC","Every email has a link to stop.":"Chaque e-mail contient un lien pour arrêter.","your account email":"l'e-mail de votre compte","You will get an email for each new release":"Vous recevrez un e-mail à chaque nouvelle sortie","New-release emails turned off":"E-mails de nouvelles sorties désactivés","Listeners who accepted emails":"Auditeurs ayant accepté les e-mails","Not answered yet":"Pas encore répondu","Said no / unsubscribed":"Refus / désinscrits","Sent in the last 24 h":"Envoyés ces dernières 24 h","Sent in the last 30 days":"Envoyés ces 30 derniers jours","Only listeners who accepted and confirmed their email address receive these emails. Free Resend plan: up to 100 emails a day and 3,000 a month. When the limit is reached, sending pauses and continues the next day.":"Seuls les auditeurs qui ont accepté et confirmé leur adresse e-mail reçoivent ces e-mails. Offre gratuite Resend : jusqu'à 100 e-mails par jour et 3 000 par mois. Quand la limite est atteinte, l'envoi se met en pause et reprend le lendemain.","Announce a release":"Annoncer une sortie","Release":"Sortie","Send email":"Envoyer l'e-mail","Email on release day":"E-mail le jour de la sortie","Resume":"Reprendre","Sending":"Envoi en cours","Paused":"En pause","Sent":"Envoyé","Cancelled":"Annulé","No emails sent yet.":"Aucun e-mail envoyé pour l'instant.","Planned":"Prévu","Send the email":"Envoyer l'e-mail","Send now":"Envoyer maintenant","Email scheduled for release day":"E-mail programmé pour le jour de la sortie","Email sent":"E-mail envoyé","Email cancelled":"E-mail annulé","Sending started":"Envoi lancé","An email was already created for this release.":"Un e-mail existe déjà pour cette sortie.","This release is not published or scheduled.":"Cette sortie n'est ni publiée ni programmée.","Daily limit reached (free Resend plan). Continues tomorrow.":"Limite du jour atteinte (offre gratuite Resend). L'envoi reprend demain.","Monthly limit reached (free Resend plan).":"Limite du mois atteinte (offre gratuite Resend).","No published or scheduled songs yet.":"Aucune chanson publiée ou programmée pour l'instant.","Emails are managed on www.wmamusic.net.":"Les e-mails se gèrent sur www.wmamusic.net.","The email tables are not installed yet. Run supabase/07-emails.sql in Supabase › SQL Editor.":"Les tables des e-mails ne sont pas encore installées. Exécutez supabase/07-emails.sql dans Supabase › SQL Editor.","Resend is not configured (RESEND_API_KEY and MAIL_FROM in Vercel).":"Resend n'est pas configuré (RESEND_API_KEY et MAIL_FROM dans Vercel).","WMA administrator":"Administrateur WMA","Signed in with your Claude account":"Connecté avec votre compte Claude","Pick a song":"Choisissez une chanson","Search WMA MUSIC":"Rechercher sur WMA MUSIC","What do you want to listen to?":"Que voulez-vous écouter ?","Good morning":"Bonjour","Good afternoon":"Bon après-midi","Good evening":"Bonsoir","Popular":"Populaire","Discography":"Discographie","Appears on":"Apparaît sur","Fans also like":"Les fans aiment aussi","Show all":"Tout afficher","Show less":"Afficher moins","Liked Songs":"Titres likés","Unfollow":"Ne plus suivre","Queue":"File d'attente","Clear":"Effacer","Credits":"Crédits","Album details":"Détails de l'album","Song details":"Détails de la chanson","Unknown":"Inconnu","Other countries":"Autres pays","Today":"Aujourd'hui","Yesterday":"Hier","Following ✓":"Abonné ✓","Cover ready.":"Pochette prête.","All the songs are already uploaded.":"Toutes les chansons sont déjà envoyées.","Choose the artist of each single (or a main artist for all).":"Choisissez l'artiste de chaque single (ou un artiste principal pour tous).","The upload stopped. Check your connection and try again.":"L'envoi s'est arrêté. Vérifiez votre connexion et réessayez.","Choose the audio files.":"Choisissez les fichiers audio.","LIVE SESSION":"SESSION LIVE","follower(s) ·":"abonné(s) ·","Afrobeat, afro-pop and amapiano.":"Afrobeat, afro-pop et amapiano.","unknown duration":"durée inconnue","This version of WMA MUSIC uses your Claude account, so there's no password to create. Your favourites, playlists and plays are saved automatically.":"Cette version de WMA MUSIC utilise votre compte Claude : aucun mot de passe à créer. Vos favoris, playlists et écoutes sont enregistrés automatiquement.","Paste the artist export from the site (JSON from the Supabase table, or one “Name, photo URL” line per artist), or choose the exported file. Only the photo is updated: names and biographies stay the same.":"Collez l'export des artistes du site (JSON de la table Supabase, ou une ligne « Nom, URL de la photo » par artiste), ou choisissez le fichier exporté. Seule la photo est mise à jour : les noms et biographies ne changent pas.","Songs, artists, albums, playlists":"Chansons, artistes, albums, playlists"};
 function i18nLookup(s,attr){
   if(I18N.lang==='fr'){
     const v=I18N_MORE[s]??I18N_FR[s];if(v!=null)return v;
