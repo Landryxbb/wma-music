@@ -237,6 +237,8 @@
 
 
 
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -3872,6 +3874,27 @@ const _homeNmf=pages.home;pages.home=function(){const h=_homeNmf.apply(this,argu
     <span class="nmf-btn" role="button" data-act="plPlay" data-pl="smart-nmf">${I.play} Play</span></div>
    <div class="nmf-c">${covers.map((t,i)=>`<img src="${trackCover(t)}" alt="" loading="lazy" style="--i:${i}">`).join('')}</div></a>`+h};
 
+/* ---------- Pochettes automatiques : photo de l'artiste le plus écouté de chaque playlist ----------
+   S'applique aux playlists sans image choisie à la main (automatiques, officielles en mode « Automatique », et playlists des auditeurs).
+   Classement réel WMA MUSIC : écoutes comptées de l'artiste, puis abonnés, puis nombre de chansons dans la playlist.
+   La playlist New Music Friday garde sa règle (artiste de la 1re chanson). */
+const AUTOCOV={},AUTOBUSY={};
+function plLeadArtist(ids){const n={};
+  (ids||[]).forEach(id=>{const t=api.track(id);if(!t||!isLive(t))return;[t.artistId,...(t.featIds||[])].forEach(a=>{if(a)n[a]=(n[a]||0)+1})});
+  const arts=Object.keys(n).map(api.artist).filter(a=>a&&artistPhoto(a));if(!arts.length)return null;
+  const sc=a=>[stat.artistPlays(a.id)||0,stat.followers(a.id)||0,n[a.id]];
+  return arts.sort((x,y)=>{const a=sc(x),b=sc(y);return b[0]-a[0]||b[1]-a[1]||b[2]-a[2]||x.name.localeCompare(y.name)})[0]}
+const _plCoverAuto=plCover;plCover=p=>{
+  const base=_plCoverAuto(p);
+  if(!p||p.id==='smart-nmf'||(!p.smart&&(p.coverId||p.cover)))return base;
+  const a=plLeadArtist(p.trackIds);if(!a)return base;
+  const src=artistPhoto(a),key=p.id+'|'+p.name+'|'+a.id+'|'+src;
+  if(AUTOCOV[key])return AUTOCOV[key];
+  if(!AUTOBUSY[key]){AUTOBUSY[key]=1;
+    makeArtistCover(src,p.name,true).then(b=>{const u=URL.createObjectURL(b);AUTOCOV[key]=u;
+      document.querySelectorAll('img').forEach(im=>{if(im.getAttribute('src')===base)im.src=u})}).catch(()=>{})}
+  return base};
+
 /* ---------- E-mails « nouvelle sortie » : consentement des auditeurs + envoi depuis WMA ADMIN ---------- */
 const MAIL={loaded:false,ok:false,uid:null,row:null,busy:false,adm:null,admErr:'',admLoading:false,dueRun:false};
 const mailLang=()=>(typeof I18N!=='undefined'&&I18N.lang==='fr')?'fr':'en';
@@ -4195,6 +4218,7 @@ const I18N_EXTRA_RX=[
   [/^Songs released since Friday (.+)\. Updated automatically every Friday\.$/,(m,d)=>`Les chansons sorties depuis le vendredi ${d}. Mise à jour automatique chaque vendredi.`],
   [/^No new songs since Friday (.+) yet\. New releases appear here automatically\.$/,(m,d)=>`Pas encore de nouvelle chanson depuis le vendredi ${d}. Les nouvelles sorties apparaîtront ici automatiquement.`],
   [/^(\d+) new songs? since Friday (.+)$/,(m,n,d)=>`${n} nouvelle${n>1?'s':''} chanson${n>1?'s':''} depuis le vendredi ${d}`],
+  [/^(.+) · sent (.+)$/,(m,a,d)=>`${a} · envoyée le ${d}`],
   [/^Produced by (.+)$/,(m,x)=>`Produit par ${x}`],[/^Written by (.+)$/,(m,x)=>`Écrit par ${x}`],
   [/^(\d+) results?$/,(m,n)=>`${n} résultat${n>1?'s':''}`],[/^(\d+) albums?$/,(m,n)=>`${n} album${n>1?'s':''}`],
   [/^(\d+) playlists?$/,(m,n)=>`${n} playlist${n>1?'s':''}`],[/^(\d+) artists?$/,(m,n)=>`${n} artiste${n>1?'s':''}`],
