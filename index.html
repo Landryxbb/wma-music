@@ -241,6 +241,7 @@
 
 
 
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -2618,7 +2619,7 @@ function trendingView(){
     <div class="relcard"><a href="#track-${rel.id}" class="relcov"><img src="${trackCover(rel)}" alt=""></a><div class="reltxt"><a class="t1" href="#track-${rel.id}">${esc(rel.title)}</a><div><div class="t2">${artistLinks(rel)}</div><div class="t2 kind">${esc(kindLabel(rel))}</div></div></div>
     <button class="relplay" data-act="play" data-id="${rel.id}" data-q="${fq}" aria-label="Play ${esc(rel.title)}">${I.play}</button></div></section>`:'';
   const chips=[['hot','Hot'],['new','New'],...trendGenres().map(g=>[g,g])];if(!chips.some(c=>c[0]===TREND_F))TREND_F='hot';
-  const trend=`<section class="sec"><div class="sec-h2"><h2>Trending Songs</h2><a class="more" href="#playlists">MORE</a></div>
+  const trend=`<section class="sec"><div class="sec-h2"><h2>Trending Songs</h2><a class="more" href="#trending">MORE</a></div>
     <div class="tchips" role="tablist" aria-label="Trending filter">${chips.map(([k,l])=>`<button class="tchip ${TREND_F===k?'on':''}" role="tab" aria-selected="${TREND_F===k}" data-act="trendF" data-f="${esc(k)}">${esc(l)}</button>`).join('')}</div>
     <div id="trendRows">${trendRows(TREND_F)}</div></section>`;
   const pop=DB.artists.filter(a=>api.tracksOf(a.id).length).sort((a,b)=>stat.artistPlays(b.id)-stat.artistPlays(a.id)||stat.followers(b.id)-stat.followers(a.id)||a.name.localeCompare(b.name)).slice(0,12);
@@ -3841,6 +3842,20 @@ const _admSongsBk=admin.songs;admin.songs=function(){return _admSongsBk.apply(th
 const _admAlbumsBk=admin.albums;admin.albums=function(){let h=_admAlbumsBk.apply(this,arguments);
   h=h.replace(/(<button class="btn pri" data-act="aAlbum">[\s\S]*?<\/button>)/,`$1<button class="btn" data-act="bulkUp">${I.upload} Upload an album (several songs)</button>`);
   return h.replace(/<button class="btn sm" data-act="aAlbum" data-id="([^"]+)">Edit<\/button>/g,'<button class="btn sm" data-act="bulkUp" data-id="$1">Add songs</button> <button class="btn sm" data-act="aAlbum" data-id="$1">Edit</button>')};
+
+/* ---------- Page « Trending Songs » : liste complète ouverte par le bouton MORE de l'accueil ---------- */
+function trendFull(f){const pub=api.pub();
+  if(f==='hot')return pub.slice().sort((a,b)=>stat.recent(b.id)-stat.recent(a.id)||byPlays(a,b)).slice(0,100);
+  if(f==='new')return sortNew(pub).slice(0,100);
+  return pub.filter(t=>t.genre===f).sort(byPlays).slice(0,100)}
+const trendFullBody=f=>{const l=trendFull(f);return `<div class="actions" style="margin:4px 0 10px">${l.length?`<button class="btn pri" data-act="play" data-id="${l[0].id}" data-q="${l.map(t=>t.id).join(',')}">${I.play} Play all</button>`:''}<span class="muted" style="align-self:center">${l.length} song${l.length===1?'':'s'}</span></div>${trackRows(l,{empty:'No songs here yet.'})}`};
+pages.trending=()=>{const chips=[['hot','Hot'],['new','New'],...trendGenres().map(g=>[g,g])];if(!chips.some(c=>c[0]===TREND_F))TREND_F='hot';
+  return `<div class="eyebrow">WMA MUSIC</div><h1 class="ltitle" style="margin-top:4px">Trending Songs</h1>
+   <div class="tchips" role="tablist" aria-label="Trending filter">${chips.map(([k,l])=>`<button class="tchip ${TREND_F===k?'on':''}" role="tab" aria-selected="${TREND_F===k}" data-act="trendAllF" data-f="${esc(k)}">${esc(l)}</button>`).join('')}</div>
+   <div id="trendAll">${trendFullBody(TREND_F)}</div>`};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act="trendAllF"]');if(!el)return;e.preventDefault();e.stopImmediatePropagation();
+  TREND_F=el.dataset.f;document.querySelectorAll('[data-act="trendAllF"]').forEach(c=>{const on=c.dataset.f===TREND_F;c.classList.toggle('on',on);c.setAttribute('aria-selected',on)});
+  const r=document.getElementById('trendAll');if(r)r.innerHTML=trendFullBody(TREND_F)},true);
 
 /* ---------- New Music Friday : playlist automatique des chansons sorties depuis vendredi, mise en avant le week-end ----------
    La semaine commence le vendredi à 0 h (heure du téléphone de l'auditeur). Rien n'est choisi à la main :
