@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WMA MUSIC API – Partner documentation</title>
+<meta name="description" content="Read-only API of the WMA MUSIC catalogue for distributors, media and partner platforms.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+:root{--or:#FF7A1A;--bg:#0A0A0A;--s1:#141414;--ln:rgba(255,255,255,.1);--mu:#a8a8ad;--fg:#f4f4f5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:900px;margin:0 auto;padding:32px max(18px,env(safe-area-inset-left,0px)) 80px}
+h1{font-size:36px;line-height:1.1;margin:8px 0 10px;letter-spacing:-.02em}h1 span{color:var(--or)}
+h2{font-size:22px;margin:40px 0 10px;padding-top:18px;border-top:1px solid var(--ln)}h3{font-size:17px;margin:24px 0 6px}
+p,li{color:#d6d6da}.mu{color:var(--mu)}a{color:var(--or)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px}
+code{background:var(--s1);border:1px solid var(--ln);padding:1px 6px;border-radius:6px}
+pre{background:var(--s1);border:1px solid var(--ln);border-radius:12px;padding:16px;overflow-x:auto;line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:top}th{color:var(--mu);font-weight:600}
+.tw{overflow-x:auto}.tag{display:inline-block;background:var(--or);color:#0A0A0A;font-weight:800;font-size:12px;padding:2px 8px;border-radius:6px;margin-right:6px}
+.note{background:rgba(255,122,26,.1);border:1px solid rgba(255,122,26,.35);border-radius:12px;padding:12px 16px}
+</style>
+</head>
+<body><div class="w">
+<div class="mu" style="font-weight:700;letter-spacing:.12em;font-size:13px">WMA <span style="color:var(--or)">MUSIC</span> · DEVELOPERS</div>
+<h1>WMA MUSIC <span>API</span> v1</h1>
+<p>Read-only access to the public WMA MUSIC catalogue for distributors, media and partner platforms: published songs, artists, albums, official playlists and new releases. The API never returns audio files or listener data — only public information and links to WMA MUSIC.</p>
+<p class="note"><b>FR —</b> Cette API permet aux partenaires de lire automatiquement le catalogue public de WMA MUSIC. Pour obtenir une clé, contactez l'équipe WMA MUSIC.</p>
+
+<h2>Authentication</h2>
+<p>Every request needs an API key, issued by the WMA MUSIC team. Send it in the <code>X-API-Key</code> header (or <code>Authorization: Bearer …</code>). Keep it secret: do not put it in a public web page or app.</p>
+<pre>curl https://www.wmamusic.net/api/v1/new-releases \
+  -H "X-API-Key: wma_YOUR_KEY"</pre>
+<p class="mu">Base URL: <code>https://www.wmamusic.net/api/v1</code> · Method: <code>GET</code> · Format: JSON (UTF-8) · Each key has an hourly request limit (1,000 by default).</p>
+
+<h2>Endpoints</h2>
+<div class="tw"><table>
+<tr><th>Endpoint</th><th>Returns</th></tr>
+<tr><td><span class="tag">GET</span><code>/tracks</code></td><td>Published songs, newest first</td></tr>
+<tr><td><span class="tag">GET</span><code>/tracks/{id}</code></td><td>One song</td></tr>
+<tr><td><span class="tag">GET</span><code>/new-releases</code></td><td>Songs released in the last 7 days (or since <code>since</code>)</td></tr>
+<tr><td><span class="tag">GET</span><code>/artists</code></td><td>Artists with at least one published song</td></tr>
+<tr><td><span class="tag">GET</span><code>/artists/{id}</code></td><td>One artist, with their songs</td></tr>
+<tr><td><span class="tag">GET</span><code>/albums</code></td><td>Albums and EPs</td></tr>
+<tr><td><span class="tag">GET</span><code>/albums/{id}</code></td><td>One album, with its songs in order</td></tr>
+<tr><td><span class="tag">GET</span><code>/playlists</code></td><td>Official WMA MUSIC playlists</td></tr>
+<tr><td><span class="tag">GET</span><code>/playlists/{id}</code></td><td>One playlist, with its songs</td></tr>
+</table></div>
+
+<h3>Query parameters (lists)</h3>
+<div class="tw"><table>
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>limit</code></td><td>1–100, default 50</td></tr>
+<tr><td><code>offset</code></td><td>For paging, default 0</td></tr>
+<tr><td><code>since</code></td><td><code>/tracks</code> and <code>/new-releases</code>: only songs released after this date (ISO 8601, e.g. <code>2026-11-13</code>, or milliseconds)</td></tr>
+<tr><td><code>artist</code></td><td><code>/tracks</code>: songs of one artist (artist id, main or featured)</td></tr>
+<tr><td><code>genre</code></td><td><code>/tracks</code>: e.g. <code>Gospel</code></td></tr>
+<tr><td><code>q</code></td><td><code>/tracks</code>: search in titles</td></tr>
+</table></div>
+
+<h3>Example response — <code>GET /tracks?limit=1</code></h3>
+<pre>{
+  "data": [{
+    "id": "abc123",
+    "title": "Commando",
+    "artist": { "id": "jaguaman", "name": "JAGUAMAN" },
+    "featured": [{ "id": "tiga", "name": "TIGA DISIEL" }],
+    "album": null,
+    "genre": "Afrobeat",
+    "release_date": "2026-11-13",
+    "released_at": "2026-11-13T00:00:00.000Z",
+    "duration_seconds": 187,
+    "cover_url": "https://…/cover.jpg",
+    "url": "https://www.wmamusic.net/s/track/abc123"
+  }],
+  "total": 42, "limit": 1, "offset": 0
+}</pre>
+<p class="mu">Optional fields, when available: <code>isrc</code>, <code>label</code>, <code>producer</code>, <code>songwriter</code> (songs); <code>links</code> (artists). Use <code>url</code> to link listeners to the song on WMA MUSIC.</p>
+
+<h2>Errors</h2>
+<div class="tw"><table>
+<tr><th>Status</th><th>Code</th><th>Meaning</th></tr>
+<tr><td>401</td><td><code>missing_api_key</code>, <code>invalid_api_key</code>, <code>revoked_api_key</code></td><td>Key missing, wrong or revoked</td></tr>
+<tr><td>404</td><td><code>not_found</code></td><td>Unknown resource or id</td></tr>
+<tr><td>429</td><td><code>rate_limited</code></td><td>Hourly limit reached — retry later</td></tr>
+<tr><td>5xx</td><td><code>server_error</code>, <code>unavailable</code></td><td>Temporary problem — retry later</td></tr>
+</table></div>
+<pre>{ "error": { "code": "invalid_api_key", "message": "This API key is not valid." } }</pre>
+
+<h2>Terms</h2>
+<p>Songs, covers and photos remain the property of the artists and rights holders. The API is provided to display and link to WMA MUSIC content; redistributing the content itself requires a separate agreement with WMA UNITED AFRICA. Responses may be cached for up to 60 seconds.</p>
+<p class="mu">© WMA UNITED AFRICA · WMA HUB · <a href="https://www.wmamusic.net">www.wmamusic.net</a></p>
+</div></body></html>
