@@ -1,10 +1,13 @@
 // WMA MUSIC — e-mails « nouvelle sortie » envoyés aux auditeurs qui ont accepté de les recevoir.
 // Actions :
 //   POST /api/mail?action=send    { kind:'track'|'album', id }  ou  { campaignId }   (administrateur WMA)
+//   POST /api/mail?action=send    { kind:'promo', id:<id de la promotion> }  e-mail « Sponsorisé », envoyé UNIQUEMENT
+//                                 aux comptes qui ont accepté les e-mails sponsorisés (supabase/09-ads-emails.sql)
 //   POST /api/mail?action=due                                  (administrateur WMA) : envoie ce qui est prévu / en pause
 //   POST /api/mail?action=cancel  { campaignId }               (administrateur WMA)
 //   GET  /api/mail?action=cron    Authorization: Bearer CRON_SECRET (facultatif, nécessite SUPABASE_SERVICE_ROLE_KEY)
 //   GET|POST /api/mail?action=unsub&t=<jeton>                  (lien « Ne plus recevoir ces e-mails », sans connexion)
+//   GET|POST /api/mail?action=unsub&k=ads&t=<jeton>            (arrête seulement les e-mails sponsorisés)
 // Limites de l'offre gratuite Resend : 100 e-mails par jour, 3 000 par mois. On garde une marge :
 //   MAIL_DAILY_LIMIT (90 par défaut) et MAIL_MONTHLY_LIMIT (2 900 par défaut). Au-delà, l'envoi se met en pause
 //   et reprend le lendemain (bouton « Reprendre » dans l'admin, ou automatiquement avec le cron).
@@ -76,7 +79,37 @@ async function release(E, sb, kind, id) {
   return { title: al.title, artist: who, cover: imgUrl(E, al.coverId) || imgUrl(E, al.cover) || artImg(a), at, type: String(al.type || 'Album'), count: ts.length };
 }
 
+function promoMail(E, c, r) {
+  const fr = r.lang === 'fr';
+  const link = `${E.site}/s/track/${encodeURIComponent(c.ref_id)}`;
+  const unsub = `${E.site}/api/mail?action=unsub&k=ads&t=${r.token}`;
+  const tag = fr ? 'Sponsorisé' : 'Sponsored';
+  const subject = `${tag} · ${c.title}${c.artist ? ' – ' + c.artist : ''}`;
+  const hello = r.name ? (fr ? `Bonjour ${r.name},` : `Hello ${r.name},`) : (fr ? 'Bonjour,' : 'Hello,');
+  const line = fr
+    ? `Découvrez « ${c.title} »${c.artist ? ' de ' + c.artist : ''}, mis en avant sur WMA MUSIC.`
+    : `Discover “${c.title}”${c.artist ? ' by ' + c.artist : ''}, featured on WMA MUSIC.`;
+  const btn = fr ? '▶ Écouter sur WMA MUSIC' : '▶ Listen on WMA MUSIC';
+  const why = fr ? 'Ceci est un e-mail sponsorisé. Vous le recevez car vous avez accepté les e-mails sponsorisés et offres de WMA MUSIC.' : 'This is a sponsored email. You are receiving it because you chose to get sponsored songs and offers from WMA MUSIC.';
+  const stop = fr ? 'Ne plus recevoir les e-mails sponsorisés' : 'Stop sponsored emails';
+  const html = `<!doctype html><html lang="${fr ? 'fr' : 'en'}"><body style="margin:0;background:#0A0A0A">
+<div style="background:#0A0A0A;padding:28px 14px;font-family:Arial,Helvetica,sans-serif">
+ <div style="max-width:480px;margin:0 auto;background:#161618;border-radius:18px;overflow:hidden;color:#FFFFFF">
+  <div style="padding:22px 26px 0;color:#FF7A1A;font-weight:800;font-size:18px;letter-spacing:.5px">WMA MUSIC</div>
+  <div style="padding:10px 26px 0"><span style="display:inline-block;background:#2A2A2E;color:#FFFFFF;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;padding:4px 9px;border-radius:6px">${esc(tag)}</span></div>
+  ${c.cover ? `<div style="padding:18px 26px 0"><a href="${esc(link)}"><img src="${esc(c.cover)}" width="428" alt="${esc(c.title)}" style="display:block;width:100%;max-width:428px;height:auto;border-radius:12px;border:0"></a></div>` : ''}
+  <div style="padding:20px 26px 6px"><div style="font-size:26px;font-weight:800;line-height:1.2">${esc(c.title)}</div>${c.artist ? `<div style="font-size:16px;color:#C9C9CE;margin-top:6px">${esc(c.artist)}</div>` : ''}</div>
+  <p style="padding:0 26px;margin:14px 0 0;color:#D0D0D4;font-size:15px;line-height:1.6">${esc(hello)}<br>${esc(line)}</p>
+  <div style="padding:22px 26px 28px"><a href="${esc(link)}" style="display:inline-block;background:#FF7A1A;color:#0A0A0A;text-decoration:none;font-weight:800;font-size:16px;padding:14px 26px;border-radius:999px">${esc(btn)}</a></div>
+ </div>
+ <p style="max-width:480px;margin:18px auto 0;color:#8E8E93;font-size:12px;line-height:1.6;text-align:center">${esc(why)}<br><a href="${esc(unsub)}" style="color:#8E8E93">${esc(stop)}</a><br>WMA UNITED AFRICA · WMA HUB</p>
+</div></body></html>`;
+  const text = `[${tag}]\n\n${hello}\n\n${line}\n\n${fr ? 'Écouter' : 'Listen'} : ${link}\n\n—\n${why}\n${stop} : ${unsub}\nWMA UNITED AFRICA · WMA HUB`;
+  return { from: E.from, to: [r.email], subject, html, text, headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } };
+}
+
 function mailFor(E, c, r) {
+  if (c.kind === 'promo') return promoMail(E, c, r);
   const fr = r.lang === 'fr', path = c.kind === 'album' ? 'album' : 'track';
   const link = `${E.site}/s/${path}/${encodeURIComponent(c.ref_id)}`;
   const unsub = `${E.site}/api/mail?action=unsub&t=${r.token}`;
@@ -138,9 +171,9 @@ async function runDue(E, sb) {
   return out;
 }
 
-const page = (fr, ok) => `<!doctype html><html lang="${fr ? 'fr' : 'en'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WMA MUSIC</title>
+const page = (fr, ok, ads) => `<!doctype html><html lang="${fr ? 'fr' : 'en'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WMA MUSIC</title>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0A0A0A;color:#fff;font-family:system-ui,Arial,sans-serif;text-align:center;padding:24px}b{color:#FF7A1A}a{color:#FF7A1A}</style></head>
-<body><div><p style="font-weight:800;font-size:20px"><b>WMA</b> MUSIC</p><h1 style="font-size:22px">${ok ? (fr ? 'Vous ne recevrez plus nos e-mails de nouvelles sorties.' : 'You will no longer receive our new-release emails.') : (fr ? 'Ce lien n\'est plus valide.' : 'This link is no longer valid.')}</h1>
+<body><div><p style="font-weight:800;font-size:20px"><b>WMA</b> MUSIC</p><h1 style="font-size:22px">${ok ? (ads ? (fr ? 'Vous ne recevrez plus nos e-mails sponsorisés.' : 'You will no longer receive our sponsored emails.') : (fr ? 'Vous ne recevrez plus nos e-mails de nouvelles sorties.' : 'You will no longer receive our new-release emails.')) : (fr ? 'Ce lien n\'est plus valide.' : 'This link is no longer valid.')}</h1>
 <p style="color:#bbb">${fr ? 'Vous pouvez les réactiver à tout moment dans votre profil WMA MUSIC.' : 'You can turn them back on anytime in your WMA MUSIC profile.'}</p><p><a href="/">${fr ? 'Ouvrir WMA MUSIC' : 'Open WMA MUSIC'}</a></p></div></body></html>`;
 
 module.exports = async (req, res) => {
@@ -151,11 +184,12 @@ module.exports = async (req, res) => {
   if (action === 'unsub') {
     const t = String((req.query && req.query.t) || '');
     const fr = /^fr/i.test(String(req.headers['accept-language'] || ''));
+    const ads = String((req.query && req.query.k) || '') === 'ads';
     let ok = false;
-    if (UUID.test(t)) { try { ok = (await client(E, E.anon)('/rest/v1/rpc/music_mail_unsubscribe', { method: 'POST', body: { p_token: t } })) === true; } catch (e) { ok = false; } }
+    if (UUID.test(t)) { try { ok = (await client(E, E.anon)('/rest/v1/rpc/' + (ads ? 'music_mail_unsubscribe_ads' : 'music_mail_unsubscribe'), { method: 'POST', body: { p_token: t } })) === true; } catch (e) { ok = false; } }
     if (req.method === 'POST') return res.status(200).json({ ok });
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(200).send(page(fr, ok));
+    return res.status(200).send(page(fr, ok, ads));
   }
 
   if (!E.resend || !E.from) return res.status(501).json({ error: 'mail_not_configured' });
@@ -194,6 +228,23 @@ module.exports = async (req, res) => {
         if (!c) return res.status(404).json({ error: 'not_found' });
         if (c.status === 'done' || c.status === 'cancelled') return res.status(409).json({ error: c.status, campaign: c });
         if (c.status === 'scheduled' && Date.parse(c.send_at) > Date.now()) return res.status(200).json({ ok: true, campaign: c });
+      } else if (body.kind === 'promo') {
+        const pid = String(body.id || '');
+        if (!/^[A-Za-z0-9_-]{2,80}$/.test(pid)) return res.status(400).json({ error: 'bad_request' });
+        const meta = (await sb('/rest/v1/music_docs?select=data&kind=eq.meta&id=eq.promos'))[0];
+        const pr = ((meta && meta.data && meta.data.list) || []).find(x => x && x.id === pid);
+        if (!pr || !pr.trackId) return res.status(404).json({ error: 'not_found' });
+        const rel = await release(E, sb, 'track', pr.trackId);
+        if (!rel || rel.at > Date.now()) return res.status(409).json({ error: 'not_live' });
+        const old = (await sb(`/rest/v1/music_mail_campaigns?select=*&kind=eq.promo&ref_id=eq.${encodeURIComponent(pr.trackId)}`))[0];
+        if (old && old.status !== 'cancelled') return res.status(409).json({ error: 'already_exists', campaign: old });
+        const row = { kind: 'promo', ref_id: pr.trackId, title: String(pr.title || rel.title || '').slice(0, 200), artist: String(pr.artist || rel.artist || '').slice(0, 200),
+          cover: imgUrl(E, pr.coverId) || imgUrl(E, pr.cover) || rel.cover || null,
+          send_at: new Date().toISOString(), status: 'scheduled', created_by: user.id, sent: 0, failed: 0, note: null, updated_at: new Date().toISOString() };
+        const j = old
+          ? await sb(`/rest/v1/music_mail_campaigns?id=eq.${old.id}`, { method: 'PATCH', body: row, prefer: 'return=representation' })
+          : await sb('/rest/v1/music_mail_campaigns', { method: 'POST', body: row, prefer: 'return=representation' });
+        c = j[0];
       } else {
         const kind = body.kind === 'album' ? 'album' : body.kind === 'track' ? 'track' : '';
         const id = String(body.id || '');
