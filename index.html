@@ -249,6 +249,7 @@
 
 
 
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -4241,6 +4242,46 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-act="reco
   RECO.on=!RECO.on;store.set('autoplay',RECO.on);
   if(RECO.on)recoTopUp();else{const keep=P.order.slice(0,P.idx+1);const rest=P.order.slice(P.idx+1).filter(id=>!RECO.auto.has(id));P.order=[...keep,...rest];P.queue=P.queue.filter(id=>!RECO.auto.has(id)||keep.includes(id))}
   toast(RECO.on?'Autoplay on: similar songs will follow your queue':'Autoplay off');rerender()},true);
+
+/* ---------- Adresses lisibles : #artist-lafouine et #music-titre-de-la-chanson ----------
+   Les anciennes adresses (#artist-<id>, #track-<id>) continuent de fonctionner : elles sont
+   remplacées automatiquement par l'adresse lisible, sans recharger la page. */
+const SLUG={sig:'',a2s:{},s2a:{},t2s:{},s2t:{}};
+const slugBase=(s,sep)=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,sep).replace(sep?/^-+|-+$/g:/^$/,'');
+function slugMaps(){const sig=DB.artists.length+':'+DB.tracks.length+':'+DB.artists.map(a=>a.name).join('|').length+':'+DB.tracks.map(t=>t.title).join('|').length;
+  if(sig===SLUG.sig)return SLUG;const S={sig,a2s:{},s2a:{},t2s:{},s2t:{}};
+  const byAge=(x,y)=>(Number(x.createdAt)||0)-(Number(y.createdAt)||0)||String(x.id).localeCompare(String(y.id));
+  const taken=(m,s)=>m[s]!==undefined;
+  DB.artists.slice().sort(byAge).forEach(a=>{let b=slugBase(a.name,'')||'artist',s=b,n=2;while(taken(S.s2a,s))s=b+'-'+n++;S.a2s[a.id]=s;S.s2a[s]=a.id});
+  const live=t=>isLive(t)&&!t.demo;
+  DB.tracks.slice().sort((x,y)=>(live(y)-live(x))||byAge(x,y)).forEach(t=>{let b=slugBase(t.title,'-')||'song',s=b,n=2;
+    if(taken(S.s2t,s)){const ar=S.a2s[t.artistId];if(ar)s=b+'-'+ar}while(taken(S.s2t,s))s=b+'-'+n++;S.t2s[t.id]=s;S.s2t[s]=t.id});
+  return Object.assign(SLUG,S)}
+const slugArtistId=x=>{if(!x||api.artist(x))return x;const id=slugMaps().s2a[x];return id||x};
+const slugTrackId=x=>{if(!x||api.track(x))return x;const id=slugMaps().s2t[x];return id||x};
+const artistHref=id=>{const s=slugMaps().a2s[id];return '#artist-'+(s||id)};
+const trackHref=id=>{const s=slugMaps().t2s[id];return s?'#music-'+s:'#track-'+id};
+/* pages : accepter les deux formes */
+const _pgArtistSlug=pages.artist;
+pages.artist=arg=>{const a=String(arg||''),m=a.match(/^(.+)-songs$/);
+  if(m&&!api.artist(a)){const id=slugArtistId(m[1]);if(api.artist(id))return _pgArtistSlug(id+'-songs')}
+  return _pgArtistSlug(slugArtistId(a))};
+const _pgTrackSlug=pages.track;
+pages.track=arg=>_pgTrackSlug(slugTrackId(arg));
+pages.music=arg=>_pgTrackSlug(slugTrackId(arg));
+/* adresse affichée : remplace #artist-<id> / #track-<id> par la version lisible */
+function slugCanon(){const h=location.hash;let m,nh=null;
+  if((m=h.match(/^#artist-(.+?)(-songs)?$/))){const a=api.artist(m[1])?m[1]:null;if(a){const s=slugMaps().a2s[a];if(s&&s!==m[1])nh='#artist-'+s+(m[2]||'')}
+    else if(m[2]&&api.artist(m[1]+m[2])){const s=slugMaps().a2s[m[1]+m[2]];if(s)nh='#artist-'+s}}
+  else if((m=h.match(/^#track-(.+)$/))&&api.track(m[1])){const s=slugMaps().t2s[m[1]];if(s)nh='#music-'+s}
+  if(nh&&nh!==h){try{history.replaceState(history.state,'',location.pathname+location.search+nh)}catch(e){}}}
+function slugLinks(root){(root||document).querySelectorAll('a[href^="#artist-"],a[href^="#track-"]').forEach(el=>{const h=el.getAttribute('href');let m;
+  if((m=h.match(/^#artist-(.+?)(-songs)?$/))&&api.artist(m[1])){const s=slugMaps().a2s[m[1]];if(s)el.setAttribute('href','#artist-'+s+(m[2]||''))}
+  else if((m=h.match(/^#track-(.+)$/))&&api.track(m[1])){const s=slugMaps().t2s[m[1]];if(s)el.setAttribute('href','#music-'+s)}})}
+const _rerenderSlug=rerender;
+rerender=function(){try{slugCanon()}catch(e){}const r=_rerenderSlug.apply(this,arguments);try{slugLinks()}catch(e){}return r};
+const _renderPlayerSlug=renderPlayer;
+renderPlayer=function(){const r=_renderPlayerSlug.apply(this,arguments);try{slugLinks(document.getElementById('player'))}catch(e){}return r};
 
 /* Traductions françaises de l'interface (clé = texte anglais affiché). */
 const I18N_FR={
