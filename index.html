@@ -269,6 +269,7 @@
 
 
 
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -739,9 +740,9 @@ a,button,[data-act],label,summary,input[type=checkbox],input[type=radio]{touch-a
 @media (prefers-reduced-motion:reduce){.fx-press,.fx-row,.fx-rel{scale:none;transition:none}.fx-rip,.fx-pop,#view.fx-in,#modal:not([hidden]),#modal .modal-box,#toast:not([hidden]){animation:none}}
 .btn.pri>.fx-rip,.pa-go>.fx-rip{background:#fff;opacity:.45}
 /* paroles synchronisées */
-.lyr{max-width:680px;padding:6px 0 40vh}
-.lyr-top{margin:0 0 18px}.lyr-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#FF7A1A;background:rgba(255,122,26,.12);border-radius:99px;padding:6px 12px}
-.ly{font-size:clamp(22px,2.4vw,30px);line-height:1.28;font-weight:800;letter-spacing:-.01em;color:rgba(255,255,255,.34);margin:0 0 16px;cursor:pointer;transition:color .3s,transform .3s,opacity .3s;transform-origin:left center}
+.lyr{position:relative;max-width:680px;height:min(62vh,560px);overflow-y:auto;scrollbar-width:none;padding:4px 4px 0;-webkit-mask-image:linear-gradient(transparent,#000 9%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 9%,#000 78%,transparent)}.lyr::-webkit-scrollbar{display:none}.lyr::after{content:'';display:block;height:45%}
+.lyr-top{margin:14px 0 18px}.lyr-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#FF7A1A;background:rgba(255,122,26,.12);border-radius:99px;padding:6px 12px}
+.ly{font-size:clamp(22px,2.4vw,30px);line-height:1.28;font-weight:800;letter-spacing:-.01em;color:rgba(255,255,255,.34);margin:0 0 16px;cursor:pointer;transition:color .45s ease,transform .45s ease,opacity .45s ease;transform-origin:left center}
 .ly.gap{margin-top:34px}.ly.past{color:rgba(255,255,255,.55)}.ly.on{color:#fff;transform:scale(1.03);text-shadow:0 0 24px rgba(255,255,255,.25)}
 .ly:hover{color:rgba(255,255,255,.8)}
 .lyr-src{margin-top:34px;font-size:13px;color:rgba(255,255,255,.45)}
@@ -4692,7 +4693,7 @@ audio.addEventListener('error',async()=>{const t=curTrack();if(!t||!audio.getAtt
    Données : t.lyricsSync = [[ms, "ligne", saut], …]  (saut = 1 si un blanc précédait la ligne dans les paroles)
    - Lecteur : la ligne chantée s'allume, les paroles défilent seules ; toucher une ligne y amène la chanson.
    - WMA ADMIN : outil « Synchroniser » (taper au début de chaque ligne en écoutant), ou paroles au format LRC collées. */
-const LY={draft:null,userTab:false,idx:-1,tid:null,hold:0,raf:0};
+const LY={anim:0,draft:null,userTab:false,idx:-1,tid:null,hold:0,raf:0};
 const lyLines=txt=>{const out=[];let gap=0;String(txt||'').split(/\r?\n/).forEach(r=>{const s=r.trim();if(!s){gap=1;return}out.push([s,out.length?gap:0]);gap=0});return out};
 const lySame=(sync,txt)=>{const L=lyLines(txt);return Array.isArray(sync)&&sync.length===L.length&&sync.every((x,i)=>x[1]===L[i][0])};
 const lyOk=t=>!!(t&&Array.isArray(t.lyricsSync)&&t.lyricsSync.length&&t.lyricsSync.every(x=>Number.isFinite(x[0])));
@@ -4719,15 +4720,15 @@ pages.now=function(){const t=curTrack();if(t&&lyOk(t)&&!LY.userTab&&NP_TAB==='ne
 document.addEventListener('click',e=>{if(e.target.closest('[data-act="npTab"]'))LY.userTab=true;
   const l=e.target.closest('[data-act="lySeek"]');if(!l)return;e.preventDefault();e.stopImmediatePropagation();
   const ms=+l.dataset.ms;if(Number.isFinite(ms)){audio.currentTime=Math.max(0,ms/1000-.05);if(audio.paused)audio.play().catch(()=>{})}LY.hold=0;LY.idx=-1},true);
-['wheel','touchmove'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest&&e.target.closest('.lyr,#npPanel'))LY.hold=Date.now()},{passive:true}));
-function lyScroll(el){const panel=document.getElementById('npPanel');if(!panel)return;
-  const pr=panel.getBoundingClientRect(),r=el.getBoundingClientRect();
-  if(panel.scrollHeight>panel.clientHeight+4){const target=panel.scrollTop+(r.top-pr.top)-panel.clientHeight*.38;panel.scrollTo({top:Math.max(0,target),behavior:'smooth'});return}
-  /* téléphone : la page entière défile — seulement si les paroles sont déjà à l'écran */
-  const vh=innerHeight;if(pr.bottom<0||pr.top>vh)return;const want=r.top-vh*.42;if(Math.abs(want)>vh*.18)scrollBy({top:want,behavior:'smooth'})}
+['wheel','touchmove'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest&&e.target.closest('.lyr')){LY.hold=Date.now();cancelAnimationFrame(LY.anim)}},{passive:true}));
+/* défilement doux et lent, à l'intérieur du cadre des paroles (la page ne bouge pas) */
+function lyScroll(el){const box=el.closest('.lyr');if(!box)return;
+  const target=Math.max(0,el.offsetTop-box.clientHeight*.34),from=box.scrollTop,d=target-from;if(Math.abs(d)<2)return;
+  cancelAnimationFrame(LY.anim);const t0=performance.now(),dur=Math.min(1100,650+Math.abs(d)*.6);
+  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;box.scrollTop=from+d*e;if(k<1)LY.anim=requestAnimationFrame(step)};LY.anim=requestAnimationFrame(step)}
 function lyTick(){LY.raf=requestAnimationFrame(lyTick);const box=document.querySelector('.lyr');if(!box||document.hidden)return;
   const t=curTrack();if(!t||box.dataset.tid!==t.id||!lyOk(t))return;
-  const now=audio.currentTime*1000+180,S=t.lyricsSync;let i=-1;for(let k=0;k<S.length;k++){if(S[k][0]<=now)i=k;else break}
+  const now=audio.currentTime*1000+60,S=t.lyricsSync;let i=-1;for(let k=0;k<S.length;k++){if(S[k][0]<=now)i=k;else break}
   if(i===LY.idx)return;LY.idx=i;const ps=box.querySelectorAll('.ly');
   ps.forEach((p,k)=>{p.classList.toggle('on',k===i);p.classList.toggle('past',k<i)});
   if(i>=0&&Date.now()-LY.hold>3500)lyScroll(ps[i])}
