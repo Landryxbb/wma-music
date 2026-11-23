@@ -265,6 +265,9 @@
 
 
 
+
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -716,22 +719,23 @@ html.adm-light #modal .sticky-actions{background:var(--surface);border-color:var
 .badge.upl{background:var(--accent-soft);color:var(--accent)}
 /* ===== Fluidité et animations au toucher ===== */
 a,button,[data-act],label,summary,input[type=checkbox],input[type=radio]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.fx-press{scale:.95;transition:scale .08s ease-out}
-.fx-rel{transition:scale .22s cubic-bezier(.3,1.6,.5,1)}
+.fx-press{scale:.93;filter:brightness(.88);transition:scale .08s ease-out,filter .08s}
+.fx-row{scale:.985;background:color-mix(in srgb,var(--fg) 8%,transparent)!important;border-radius:10px;transition:scale .08s ease-out,background .08s}
+.fx-rel{transition:scale .3s cubic-bezier(.3,1.8,.5,1),filter .3s,background .3s}
 .fx-rp{overflow:hidden;isolation:isolate}.fx-rp-rel{position:relative}
 .fx-rip{position:absolute;border-radius:50%;pointer-events:none;background:currentColor;opacity:.22;transform:scale(0);animation:fxRip .5s cubic-bezier(.2,.7,.2,1) forwards;z-index:-1}
 @keyframes fxRip{to{transform:scale(1);opacity:0}}
 .fx-pop{animation:fxPop .38s cubic-bezier(.3,1.7,.5,1)}
 @keyframes fxPop{0%{scale:1}35%{scale:1.28}100%{scale:1}}
-#view.fx-in{animation:fxIn .28s cubic-bezier(.2,.7,.2,1)}
-@keyframes fxIn{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}
+#view.fx-in{animation:fxIn .34s cubic-bezier(.2,.7,.2,1)}
+@keyframes fxIn{from{opacity:0;translate:0 14px}to{opacity:1;translate:0 0}}
 #modal:not([hidden]){animation:fxFade .18s ease-out}
 #modal .modal-box{animation:fxBox .26s cubic-bezier(.2,.8,.2,1)}
 @keyframes fxFade{from{opacity:0}to{opacity:1}}
 @keyframes fxBox{from{opacity:0;scale:.96;translate:0 10px}to{opacity:1;scale:1;translate:0 0}}
 #toast:not([hidden]){animation:fxToast .26s cubic-bezier(.2,.8,.2,1)}
 @keyframes fxToast{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
-@media (prefers-reduced-motion:reduce){.fx-press,.fx-rel{scale:none;transition:none}.fx-rip,.fx-pop,#view.fx-in,#modal:not([hidden]),#modal .modal-box,#toast:not([hidden]){animation:none}}
+@media (prefers-reduced-motion:reduce){.fx-press,.fx-row,.fx-rel{scale:none;transition:none}.fx-rip,.fx-pop,#view.fx-in,#modal:not([hidden]),#modal .modal-box,#toast:not([hidden]){animation:none}}
 .btn.pri>.fx-rip,.pa-go>.fx-rip{background:#fff;opacity:.45}
 </style>
 <style>
@@ -4595,11 +4599,13 @@ function fxHtml(h){return h.indexOf('<img')<0?h:h.replace(/<img(?![^>]*\sloading
 /* connexion au serveur de fichiers ouverte d'avance */
 (function(){try{const u=window.WMA_CONFIG&&WMA_CONFIG.supabaseUrl;if(!u||!/^https:/.test(u))return;const l=document.createElement('link');l.rel='preconnect';l.href=new URL(u).origin;l.crossOrigin='';document.head.appendChild(l)}catch(e){}})();
 const FX_REDUCE=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
-const FX_SEL='.btn,button,[data-act],.adm-nav a,#sideNav a,.tabbar a,.chip,.card,.tile';
+const FX_SEL='.btn,button,[data-act],.adm-nav a,#sideNav a,#tabs a,.tabbar a,.chip,.card,.tile,.acard,.dcard-h,.nmf-hero,.relcov,.fans-av,.cov,.trow2,.drow,.trow';
+const FX_ROW='.trow2,.drow,.trow';
 let fxEl=null;
-function fxRelease(){if(!fxEl)return;const el=fxEl;fxEl=null;el.classList.remove('fx-press');el.classList.add('fx-rel');setTimeout(()=>el.classList.remove('fx-rel'),240)}
-document.addEventListener('pointerdown',e=>{if(FX_REDUCE||e.button>0)return;const el=e.target.closest(FX_SEL);if(!el||el.disabled||el.closest('input,textarea,select,[contenteditable]'))return;
-  fxEl=el;el.classList.remove('fx-rel');el.classList.add('fx-press');
+function fxRelease(){if(!fxEl)return;const el=fxEl;fxEl=null;el.classList.remove('fx-press','fx-row');el.classList.add('fx-rel');setTimeout(()=>el.classList.remove('fx-rel'),240)}
+document.addEventListener('pointerdown',e=>{if(FX_REDUCE||e.button>0)return;let el=e.target.closest(FX_SEL);if(!el||el.disabled||e.target.closest('input,textarea,select,[contenteditable]'))return;
+  const inner=e.target.closest('button,.ic,.tr-cov,.dr-cov');if(el.matches(FX_ROW)&&inner&&el.contains(inner)&&inner!==el)el=inner;
+  fxEl=el;el.classList.remove('fx-rel');el.classList.add(el.matches(FX_ROW)?'fx-row':'fx-press');
   if(el.matches('.btn,.pa-go'))fxRipple(el,e)},{passive:true,capture:true});
 function fxRipple(el,e){const r=el.getBoundingClientRect();if(!r.width)return;const d=Math.max(r.width,r.height)*2.2,s=document.createElement('span');
   s.className='fx-rip';s.setAttribute('aria-hidden','true');s.style.width=s.style.height=d+'px';s.style.left=(e.clientX-r.left-d/2)+'px';s.style.top=(e.clientY-r.top-d/2)+'px';
@@ -4611,8 +4617,53 @@ document.addEventListener('pointerleave',fxRelease,{passive:true});
 document.addEventListener('click',e=>{if(FX_REDUCE)return;const el=e.target.closest('[data-act="fav"],[data-act="follow"]');if(!el)return;
   const ic=el.querySelector('svg')||el;ic.classList.remove('fx-pop');void ic.offsetWidth;ic.classList.add('fx-pop');setTimeout(()=>ic.classList.remove('fx-pop'),420)},true);
 /* changement de page : apparition douce */
-window.addEventListener('hashchange',()=>{if(FX_REDUCE)return;const v=document.getElementById('view');if(!v)return;v.classList.remove('fx-in');void v.offsetWidth;v.classList.add('fx-in')});
+window.addEventListener('hashchange',()=>{if(FX_REDUCE)return;const tb=document.querySelector('#tabs a.on svg');if(tb){tb.classList.remove('fx-pop');void tb.offsetWidth;tb.classList.add('fx-pop');setTimeout(()=>tb.classList.remove('fx-pop'),420)}const v=document.getElementById('view');if(!v)return;v.classList.remove('fx-in');void v.offsetWidth;v.classList.add('fx-in')});
 document.addEventListener('animationend',e=>{if(e.target.id==='view'&&e.animationName==='fxIn')e.target.classList.remove('fx-in')});
+
+/* ---------- Lecture en arrière-plan : la musique continue quand on quitte l'application ----------
+   1. La chanson suivante est préparée à l'avance (adresse du fichier déjà obtenue) :
+      à la fin d'un titre, le suivant démarre aussitôt, même écran éteint ou application en arrière-plan.
+   2. Écran verrouillé / notification : titre, pochette, lecture-pause, suivant-précédent et barre de progression.
+   3. Si le réseau coupe en pleine chanson, ou si l'adresse du fichier a expiré après une longue pause,
+      la lecture reprend au même endroit au lieu de s'arrêter.
+   4. Si le téléphone a bloqué le démarrage en arrière-plan, la lecture reprend au retour dans l'application. */
+const BG={warm:null,blocked:false,lastPos:0,retry:0,retryId:null};
+function bgNextId(){if(!P.order.length)return null;if(P.repeat==='one')return null;
+  const i=P.idx+1<P.order.length?P.idx+1:(P.repeat==='all'?0:-1);return i>=0?P.order[i]:null}
+async function bgWarm(){const id=bgNextId();if(!id||BG.warm===id)return;const t=api.track(id);if(!t||!t.audioId)return;BG.warm=id;
+  try{await audioSrc(t.audioId)}catch(e){BG.warm=null}}
+const bgMS=()=>'mediaSession' in navigator?navigator.mediaSession:null;
+function bgPos(force){const ms=bgMS();if(!ms||!ms.setPositionState)return;const d=audio.duration;if(!isFinite(d)||!d)return;
+  const now=Date.now();if(!force&&now-BG.lastPos<5000)return;BG.lastPos=now;
+  try{ms.setPositionState({duration:d,playbackRate:audio.playbackRate||1,position:Math.max(0,Math.min(audio.currentTime||0,d))})}catch(e){}}
+audio.addEventListener('play',()=>{const ms=bgMS();if(ms)try{ms.playbackState='playing'}catch(e){}BG.blocked=false;bgPos(true)});
+audio.addEventListener('playing',()=>{BG.retry=0;setTimeout(bgWarm,1500)});
+audio.addEventListener('pause',()=>{const ms=bgMS();if(ms&&!audio.ended)try{ms.playbackState='paused'}catch(e){}});
+audio.addEventListener('timeupdate',()=>{const ct=audio.currentTime;if(ct>0.5){const t=curTrack();if(t)BG.pos={id:t.id,t:ct}}bgPos(false);const d=audio.duration;if(d&&d-audio.currentTime<30)bgWarm()});
+audio.addEventListener('loadedmetadata',()=>bgPos(true));audio.addEventListener('seeked',()=>bgPos(true));
+/* commandes de l'écran verrouillé */
+const _setMediaBg=setMedia;
+setMedia=function(t){_setMediaBg.apply(this,arguments);const ms=bgMS();if(!ms)return;const h=(a,f)=>{try{ms.setActionHandler(a,f)}catch(e){}};
+  h('play',()=>{audio.play().catch(()=>{})});
+  h('seekto',d=>{if(!d||!isFinite(d.seekTime))return;if(d.fastSeek&&audio.fastSeek)audio.fastSeek(d.seekTime);else audio.currentTime=d.seekTime;bgPos(true)});
+  h('stop',()=>{audio.pause()});
+  bgPos(true)};
+/* démarrage refusé en arrière-plan : nouvel essai, puis reprise au retour dans l'application */
+const _loadCurrentBg=loadCurrent;
+loadCurrent=async function(autoplay){const r=await _loadCurrentBg.apply(this,arguments);
+  if(autoplay&&audio.paused&&audio.getAttribute('src')&&!P.loading){if(document.hidden){BG.blocked=true;setTimeout(()=>{if(audio.paused&&BG.blocked)audio.play().catch(()=>{})},800)}}
+  return r};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&BG.blocked&&audio.paused&&audio.getAttribute('src')){BG.blocked=false;audio.play().catch(()=>{})}});
+/* coupure réseau ou adresse expirée en pleine chanson : reprise au même endroit (2 essais), sinon chanson suivante */
+audio.addEventListener('error',async()=>{const t=curTrack();if(!t||!audio.getAttribute('src')||P.loading)return;
+  if(BG.retryId!==t.id){BG.retryId=t.id;BG.retry=0}
+  if(BG.retry>=2){BG.retry=0;if(P.order.length>1)next(true);return}
+  BG.retry++;const my=t.id,at=BG.pos&&BG.pos.id===my?BG.pos.t:(audio.currentTime||0);
+  await new Promise(r=>setTimeout(r,BG.retry*1500));if(!curTrack()||curTrack().id!==my)return;
+  try{if(t.audioId&&typeof signed==='object')delete signed[t.audioId];
+    const src=t.audioId?await audioSrc(t.audioId):t.audioUrl;if(!src||!curTrack()||curTrack().id!==my)return;
+    audio.src=src;audio.addEventListener('loadedmetadata',()=>{try{if(at>1)audio.currentTime=at}catch(e){}},{once:true});
+    await audio.play()}catch(e){}});
 
 /* Traductions françaises de l'interface (clé = texte anglais affiché). */
 const I18N_FR={
