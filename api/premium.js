@@ -7,6 +7,11 @@
 //   callback   POST  notification envoyée par pawaPay (webhook)
 //   download   GET   lien temporaire pour télécharger une chanson (Premium actif uniquement)
 //   reconcile  GET   tâche planifiée : revérifie les paiements restés en attente
+//   tipconfig  GET   montants et opérateurs pour « Soutenir l'artiste » (public)
+//   tip        POST  lance un soutien (pourboire) à un artiste (utilisateur connecté)
+//   tipstatus  GET   état d'un soutien ; interroge pawaPay tant qu'il est en attente
+//   (supabase/13-push-soutien-parrainage.sql doit avoir été exécuté pour les soutiens)
+//   TIP_AMOUNTS_UGX (facultatif, 2000,5000,10000,20000) · TIP_AMOUNTS_USD (facultatif, 1,2,5,10)
 //
 // RÈGLE DE SÉCURITÉ : Premium n'est JAMAIS activé sur la parole de l'utilisateur ni sur le seul
 // contenu d'un webhook. Le serveur interroge toujours lui-même pawaPay (GET /v2/deposits/{id})
@@ -44,6 +49,10 @@ function conf() {
   c.ready = !!(c.sbUrl && c.anon && c.service && c.token && c.cbKey);
   return c;
 }
+function tipAmounts() {
+  const parse = (v, d) => { const a = String(v || '').split(',').map(x => Number(x.trim())).filter(x => x > 0); return (a.length ? a : d).slice(0, 6).map(x => String(x)); };
+  return { UGX: parse(process.env.TIP_AMOUNTS_UGX, [2000, 5000, 10000, 20000]).map(x => String(Math.round(Number(x)))), USD: parse(process.env.TIP_AMOUNTS_USD, [1, 2, 5, 10]).map(x => Number(x).toFixed(2)) };
+}
 function money(v, d) { const n = Number(v); return n > 0 ? n.toFixed(2) : d; }
 const amountFor = (c, country) => c.prices[COUNTRIES[country].currency];
 
@@ -63,6 +72,8 @@ async function currentUser(c, req) {
   try { const u = await sbFetch(c, '/auth/v1/user', { key: c.anon, auth }); return u && u.id ? { id: u.id, auth } : null; } catch (e) { return null; }
 }
 async function getPayment(c, id) { const r = await sbFetch(c, `/rest/v1/music_premium_payments?id=eq.${id}&select=*`); return r && r[0] || null; }
+async function getTip(c, id) { const r = await sbFetch(c, `/rest/v1/music_tips?id=eq.${id}&select=*`); return r && r[0] || null; }
+const KIND = { premium: { get: getPayment, ok: 'music_premium_complete', ko: 'music_premium_fail' }, tip: { get: getTip, ok: 'music_tip_complete', ko: 'music_tip_fail' } };
 
 // ---------- appels pawaPay ----------
 async function pp(c, path, opts = {}) {
@@ -73,22 +84,23 @@ async function pp(c, path, opts = {}) {
 }
 
 // Vérifie l'état réel du paiement auprès de pawaPay et met à jour la base. Ne fait confiance à rien d'autre.
-async function verifyWithPawaPay(c, pay) {
+async function verifyWithPawaPay(c, pay, kind = 'premium') {
+  const K = KIND[kind];
   if (!pay || pay.status !== 'pending') return pay;
   const r = await pp(c, '/v2/deposits/' + pay.id);
   if (r.http !== 200 || !r.json) return pay;                                 // pawaPay injoignable : on réessaiera
   if (r.json.status === 'NOT_FOUND') {
-    if (Date.now() - Date.parse(pay.created_at) > 30 * 60e3) await rpc(c, 'music_premium_fail', { p_id: pay.id, p_reason: 'NOT_FOUND', p_raw: r.json });
-    return getPayment(c, pay.id);
+    if (Date.now() - Date.parse(pay.created_at) > 30 * 60e3) await rpc(c, K.ko, { p_id: pay.id, p_reason: 'NOT_FOUND', p_raw: r.json });
+    return K.get(c, pay.id);
   }
   const d = r.json.data || {};
   if (r.json.status !== 'FOUND' || d.depositId !== pay.id) return pay;
   if (d.status === 'COMPLETED') {
-    await rpc(c, 'music_premium_complete', { p_id: pay.id, p_amount: Number(d.amount), p_currency: String(d.currency || ''), p_tx: String(d.providerTransactionId || ''), p_raw: d });
+    await rpc(c, K.ok, { p_id: pay.id, p_amount: Number(d.amount), p_currency: String(d.currency || ''), p_tx: String(d.providerTransactionId || ''), p_raw: d });
   } else if (d.status === 'FAILED') {
-    await rpc(c, 'music_premium_fail', { p_id: pay.id, p_reason: String((d.failureReason && d.failureReason.failureCode) || 'FAILED'), p_raw: d });
+    await rpc(c, K.ko, { p_id: pay.id, p_reason: String((d.failureReason && d.failureReason.failureCode) || 'FAILED'), p_raw: d });
   }
-  return getPayment(c, pay.id);
+  return K.get(c, pay.id);
 }
 const publicPay = p => p && ({ id: p.id, status: p.status, failure: p.failure, amount: p.amount, currency: p.currency, operator: p.operator, period_end: p.period_end, created_at: p.created_at });
 
@@ -150,7 +162,62 @@ module.exports = async (req, res) => {
         countries: Object.entries(COUNTRIES).map(([code, k]) => ({ code, name: k.name, prefix: k.prefix, currency: k.currency, amount: amountFor(c, code),
           providers: Object.entries(k.providers).map(([p, n]) => ({ code: p, name: n })) })) });
     }
+    if (action === 'tipconfig') {
+      return send(200, { enabled: c.ready, amounts: tipAmounts(),
+        countries: Object.entries(COUNTRIES).map(([code, k]) => ({ code, name: k.name, prefix: k.prefix, currency: k.currency,
+          providers: Object.entries(k.providers).map(([p, n]) => ({ code: p, name: n })) })) });
+    }
     if (!c.ready) return send(501, { error: 'not_configured' });
+
+    if (action === 'tip') {
+      if (req.method !== 'POST') return send(405, { error: 'method' });
+      const user = await currentUser(c, req); if (!user) return send(401, { error: 'auth' });
+      body = req.body;
+      if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
+      body = body || {};
+      const country = String(body.country || ''), provider = String(body.provider || ''), artistId = String(body.artistId || '');
+      if (!COUNTRIES[country] || !COUNTRIES[country].providers[provider]) return send(400, { error: 'bad_operator' });
+      if (!/^[A-Za-z0-9_-]{1,80}$/.test(artistId)) return send(400, { error: 'bad_artist' });
+      const phone = normPhone(country, body.phone); if (!phone) return send(400, { error: 'bad_phone' });
+      const currency = COUNTRIES[country].currency, allowed = tipAmounts()[currency];
+      const amount = allowed.find(a => Number(a) === Number(body.amount)); if (!amount) return send(400, { error: 'bad_amount' });
+      const art = await sbFetch(c, `/rest/v1/music_docs?kind=eq.artists&id=eq.${encodeURIComponent(artistId)}&select=data`);
+      if (!art || !art[0]) return send(404, { error: 'no_artist' });
+      const since = new Date(Date.now() - 10 * 60e3).toISOString();
+      const recent = await sbFetch(c, `/rest/v1/music_tips?user_id=eq.${user.id}&created_at=gte.${encodeURIComponent(since)}&select=id,status,created_at&order=created_at.desc`);
+      const open = (recent || []).find(p => p.status === 'pending' && Date.now() - Date.parse(p.created_at) < 3 * 60e3);
+      if (open) return send(409, { error: 'pending', id: open.id });
+      if ((recent || []).length >= 5) return send(429, { error: 'too_many' });
+      const meta = await sbFetch(c, '/rest/v1/music_docs?kind=eq.meta&id=eq.tips&select=data').catch(() => []);
+      const rawPct = meta && meta[0] && meta[0].data && meta[0].data.commission !== undefined ? Number(meta[0].data.commission) : NaN;
+      const commission = Number.isFinite(rawPct) ? Math.max(0, Math.min(50, rawPct)) : 10;   // % gardé par WMA (réglable dans WMA ADMIN › Support)
+      const prof = await sbFetch(c, `/rest/v1/music_profiles?id=eq.${user.id}&select=display_name`).catch(() => []);
+      const id = crypto.randomUUID();
+      await sbFetch(c, '/rest/v1/music_tips', { method: 'POST', prefer: 'return=minimal', body: {
+        id, user_id: user.id, artist_id: artistId, artist_name: String((art[0].data || {}).name || '').slice(0, 120),
+        fan_name: String((prof && prof[0] && prof[0].display_name) || '').slice(0, 80), show_name: body.showName !== false,
+        message: String(body.message || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 200),
+        operator: provider, country, phone_hint: phone.slice(0, 4) + '•••••' + phone.slice(-3), amount: Number(amount), currency, commission_pct: commission } });
+      const r = await pp(c, '/v2/deposits', { method: 'POST', body: {
+        depositId: id, amount: String(amount), currency, payer: { type: 'MMO', accountDetails: { phoneNumber: phone, provider } },
+        customerMessage: 'WMA MUSIC support', clientReferenceId: 'TIP-' + user.id.slice(0, 8), metadata: [{ userId: user.id }, { product: 'tip' }, { artistId }] } });
+      const st = r.json && r.json.status;
+      if (st === 'ACCEPTED' || st === 'DUPLICATE_IGNORED') return send(200, { id, status: 'pending' });
+      if (st === 'REJECTED') {
+        const code = String((r.json.failureReason && r.json.failureReason.failureCode) || 'REJECTED');
+        await rpc(c, 'music_tip_fail', { p_id: id, p_reason: code, p_raw: r.json });
+        return send(402, { error: 'rejected', code, id });
+      }
+      return send(502, { error: 'provider_unreachable', id });
+    }
+
+    if (action === 'tipstatus') {
+      const user = await currentUser(c, req); if (!user) return send(401, { error: 'auth' });
+      const id = String(q.id || ''); if (!UUID.test(id)) return send(400, { error: 'bad_id' });
+      let t = await getTip(c, id); if (!t || t.user_id !== user.id) return send(404, { error: 'not_found' });
+      t = await verifyWithPawaPay(c, t, 'tip');
+      return send(200, { id: t.id, status: t.status, failure: t.failure, amount: t.amount, currency: t.currency, artist: t.artist_name });
+    }
 
     if (action === 'pay') {
       if (req.method !== 'POST') return send(405, { error: 'method' });
@@ -197,7 +264,9 @@ module.exports = async (req, res) => {
       if (c.pubKey && !verifySignature(req, raw, c.pubKey)) return send(401, { error: 'bad_signature' });
       let b = {}; try { b = JSON.parse(raw || '{}'); } catch (e) { b = {}; }
       const id = String(b.depositId || ''); if (!UUID.test(id)) return send(200, { ok: true, ignored: true });
-      const pay = await getPayment(c, id); if (!pay) return send(200, { ok: true, ignored: true });
+      const pay = await getPayment(c, id);
+      if (!pay) { const tip = await getTip(c, id).catch(() => null); if (!tip) return send(200, { ok: true, ignored: true });
+        const t2 = await verifyWithPawaPay(c, tip, 'tip'); return send(200, { ok: true, status: t2 && t2.status }); }
       const after = await verifyWithPawaPay(c, pay);                     // revérification auprès de pawaPay
       return send(200, { ok: true, status: after && after.status });
     }
@@ -227,7 +296,9 @@ module.exports = async (req, res) => {
       const old = new Date(Date.now() - 2 * 60e3).toISOString(), week = new Date(Date.now() - 7 * 864e5).toISOString();
       const list = await sbFetch(c, `/rest/v1/music_premium_payments?status=eq.pending&created_at=lte.${encodeURIComponent(old)}&created_at=gte.${encodeURIComponent(week)}&select=*&limit=50`);
       let done = 0; for (const p of list || []) { const a = await verifyWithPawaPay(c, p); if (a && a.status !== 'pending') done++; }
-      return send(200, { checked: (list || []).length, settled: done });
+      const tips = await sbFetch(c, `/rest/v1/music_tips?status=eq.pending&created_at=lte.${encodeURIComponent(old)}&created_at=gte.${encodeURIComponent(week)}&select=*&limit=50`).catch(() => []);
+      for (const t of tips || []) { const a = await verifyWithPawaPay(c, t, 'tip'); if (a && a.status !== 'pending') done++; }
+      return send(200, { checked: (list || []).length + (tips || []).length, settled: done });
     }
     return send(404, { error: 'unknown_action' });
   } catch (e) {
