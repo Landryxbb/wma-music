@@ -295,6 +295,8 @@
 
 
 
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -888,6 +890,20 @@ a,button,[data-act],label,summary,input[type=checkbox],input[type=radio]{touch-a
 .ref-prog{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:14px}.ref-prog i{display:block;height:100%;background:var(--accent);border-radius:4px}
 .ref-list{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}.ref-list li{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--surface2);border-radius:10px;padding:10px 12px;font-size:14px}
 .cast-btn.on{color:var(--accent)}
+/* lecteur : fond flou aux couleurs de la pochette */
+.ytnp{isolation:isolate}
+.np-bg{position:absolute;inset:0;z-index:-1;overflow:hidden;border-radius:inherit;background:var(--tone,#1a1714);pointer-events:none}
+.np-bg img{position:absolute;left:-20%;top:-20%;width:140%;height:140%;object-fit:cover;filter:blur(80px) saturate(1.6) brightness(.62);transform:translateZ(0);opacity:.95}
+.np-mesh{position:absolute;inset:-25%;opacity:0;transition:opacity 1.2s ease;filter:blur(50px);
+  background:radial-gradient(40% 38% at 18% 22%,var(--c1,transparent),transparent 72%),radial-gradient(38% 42% at 84% 26%,var(--c2,transparent),transparent 72%),radial-gradient(46% 42% at 26% 84%,var(--c3,transparent),transparent 72%),radial-gradient(42% 46% at 82% 78%,var(--c4,transparent),transparent 72%);
+  animation:npDrift 26s ease-in-out infinite alternate}
+.np-bg.ready .np-mesh{opacity:.9}
+.np-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,.06) 30%,rgba(0,0,0,.12) 60%,rgba(0,0,0,.55) 100%)}
+@keyframes npDrift{0%{transform:translate(0,0) rotate(0) scale(1)}33%{transform:translate(4%,-3%) rotate(8deg) scale(1.06)}66%{transform:translate(-3%,4%) rotate(-6deg) scale(1.03)}100%{transform:translate(2%,2%) rotate(4deg) scale(1.08)}}
+@media (prefers-reduced-motion:reduce){.np-mesh{animation:none}}
+/* pochette plus petite, centrée */
+.ytnp .yt-art{width:min(100%,46vh,440px);border-radius:12px;box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06)}
+@media (max-width:760px){.ytnp .yt-art{width:min(78vw,42vh)}.ytnp .yt-left{padding-top:8px}}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -5332,27 +5348,8 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='slForm')return;e.
     SL.edit=null;SL.f=null;SL.img=null;SL.busy=false;SL.msg='';rerender();toast(isNew?'Smartlink created: '+slUrl(f.slug).replace(/^https:\/\//,''):'Smartlink saved')}
   catch(x){SL.busy=false;btn.disabled=false;btn.textContent='Save';err.textContent=x.message||String(x)}},true);
 
-/* ---------- Radio automatique : quand la file d'écoute se termine, la musique continue avec des titres proches ----------
-   Choix fait ici, sans service externe : même artiste ou artistes invités, même genre, titres populaires sur WMA MUSIC,
-   en évitant ce qui vient d'être écouté. Réglable dans Profil › Lecture (activé par défaut). */
-const RAD={on:()=>store.get('radio',true)!==false,seed:null,added:0};
-function radioPick(seed,n){const pub=api.pub(),played=new Set([...P.order,...((api.me()&&api.me().history)||[]).slice(0,30).map(h=>h.t||h)]);
-  const arts=new Set([seed.artistId,...(seed.featIds||[])]),L=(api.me()&&api.me().listens)||{};
-  const pop=t=>{try{return (api.plays&&api.plays(t.id))||0}catch(e){return 0}};
-  const score=t=>{let s=0;if(arts.has(t.artistId))s+=6;if((t.featIds||[]).some(a=>arts.has(a)))s+=4;if(seed.genre&&t.genre===seed.genre)s+=5;
-    s+=Math.min(3,Math.log10(1+pop(t)));if(L[t.id])s+=1;return s+Math.random()*2.5};
-  let c=pub.filter(t=>!played.has(t.id)&&t.id!==seed.id).map(t=>[score(t),t]).filter(x=>x[0]>=2.5).sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
-  if(c.length<n)c=c.concat(pub.filter(t=>!played.has(t.id)&&t.id!==seed.id&&!c.includes(t)).sort(()=>Math.random()-.5));
-  /* pas plus de 2 titres d'affilée du même artiste */
-  const out=[];for(const t of c){if(out.length>=n)break;const k=out.length;if(k>=2&&out[k-1].artistId===t.artistId&&out[k-2].artistId===t.artistId)continue;out.push(t)}
-  return out.map(t=>t.id)}
-const _nextRad=next;
-next=function(auto){if(auto&&RAD.on()&&P.repeat==='off'&&P.order.length&&P.idx>=P.order.length-1&&!(typeof SLP!=='undefined'&&SLP.eot)){
-    const seed=curTrack();const ids=seed?radioPick(seed,15):[];
-    if(ids.length){RAD.seed=seed.id;RAD.added+=ids.length;P.queue=P.queue.concat(ids);P.order=P.order.concat(ids);P.idx++;loadCurrent(true);
-      if(!RAD.told){RAD.told=1;toast(`Radio: more songs like “${seed.title}”`)}return}}
-  return _nextRad.apply(this,arguments)};
-
+/* La lecture automatique (« Autoplay ») existe déjà dans reco.js ; ici on ajoute seulement son interrupteur dans Profil › Lecture. */
+const RAD={on:()=>typeof RECO!=='undefined'?!!RECO.on:store.get('autoplay',true)!==false};
 /* ---------- Diffuser sur une enceinte ou une télé (Chromecast) ----------
    API « Remote Playback » du navigateur : Chrome sur Android (et certaines versions ordinateur) propose
    les appareils Chromecast du même Wi-Fi. Le bouton n'apparaît que si le navigateur en trouve un. */
@@ -5369,7 +5366,7 @@ const _pgNowCast=pages.now;
 pages.now=function(){const h=_pgNowCast.apply(this,arguments);if(!audio.remote||!h.includes('data-act="trMenu"'))return h;
   return h.replace('<button class="yt-ic" data-act="trMenu"',`<button class="yt-ic cast-btn${CAST.state!=='disconnected'?' on':''}" data-act="castOpen" aria-label="Play on a TV or speaker" ${!CAST.avail&&CAST.state==='disconnected'?'hidden':''}>${CAST_IC}</button><button class="yt-ic" data-act="trMenu"`)};
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act="castOpen"],[data-act="pbRadio"]');if(!el)return;e.preventDefault();e.stopImmediatePropagation();
-  if(el.dataset.act==='pbRadio'){const v=!RAD.on();store.set('radio',v);el.classList.toggle('on',v);el.setAttribute('aria-checked',v);toast(v?'Autoplay similar songs on':'Autoplay similar songs off');return}
+  if(el.dataset.act==='pbRadio'){const v=!RAD.on();if(typeof RECO!=='undefined')RECO.on=v;store.set('autoplay',v);el.classList.toggle('on',v);el.setAttribute('aria-checked',v);toast(v?'Autoplay similar songs on':'Autoplay similar songs off');return}
   if(!audio.remote)return;if(!audio.src){toast('Play a song first.');return}
   audio.remote.prompt().catch(err=>{if(err&&err.name==='NotFoundError')toast('No TV or speaker found on your Wi-Fi.');else if(err&&err.name==='NotSupportedError')toast('This browser cannot cast this song. Use Chrome on Android.');})},true);
 /* interrupteur dans Profil › Lecture */
@@ -5571,6 +5568,33 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-act
   if(el.dataset.act==='refShare'&&navigator.share){try{await navigator.share({title:'WMA MUSIC',text:'Join me on WMA MUSIC, the free African music app 🎧',url:link})}catch(x){}return}
   try{await navigator.clipboard.writeText(link);toast('Link copied')}catch(x){const c=$('#refUrl');if(c){const r=document.createRange();r.selectNodeContents(c);const s=getSelection();s.removeAllRanges();s.addRange(r)}toast('Select the link to copy it')}},true);
 const _odlRef=onDataLoaded;onDataLoaded=function(){const r=_odlRef.apply(this,arguments);setTimeout(refClaim,2500);return r};
+
+/* ---------- Lecteur plein écran : fond aux couleurs de la pochette, en flou (style Apple Music) ----------
+   Derrière le lecteur : la pochette très floue + 4 taches de couleur tirées de la pochette, qui bougent lentement.
+   Les couleurs sont calculées dans le navigateur à partir de l'image (aucun service externe). */
+const NPB={cache:{}};
+function npPalette(src){if(NPB.cache[src])return Promise.resolve(NPB.cache[src]);
+  return new Promise(res=>{const im=new Image();if(!/^(data|blob):/.test(src))im.crossOrigin='anonymous';
+    im.onload=()=>{try{const S=32,c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(im,0,0,S,S);const d=g.getImageData(0,0,S,S).data;
+      /* regroupe les couleurs proches, en favorisant les couleurs vives et fréquentes */
+      const bins={};for(let i=0;i<d.length;i+=4){const r=d[i],gg=d[i+1],b=d[i+2],mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),sat=mx?(mx-mn)/mx:0,lum=(mx+mn)/510;
+        const k=(r>>5)+','+(gg>>5)+','+(b>>5);const w=.35+sat*1.6+(lum>.12&&lum<.9?.4:0);const o=bins[k]||(bins[k]={r:0,g:0,b:0,n:0,w:0});o.r+=r;o.g+=gg;o.b+=b;o.n++;o.w+=w}
+      let list=Object.values(bins).map(o=>({r:o.r/o.n,g:o.g/o.n,b:o.b/o.n,w:o.w})).sort((a,b)=>b.w-a.w);
+      const out=[];const far=(a,b)=>Math.hypot(a.r-b.r,a.g-b.g,a.b-b.b)>60;
+      for(const x of list){if(out.every(y=>far(x,y)))out.push(x);if(out.length===4)break}
+      while(out.length<4)out.push(out[out.length-1]||{r:42,g:38,b:34});
+      /* couleurs assez sombres pour que le texte blanc reste lisible, mais vives */
+      const fix=c=>{let {r,g,b}=c;const mx=Math.max(r,g,b)||1,t=Math.min(1,175/mx);r*=t;g*=t;b*=t;const avg=(r+g+b)/3;r=avg+(r-avg)*1.25;g=avg+(g-avg)*1.25;b=avg+(b-avg)*1.25;
+        return `rgb(${[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v)))).join(',')})`};
+      res(NPB.cache[src]=out.map(fix))}catch(e){res(null)}};
+    im.onerror=()=>res(null);im.src=src})}
+function npPaintBg(){const box=document.querySelector('.ytnp'),bg=box&&box.querySelector('.np-bg');if(!bg)return;const src=box.dataset.src;
+  npPalette(src).then(p=>{if(!p||box.dataset.src!==src)return;p.forEach((c,i)=>bg.style.setProperty('--c'+(i+1),c));bg.classList.add('ready')})}
+const _pgNowBg=pages.now;
+pages.now=function(){const h=_pgNowBg.apply(this,arguments);const m=h.match(/<div class="ytnp"[^>]*data-src="([^"]*)"[^>]*>/);if(!m)return h;
+  const src=m[1],p=NPB.cache[src.replace(/&amp;/g,'&')];const vars=p?p.map((c,i)=>`--c${i+1}:${c}`).join(';'):'';
+  setTimeout(npPaintBg,0);
+  return h.replace(m[0],m[0]+`<div class="np-bg${p?' ready':''}" aria-hidden="true" style="${vars}"><img src="${src}" alt=""><i class="np-mesh"></i><i class="np-shade"></i></div>`)};
 
 /* Traductions françaises de l'interface (clé = texte anglais affiché). */
 const I18N_FR={
