@@ -24,6 +24,10 @@
       "destination": "/api/share?k=:k&id=:id"
     },
     {
+      "source": "/l/:s",
+      "destination": "/api/l?s=:s"
+    },
+    {
       "source": "/telecharger",
       "destination": "/download"
     },
