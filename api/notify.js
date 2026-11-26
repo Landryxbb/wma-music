@@ -26,21 +26,22 @@ module.exports = async (req, res) => {
     const prof = await sb(`/rest/v1/music_profiles?select=role&id=eq.${encodeURIComponent(user.id)}`);
     if (!prof[0] || prof[0].role !== 'admin') return res.status(403).json({ error: 'forbidden' });
     // 2) la soumission (lisible par un admin uniquement) et la chanson publiée
-    const subs = await sb(`/rest/v1/music_submissions?select=title,artists,email,status&id=eq.${sid}`);
+    const subs = await sb(`/rest/v1/music_submissions?select=*&id=eq.${sid}`);
     const s = subs[0];
     if (!s || s.status !== 'accepted') return res.status(409).json({ error: 'not_accepted' });
     const docs = await sb(`/rest/v1/music_docs?select=data&kind=eq.tracks&id=eq.${encodeURIComponent(tid)}`);
     const t = docs[0] && docs[0].data;
     if (!t || t.status !== 'published' || t.submissionId !== sid) return res.status(409).json({ error: 'not_published' });
     const site = (process.env.SITE_URL || 'https://www.wmamusic.net').replace(/\/+$/, '');
-    const link = `${site}/#track-${tid}`;
-    const subject = `Your song “${s.title}” is now live on WMA MUSIC`;
-    const text = `Hello ${s.artists},\n\nGreat news! The WMA team selected your song “${s.title}”. It is now online on WMA MUSIC.\n\nListen and share it here: ${link}\n\nThank you for trusting WMA.\nThe WMA MUSIC team`;
+    const w = s.kind === 'ep' ? 'EP' : s.kind === 'album' ? 'album' : 'song';
+    const link = w !== 'song' && t.albumId ? `${site}/#album-${encodeURIComponent(t.albumId)}` : `${site}/#track-${tid}`;
+    const subject = `Your ${w} “${s.title}” is now live on WMA MUSIC`;
+    const text = `Hello ${s.artists},\n\nGreat news! The WMA team selected your ${w} “${s.title}”. It is now online on WMA MUSIC.\n\nListen and share it here: ${link}\n\nThank you for trusting WMA.\nThe WMA MUSIC team`;
     const html = `<div style="background:#0A0A0A;padding:32px 16px;font-family:Arial,Helvetica,sans-serif">
   <div style="max-width:520px;margin:0 auto;background:#161618;border-radius:16px;padding:32px;color:#FFFFFF">
     <div style="color:#FF7A1A;font-weight:800;font-size:20px;letter-spacing:.5px">WMA MUSIC</div>
     <h1 style="font-size:24px;line-height:1.3;margin:20px 0 12px">“${esc(s.title)}” is now live 🎉</h1>
-    <p style="color:#D0D0D4;font-size:16px;line-height:1.6;margin:0 0 24px">Hello ${esc(s.artists)},<br><br>Great news! The WMA team selected your song. It is now online on WMA MUSIC — listen to it and share it with your fans.</p>
+    <p style="color:#D0D0D4;font-size:16px;line-height:1.6;margin:0 0 24px">Hello ${esc(s.artists)},<br><br>Great news! The WMA team selected your ${w}. It is now online on WMA MUSIC — listen to it and share it with your fans.</p>
     <a href="${esc(link)}" style="display:inline-block;background:#FF7A1A;color:#0A0A0A;text-decoration:none;font-weight:800;padding:14px 26px;border-radius:999px">▶ Listen on WMA MUSIC</a>
     <p style="color:#8E8E93;font-size:13px;line-height:1.5;margin:28px 0 0">Or copy this link: ${esc(link)}<br><br>Thank you for trusting WMA.<br>The WMA MUSIC team</p>
   </div></div>`;
