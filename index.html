@@ -300,6 +300,7 @@
 
 
 
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -5285,7 +5286,7 @@ const slPng=file=>new Promise((res,rej)=>{if(!/^image\//.test(file.type))return 
 function slIcons(){const ic=SL.icons||{};const n=SL_PL.filter(([k])=>ic[k]||SL_DEF.includes(k)).length;
   return `<details class="panel sl-icons" ${SL.iconsOpen?'open':''}><summary><b>Platform logos</b> <span class="muted">(${n} / ${SL_PL.length})</span></summary>
    <p class="muted" style="font-size:13.5px;max-width:760px;margin:8px 0 12px">Upload the official logo of each platform, as provided in its brand resources (square icon, PNG or SVG, transparent background if possible). WMA logos are already included for 8 platforms; a logo uploaded here replaces them. Platforms without a logo keep the coloured play icon.</p>
-   <div class="sl-ic-grid">${SL_PL.map(([k,nm])=>`<div class="sl-ic"><span class="sl-ic-prev">${ic[k]?`<img src="${esc(blob(ic[k]))}" alt="">`:SL_DEF.includes(k)?`<img src="/logos/${k}.png" alt="">`:'<i></i>'}</span><b>${nm}${!ic[k]&&SL_DEF.includes(k)?' <small class="muted">(WMA logo)</small>':''}</b>
+   <div class="sl-ic-grid">${SL_PL.map(([k,nm])=>`<div class="sl-ic"><span class="sl-ic-prev">${ic[k]?`<img src="${esc(blob(ic[k]))}" alt="">`:SL_DEF.includes(k)?`<img src="/${k}.png" alt="">`:'<i></i>'}</span><b>${nm}${!ic[k]&&SL_DEF.includes(k)?' <small class="muted">(WMA logo)</small>':''}</b>
      <label class="btn sm">${ic[k]?'Replace':'Upload'}<input type="file" accept="image/png,image/svg+xml,image/jpeg,image/webp" data-slicon="${k}" hidden></label>${ic[k]?`<button class="btn sm" data-act="slIconDel" data-id="${k}">Remove</button>`:''}</div>`).join('')}</div></details>`}
 adminActs.slIconDel=async el=>{const k=el.dataset.id;el.disabled=true;SL.iconsOpen=true;try{await slIconsWrite(ic=>{delete ic[k];return ic});toast('Logo removed')}catch(e){toast('Not saved: '+(e.message||e))}rerender()};
 document.addEventListener('change',async e=>{const k=e.target.dataset&&e.target.dataset.slicon;if(!k)return;const file=e.target.files[0];if(!file)return;SL.iconsOpen=true;
