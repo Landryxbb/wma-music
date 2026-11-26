@@ -41,7 +41,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function conf() {
   const e = process.env;
   const c = {
-    sbUrl: String(e.SUPABASE_URL || '').replace(/\/+$/, ''), anon: e.SUPABASE_ANON_KEY || '', service: e.SUPABASE_SERVICE_ROLE_KEY || '',
+    sbUrl: String(e.SUPABASE_URL || '').replace(/\/+$/, ''), anon: e.SUPABASE_ANON_KEY || '', service: String(e.SUPABASE_SERVICE_ROLE_KEY || '').replace(/^\s*(Bearer\s+)?["']?|["']?\s*$/g, ''),
     token: e.PAWAPAY_API_TOKEN || '', ppBase: /^prod/i.test(e.PAWAPAY_ENV || '') ? 'https://api.pawapay.io' : 'https://api.sandbox.pawapay.io',
     sandbox: !/^prod/i.test(e.PAWAPAY_ENV || ''), cbKey: e.PAWAPAY_CALLBACK_KEY || '', pubKey: e.PAWAPAY_PUBLIC_KEY || '',
     prices: { USD: money(e.PREMIUM_PRICE_USD, '1.50'), UGX: String(Math.round(Number(e.PREMIUM_PRICE_UGX) || 5500)) }

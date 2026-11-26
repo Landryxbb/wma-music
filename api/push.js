@@ -20,7 +20,7 @@ const hmac = (key, data) => crypto.createHmac('sha256', key).update(data).digest
 
 function conf() {
   const e = process.env;
-  const c = { sbUrl: String(e.SUPABASE_URL || '').replace(/\/+$/, ''), anon: e.SUPABASE_ANON_KEY || '', service: e.SUPABASE_SERVICE_ROLE_KEY || '',
+  const c = { sbUrl: String(e.SUPABASE_URL || '').replace(/\/+$/, ''), anon: e.SUPABASE_ANON_KEY || '', service: String(e.SUPABASE_SERVICE_ROLE_KEY || '').replace(/^\s*(Bearer\s+)?["']?|["']?\s*$/g, ''),
     pub: e.VAPID_PUBLIC_KEY || '', priv: e.VAPID_PRIVATE_KEY || '', subject: e.VAPID_SUBJECT || 'mailto:worldmusicactus@gmail.com',
     site: String(e.SITE_URL || 'https://www.wmamusic.net').replace(/\/+$/, '') };
   c.ready = !!(c.sbUrl && c.anon && c.service && c.pub && c.priv);
@@ -122,6 +122,12 @@ module.exports = async (req, res) => {
   const send = (code, o) => res.status(code).json(o);
   try {
     if (action === 'config') return send(200, { enabled: c.ready, publicKey: c.ready ? c.pub : '' });
+    if (action === 'health') { // vérifie la clé serveur sans jamais l'afficher
+      const k = c.service, kind = !k ? 'missing' : /^sb_secret_/.test(k) ? 'sb_secret' : /^sb_publishable_/.test(k) ? 'publishable (wrong key)' : /^eyJ/.test(k) ? 'jwt' : 'unknown format';
+      let service = 'missing';
+      if (k) { try { await sb(c, '/rest/v1/music_push_subs?select=id&limit=1'); service = 'ok'; } catch (e) { service = e.status === 401 || e.status === 403 ? 'refused' : 'error ' + (e.status || ''); } }
+      return send(200, { push: c.ready, service, keyType: kind });
+    }
     if (!c.ready) return send(501, { error: 'not_configured' });
     if (req.method !== 'POST') return send(405, { error: 'method' });
 
