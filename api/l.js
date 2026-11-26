@@ -11,6 +11,8 @@ const PLATFORMS = [
   ['anghami', 'Anghami', '#9B3DF2'], ['tiktok', 'TikTok', '#2B2B2B'], ['instagram', 'Instagram', '#E1306C']
 ];
 const SOCIAL = { tiktok: 1, instagram: 1 };
+// Logos officiels fournis par WMA (dossier /logos du site). Un logo envoyé dans WMA ADMIN › Smartlinks les remplace.
+const DEFAULT_LOGOS = ['spotify', 'youtube', 'ytmusic', 'audiomack', 'boomplay', 'deezer', 'amazon', 'tidal'];
 const T = {
   en: { listen: 'Listen now', soon: 'Out soon', out: 'Out', choose: 'Choose your platform', play: 'Play', open: 'Open', follow: 'Follow', d: 'days', h: 'hours', m: 'min', s: 'sec',
     links: 'The links appear here on release day.', share: 'Share', copied: 'Link copied', nf: 'This Smartlink does not exist or has been removed.', home: 'Go to WMA MUSIC', tz: 'Kampala time', by: 'by', ready: 'Out now!' },
@@ -36,11 +38,11 @@ module.exports = async (req, res) => {
     if (/^img\//.test(v) && base) return `${base}/storage/v1/object/public/music-images/${v.split('/').map(encodeURIComponent).join('/')}`;
     return '';
   };
-  let item = null;
+  let item = null, icons = {};
   if (/^[a-z0-9][a-z0-9-]{0,59}$/.test(slug) && base && key) {
     try {
       const r = await fetch(`${base}/rest/v1/music_docs?select=data&kind=eq.meta&id=eq.smartlinks`, { headers: { apikey: key, Authorization: 'Bearer ' + key } });
-      if (r.ok) { const j = await r.json(); const items = (j[0] && j[0].data && j[0].data.items) || []; item = items.find(x => x && x.slug === slug && !x.hidden) || null; }
+      if (r.ok) { const j = await r.json(); const items = (j[0] && j[0].data && j[0].data.items) || []; item = items.find(x => x && x.slug === slug && !x.hidden) || null; icons = (j[0] && j[0].data && j[0].data.icons) || {}; }
     } catch (e) { item = null; }
   }
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -71,7 +73,9 @@ module.exports = async (req, res) => {
   const url = `${site}/l/${slug}`;
   const btn = ([k, name, col]) => {
     const soc = SOCIAL[k];
-    return `<a class="pl" href="${esc(item.links[k])}" target="_blank" rel="noopener" data-k="${k}"><span class="ic${k === 'wma' ? ' wma' : ''}" style="background:${col}">${k === 'wma' ? SUN : soc ? PERSON : PLAY}</span><span class="nm">${esc(name)}</span><span class="go">${esc(soc ? L.follow : k === 'wma' ? L.play : L.play)}</span></a>`;
+    const logo = img(icons[k]) || (DEFAULT_LOGOS.includes(k) ? `${site}/logos/${k}.png` : '');
+    const ic = logo ? `<span class="ic logo"><img src="${esc(logo)}" alt="" width="40" height="40" loading="lazy"></span>` : `<span class="ic${k === 'wma' ? ' wma' : ''}" style="background:${col}">${k === 'wma' ? SUN : soc ? PERSON : PLAY}</span>`;
+    return `<a class="pl" href="${esc(item.links[k])}" target="_blank" rel="noopener" data-k="${k}">${ic}<span class="nm">${esc(name)}</span><span class="go">${esc(soc ? L.follow : k === 'wma' ? L.play : L.play)}</span></a>`;
   };
   const html = head(`${title}${artist ? ' — ' + artist : ''}`, desc, cover, url) + `
 <style>
@@ -93,7 +97,7 @@ h1{margin:14px 0 4px;font-size:clamp(28px,8vw,38px);line-height:1.05;letter-spac
 .list{width:100%;display:flex;flex-direction:column;gap:9px}
 .pl{display:flex;align-items:center;gap:13px;padding:10px 12px 10px 10px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#fff;text-decoration:none;transition:transform .15s,background .15s}
 .pl:hover{background:rgba(255,255,255,.13)}.pl:active{transform:scale(.98)}
-.ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;flex:none}.ic svg{width:20px;height:20px}.ic.wma{color:#0A0A0A}.ic.wma svg{width:28px;height:28px}
+.ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;flex:none}.ic svg{width:20px;height:20px}.ic.logo{background:none}.ic.logo img{width:40px;height:40px;object-fit:contain;border-radius:10px}.ic.wma{color:#0A0A0A}.ic.wma svg{width:28px;height:28px}
 .nm{flex:1;min-width:0;text-align:left;font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .go{font-size:13px;font-weight:800;color:#0A0A0A;background:#fff;border-radius:999px;padding:7px 14px}
 .pl[data-k="wma"] .go{background:var(--a)}
