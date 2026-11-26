@@ -312,6 +312,8 @@
 
 
 
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -953,6 +955,13 @@ a,button,[data-act],label,summary,input[type=checkbox],input[type=radio]{touch-a
 .phead .meta,.phead h1{overflow-wrap:anywhere}
 .phead .actions{flex-wrap:wrap;max-width:100%}
 .phead .actions .btn{max-width:100%;white-space:normal;min-width:0}
+/* Ouverture : animation vidéo du logo (repli automatique sur l'animation CSS) */
+#intro{background:#0A0A0A}
+#intro .in-vid{position:absolute;left:50%;top:50%;width:min(100vw,100vh,720px);aspect-ratio:1;height:auto;transform:translate(-50%,-50%);object-fit:cover;opacity:0;transition:opacity .25s ease;pointer-events:none;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(circle at 50% 50%,#000 70%,transparent 100%)}
+#intro.vid .in-vid{opacity:1}
+#intro.wait .in-stage,#intro.vid .in-stage{visibility:hidden}
+#intro.wait .in-stage *{animation-play-state:paused!important}
 </style>
 <style>
 /* Layout façon Apple Music : barre latérale translucide + grands titres + lecteur flottant en verre dépoli ; charte WMA orange et noir */
@@ -1432,6 +1441,7 @@ body.is-playing .logo svg .sun{animation:sunSpin 14s linear infinite}
 </head>
 <body>
 <div id="intro" role="status" aria-live="polite" aria-label="WMA MUSIC is loading">
+  <video class="in-vid" src="/intro.mp4" muted playsinline autoplay preload="auto" disablepictureinpicture disableremoteplayback aria-hidden="true"></video>
   <div class="in-stage">
     <svg class="in-sun" width="132" height="132" viewBox="-50 -50 100 100" aria-hidden="true"><g class="in-rot" fill="#FF7A1A"><circle class="core" r="12"/><g transform="rotate(0)"><rect class="ray" style="--k:0" x="-2.8" y="-46" width="5.6" height="26" rx="2.8"/></g><g transform="rotate(22.5)"><rect class="ray" style="--k:1" x="-2.8" y="-34" width="5.6" height="14" rx="2.8"/></g><g transform="rotate(45)"><rect class="ray" style="--k:2" x="-2.8" y="-40" width="5.6" height="20" rx="2.8"/></g><g transform="rotate(67.5)"><rect class="ray" style="--k:3" x="-2.8" y="-30" width="5.6" height="10" rx="2.8"/></g><g transform="rotate(90)"><rect class="ray" style="--k:4" x="-2.8" y="-44" width="5.6" height="24" rx="2.8"/></g><g transform="rotate(112.5)"><rect class="ray" style="--k:5" x="-2.8" y="-36" width="5.6" height="16" rx="2.8"/></g><g transform="rotate(135)"><rect class="ray" style="--k:6" x="-2.8" y="-48" width="5.6" height="28" rx="2.8"/></g><g transform="rotate(157.5)"><rect class="ray" style="--k:7" x="-2.8" y="-32" width="5.6" height="12" rx="2.8"/></g><g transform="rotate(180)"><rect class="ray" style="--k:8" x="-2.8" y="-42" width="5.6" height="22" rx="2.8"/></g><g transform="rotate(202.5)"><rect class="ray" style="--k:9" x="-2.8" y="-34" width="5.6" height="14" rx="2.8"/></g><g transform="rotate(225)"><rect class="ray" style="--k:10" x="-2.8" y="-46" width="5.6" height="26" rx="2.8"/></g><g transform="rotate(247.5)"><rect class="ray" style="--k:11" x="-2.8" y="-30" width="5.6" height="10" rx="2.8"/></g><g transform="rotate(270)"><rect class="ray" style="--k:12" x="-2.8" y="-40" width="5.6" height="20" rx="2.8"/></g><g transform="rotate(292.5)"><rect class="ray" style="--k:13" x="-2.8" y="-36" width="5.6" height="16" rx="2.8"/></g><g transform="rotate(315)"><rect class="ray" style="--k:14" x="-2.8" y="-44" width="5.6" height="24" rx="2.8"/></g><g transform="rotate(337.5)"><rect class="ray" style="--k:15" x="-2.8" y="-32" width="5.6" height="12" rx="2.8"/></g></g></svg>
     <div class="in-word" aria-hidden="true"><b>WMA</b> <em>MUSIC</em></div>
@@ -1439,7 +1449,7 @@ body.is-playing .logo svg .sun{animation:sunSpin 14s linear infinite}
     <div class="in-bar" aria-hidden="true"><i></i></div>
   </div>
 </div>
-<script>try{if(sessionStorage.getItem('wma_intro_seen')==='1')document.getElementById('intro').classList.add('quick')}catch(e){}document.body.classList.add('ob-lock');setTimeout(function(){var e=document.getElementById('intro');if(e){e.classList.add('out');document.body.classList.remove('ob-lock')}},8000)</script>
+<script>(function(){var e=document.getElementById('intro'),v=e.querySelector('.in-vid'),q=false;try{q=sessionStorage.getItem('wma_intro_seen')==='1'}catch(x){}var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,sd=navigator.connection&&navigator.connection.saveData;if(q)e.classList.add('quick');if(q||rm||sd){v.remove()}else{e.classList.add('wait');v.addEventListener('playing',function(){e.classList.add('vid')},{once:true})}})();document.body.classList.add('ob-lock');setTimeout(function(){var e=document.getElementById('intro');if(e){e.classList.add('out');document.body.classList.remove('ob-lock')}},10000)</script>
 <aside class="side">
   <a class="logo" href="#home" aria-label="WMA MUSIC, home">
     <svg width="48" height="48" viewBox="-50 -50 100 100" aria-hidden="true"><g class="sun" fill="#FF7A1A"><circle r="12"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(0)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(22.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(45)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(67.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(90)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(112.5)"/><rect x="-2.8" y="-48" width="5.6" height="28" rx="2.8" transform="rotate(135)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(157.5)"/><rect x="-2.8" y="-42" width="5.6" height="22" rx="2.8" transform="rotate(180)"/><rect x="-2.8" y="-34" width="5.6" height="14" rx="2.8" transform="rotate(202.5)"/><rect x="-2.8" y="-46" width="5.6" height="26" rx="2.8" transform="rotate(225)"/><rect x="-2.8" y="-30" width="5.6" height="10" rx="2.8" transform="rotate(247.5)"/><rect x="-2.8" y="-40" width="5.6" height="20" rx="2.8" transform="rotate(270)"/><rect x="-2.8" y="-36" width="5.6" height="16" rx="2.8" transform="rotate(292.5)"/><rect x="-2.8" y="-44" width="5.6" height="24" rx="2.8" transform="rotate(315)"/><rect x="-2.8" y="-32" width="5.6" height="12" rx="2.8" transform="rotate(337.5)"/></g></svg>
@@ -3176,9 +3186,16 @@ function startIntro(boot){
   const el=$('#intro'),t0=performance.now(),quick=ssGet('wma_intro_seen')==='1'||RM.matches;
   if(!el){afterIntro();return}
   if(quick)el.classList.add('quick');ssSet('wma_intro_seen','1');
-  const minMs=quick?550:1700,maxMs=4500;let done=false;
+  let minMs=quick?550:1700;const maxMs=4500;let done=false;
   const finish=()=>{if(done)return;done=true;el.classList.add('out');document.body.classList.remove('ob-lock');afterIntro();setTimeout(()=>el.remove(),450)};
-  const wait=Promise.race([Promise.resolve(boot).catch(()=>{}),new Promise(r=>setTimeout(r,maxMs))]);
+  /* Animation vidéo du logo : jouée jusqu'au bout ; si elle ne démarre pas vite (réseau lent), on passe à l'animation dessinée */
+  const v=el.querySelector('.in-vid');
+  const vid=!v?Promise.resolve():new Promise(res=>{let ok=false;const fall=()=>{if(ok)return;try{v.pause()}catch(e){}v.remove();el.classList.remove('wait','vid');res()};
+    const t=setTimeout(fall,1500);v.addEventListener('playing',()=>{ok=true;clearTimeout(t);el.classList.add('vid');el.classList.remove('wait');minMs=0;setTimeout(res,7000)},{once:true});
+    v.addEventListener('ended',()=>{ok=true;clearTimeout(t);res()},{once:true});v.addEventListener('error',fall,{once:true});
+    if(!v.paused&&v.currentTime>0){ok=true;clearTimeout(t);el.classList.add('vid');el.classList.remove('wait');minMs=0}
+    try{const p=v.play();if(p&&p.catch)p.catch(fall)}catch(e){fall()}});
+  const wait=Promise.all([vid,Promise.race([Promise.resolve(boot).catch(()=>{}),new Promise(r=>setTimeout(r,maxMs))])]);
   wait.then(()=>{const left=minMs-(performance.now()-t0);setTimeout(finish,Math.max(0,left))});
   el.addEventListener('click',()=>{if(performance.now()-t0>500)finish()})}
 function afterIntro(){
