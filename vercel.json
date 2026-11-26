@@ -26,26 +26,6 @@
     {
       "source": "/l/:s",
       "destination": "/api/l?s=:s"
-    },
-    {
-      "source": "/telecharger",
-      "destination": "/download"
-    },
-    {
-      "source": "/telechargement",
-      "destination": "/download"
-    },
-    {
-      "source": "/app",
-      "destination": "/download"
-    },
-    {
-      "source": "/teams",
-      "destination": "/team"
-    },
-    {
-      "source": "/equipe",
-      "destination": "/team"
     }
   ],
   "headers": [
@@ -126,6 +106,44 @@
           "value": "SAMEORIGIN"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/telecharger",
+      "destination": "/download",
+      "permanent": true
+    },
+    {
+      "source": "/telechargement",
+      "destination": "/download",
+      "permanent": true
+    },
+    {
+      "source": "/app",
+      "destination": "/download",
+      "permanent": true
+    },
+    {
+      "source": "/teams",
+      "destination": "/team",
+      "permanent": true
+    },
+    {
+      "source": "/equipe",
+      "destination": "/team",
+      "permanent": true
+    },
+    {
+      "source": "/((?!api/).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "wmamusic.vercel.app"
+        }
+      ],
+      "destination": "https://www.wmamusic.net/$1",
+      "permanent": true
     }
   ]
 }
