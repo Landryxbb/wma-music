@@ -49,7 +49,7 @@ module.exports = async (req, res) => {
   res.setHeader('Vary', 'Accept-Language');
   const head = (title, desc, image, url) => `<!doctype html><html lang="${lang}"><head><meta charset="utf-8">
 <title>${esc(title)}</title><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="${esc(desc)}"><meta name="theme-color" content="#0A0A0A">
+<meta name="description" content="${esc(desc)}"><meta name="theme-color" content="#0A0A0A"><link rel="canonical" href="${esc(url)}">
 <meta property="og:site_name" content="WMA MUSIC"><meta property="og:type" content="music.song"><meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(url)}"><meta property="og:image" content="${esc(image)}"><meta property="og:image:secure_url" content="${esc(image)}">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(desc)}"><meta name="twitter:image" content="${esc(image)}">

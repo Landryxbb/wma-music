@@ -73,6 +73,7 @@ module.exports = async (req, res) => {
 <title>${esc(title)}</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="${esc(desc)}">
+<meta name="robots" content="noindex, follow">
 <link rel="canonical" href="${esc(appUrl)}">
 <meta property="og:site_name" content="WMA MUSIC">
 <meta property="og:type" content="${esc(type)}">
