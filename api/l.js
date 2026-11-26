@@ -11,7 +11,7 @@ const PLATFORMS = [
   ['anghami', 'Anghami', '#9B3DF2'], ['tiktok', 'TikTok', '#2B2B2B'], ['instagram', 'Instagram', '#E1306C']
 ];
 const SOCIAL = { tiktok: 1, instagram: 1 };
-// Logos officiels fournis par WMA (dossier /logos du site). Un logo envoyé dans WMA ADMIN › Smartlinks les remplace.
+// Logos officiels fournis par WMA (à la racine du site : /spotify.png, /youtube.png…). Un logo envoyé dans WMA ADMIN › Smartlinks les remplace.
 const DEFAULT_LOGOS = ['spotify', 'youtube', 'ytmusic', 'audiomack', 'boomplay', 'deezer', 'amazon', 'tidal'];
 const T = {
   en: { listen: 'Listen now', soon: 'Out soon', out: 'Out', choose: 'Choose your platform', play: 'Play', open: 'Open', follow: 'Follow', d: 'days', h: 'hours', m: 'min', s: 'sec',
@@ -73,7 +73,7 @@ module.exports = async (req, res) => {
   const url = `${site}/l/${slug}`;
   const btn = ([k, name, col]) => {
     const soc = SOCIAL[k];
-    const logo = img(icons[k]) || (DEFAULT_LOGOS.includes(k) ? `${site}/logos/${k}.png` : '');
+    const logo = img(icons[k]) || (DEFAULT_LOGOS.includes(k) ? `${site}/${k}.png` : '');
     const ic = logo ? `<span class="ic logo"><img src="${esc(logo)}" alt="" width="40" height="40" loading="lazy"></span>` : `<span class="ic${k === 'wma' ? ' wma' : ''}" style="background:${col}">${k === 'wma' ? SUN : soc ? PERSON : PLAY}</span>`;
     return `<a class="pl" href="${esc(item.links[k])}" target="_blank" rel="noopener" data-k="${k}">${ic}<span class="nm">${esc(name)}</span><span class="go">${esc(soc ? L.follow : k === 'wma' ? L.play : L.play)}</span></a>`;
   };
