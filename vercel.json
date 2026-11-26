@@ -26,6 +26,22 @@
     {
       "source": "/l/:s",
       "destination": "/api/l?s=:s"
+    },
+    {
+      "source": "/artist/:s",
+      "destination": "/api/seo?k=artist&s=:s"
+    },
+    {
+      "source": "/song/:s",
+      "destination": "/api/seo?k=song&s=:s"
+    },
+    {
+      "source": "/album/:s",
+      "destination": "/api/seo?k=album&s=:s"
+    },
+    {
+      "source": "/sitemap-music.xml",
+      "destination": "/api/seo?map=1"
     }
   ],
   "headers": [

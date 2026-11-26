@@ -3,3 +3,4 @@ Allow: /
 Disallow: /api/
 
 Sitemap: https://www.wmamusic.net/sitemap.xml
+Sitemap: https://www.wmamusic.net/sitemap-music.xml
