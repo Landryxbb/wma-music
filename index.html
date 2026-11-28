@@ -323,6 +323,8 @@
 
 
 
+
+
 /* ===== Parcours d'ouverture ===== */
 #intro{position:fixed;inset:0;z-index:1000;background:#000;display:grid;place-items:center;padding:24px;color:#fff;transition:opacity .42s ease,visibility 0s linear .42s}
 #intro.out{opacity:0;visibility:hidden}
@@ -2662,7 +2664,7 @@ const SMART=[
  {id:'smart-afrobeat',name:'Afrobeat',desc:'Afrobeat, afro-pop and amapiano.',hue:40,empty:'No afrobeat songs yet.',build:()=>api.pub().filter(t=>['Afrobeat','Afro-pop','Amapiano'].includes(t.genre)).sort(byPlays).slice(0,60)},
  {id:'smart-gospel',name:'Gospel',desc:'Gospel songs from across Africa.',hue:280,empty:'No gospel songs yet.',build:()=>api.pub().filter(t=>t.genre==='Gospel').sort(byPlays).slice(0,60)},
  {id:'smart-congo',name:'Congolese Music',desc:'Rumba, ndombolo, soukous and artists from the DR Congo.',hue:12,empty:'No Congolese music yet.',build:()=>api.pub().filter(t=>CONGO_GENRES.includes(t.genre)||/congo|rdc|drc/i.test(api.artist(t.artistId)?.country||'')).sort(byPlays).slice(0,60)},
- {id:'smart-ivoire',name:'Rap Ivoire',desc:'Rap ivoire and the sounds of Côte d’Ivoire: rap, coupé-décalé, zouglou.',hue:28,empty:'No Ivorian music yet.',build:()=>{
+ {id:'smart-ivoire',name:'Rap Ivoire',cover:'/playlists/rap-ivoire.jpg',desc:'Rap ivoire and the sounds of Côte d’Ivoire: rap, coupé-décalé, zouglou.',hue:28,empty:'No Ivorian music yet.',build:()=>{
    const civ=t=>/rap ?ivoire|coup[eé].?d[eé]cal[eé]|zouglou|nouchi|mapouka|zoblazo/i.test(t.genre||'')||[t.artistId,...t.featIds].some(id=>{const a=api.artist(id);return a&&/c[oô]te ?d.?ivoire|ivory ?coast|ivoirien|abidjan|bouak[eé]|yamoussoukro|^ci$|^civ$/i.test((a.country||'')+' '+(a.city||''))});
    const rap=t=>/rap|hip.?hop|drill|trap/i.test(t.genre||'');
    const l=api.pub().filter(t=>!t.demo&&civ(t));return [...l.filter(rap).sort(byPlays),...l.filter(t=>!rap(t)).sort(byPlays)].slice(0,80)}},
@@ -5960,6 +5962,11 @@ const _plPageMood=pages.playlist;pages.playlist=function(id){const h=_plPageMood
 const _plsMood=pages.playlists;pages.playlists=function(){const h=_plsMood.apply(this,arguments);const D=moodBuild(),all=MOOD_DEFS.flatMap(m=>D[m.k]||[]);if(!all.length)return h;
   const s=sec('Moods &amp; moments',`<div class="grid mgrid">${all.map(L=>`<a class="mgrid-i" href="#playlist-${L.id}">${moodCover(L)}<b>${esc(L.name)}</b><small>${esc(L.moodLabel)} · ${L.tracks.length} songs</small></a>`).join('')}</div>`);
   const i0=h.indexOf('<section class="sec">'),i=i0>=0?h.indexOf('<section class="sec">',i0+10):-1;return i>=0?h.slice(0,i)+s+h.slice(i):h+s};
+
+/* Pochettes dessinées pour certaines playlists automatiques (ex. Rap Ivoire), et mise en avant en tête de « Charts & picks » */
+const SMART_COVERS=Object.fromEntries(SMART.filter(d=>d.cover).map(d=>[d.id,d.cover]));
+const _plCoverSmartImg=plCover;plCover=p=>(p&&SMART_COVERS[p.id])?SMART_COVERS[p.id]:_plCoverSmartImg(p);
+{const _spl=api.smartPlaylists;api.smartPlaylists=()=>{const l=_spl(),i=l.findIndex(p=>p.id==='smart-ivoire');if(i>0&&l[i].trackIds.length)l.unshift(l.splice(i,1)[0]);return l}}
 
 /* Traductions françaises de l'interface (clé = texte anglais affiché). */
 const I18N_FR={
